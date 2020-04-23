@@ -21,5 +21,8 @@
     "ext": "css, js",
     "delay": "1000"
   },
-  "homepage": "https://github.com/gregoryvanko/Aquagreen#readme"
+  "homepage": "https://github.com/gregoryvanko/Aquagreen#readme",
+  "dependencies": {
+    "@gregvanko/corex": "^4.7.0"
+  }
 }
