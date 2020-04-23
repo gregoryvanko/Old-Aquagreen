@@ -1,3 +1,6 @@
 let Aquagreen = require('./index').Aquagreen
-let MyApp = new Aquagreen()
-MyApp.Start() 
+const Name = "AquagreenDev"
+const Port = 5000
+const Debug = true
+let MyApp = new Aquagreen(Name, Port, Debug)
+MyApp.Start()
