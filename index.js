@@ -7,4 +7,5 @@ class Aquagreen {
         console.log("Application started")
     }
 }
+
 module.exports.Aquagreen = Aquagreen
