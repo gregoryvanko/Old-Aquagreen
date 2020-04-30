@@ -1,5 +1,5 @@
 class Aquagreen {
-    constructor(Name = "AppName", Port = 4000, Debug = true){
+    constructor(Name = "AppName", Port = 4000, Debug = true, PinIO= null){
         // Creation de l'application CoreX
         let corex = require('@gregvanko/corex').corex
         this._OptionApplication = {
@@ -11,9 +11,10 @@ class Aquagreen {
         this._MyApp = new corex(this._OptionApplication)
         // Variable interne
         this._Debug = Debug
-        // Varaible interne MongoDB
-        let MongoR = require('@gregvanko/corex').Mongo
-        this._Mongo = new MongoR(this._OptionApplication.MongoUrl,this._OptionApplication.AppName)
+        this._PinIO = PinIO
+
+        let FunctionAdminR = require('./FunctionAdmin').FunctionAdmin
+        this._FunctionAdmin = new FunctionAdminR(this._OptionApplication.AppName, this._OptionApplication.MongoUrl, this._MyApp, this._PinIO)
     }
 
     /* Start de l'application */
@@ -43,9 +44,12 @@ class Aquagreen {
         // Chemin vers le dossier contenant les sources Js et CSS de l'app client
         this._MyApp.ClientAppFolder = __dirname + "/Client"
         // Chemin vers le dossier contenant les sources Js et CSS de l'app Admin
-        //this._MyApp.AdminAppFolder = __dirname + "/Admin"
+        this._MyApp.AdminAppFolder = __dirname + "/Admin"
         // Chemin relatif de l'icone
-        //this._MyApp.IconRelPath = __dirname + "/apple-icon-192x192.png"
+        this._MyApp.IconRelPath = __dirname + "/apple-icon-192x192.png"
+        // Api Admin
+        this._MyApp.AddApiAdminFct("PinIo", this._FunctionAdmin.ApiPinIo.bind(this._FunctionAdmin))
+        // Start Aoo
         this._MyApp.Start()
     }
 }
