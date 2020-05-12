@@ -47,6 +47,8 @@ class Aquagreen {
         this._MyApp.AdminAppFolder = __dirname + "/Admin"
         // Chemin relatif de l'icone
         this._MyApp.IconRelPath = __dirname + "/apple-icon-192x192.png"
+        // Api Client
+        //this._MyApp.AddApiFct("Test", this.TestApiCallForFctTest.bind(this))
         // Api Admin
         this._MyApp.AddApiAdminFct("PinIo", this._FunctionAdmin.ApiPinIo.bind(this._FunctionAdmin))
         // Start Aoo
