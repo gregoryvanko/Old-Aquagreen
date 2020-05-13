@@ -13,6 +13,9 @@ class Aquagreen {
         this._Debug = Debug
         this._PinIO = PinIO
 
+        let FunctionClientR = require('./FunctionClient').FunctionClient
+        this._FunctionClient = new FunctionClientR(this._OptionApplication.AppName, this._OptionApplication.MongoUrl, this._MyApp)
+
         let FunctionAdminR = require('./FunctionAdmin').FunctionAdmin
         this._FunctionAdmin = new FunctionAdminR(this._OptionApplication.AppName, this._OptionApplication.MongoUrl, this._MyApp, this._PinIO)
     }
@@ -48,9 +51,9 @@ class Aquagreen {
         // Chemin relatif de l'icone
         this._MyApp.IconRelPath = __dirname + "/apple-icon-192x192.png"
         // Api Client
-        //this._MyApp.AddApiFct("Test", this.TestApiCallForFctTest.bind(this))
+        this._MyApp.AddApiFct("Worker", this._FunctionClient.ApiWorker.bind(this._FunctionClient))
         // Api Admin
-        this._MyApp.AddApiAdminFct("PinIo", this._FunctionAdmin.ApiPinIo.bind(this._FunctionAdmin))
+        //this._MyApp.AddApiAdminFct("PinIo", this._FunctionAdmin.ApiPinIo.bind(this._FunctionAdmin))
         // Start Aoo
         this._MyApp.Start()
     }
