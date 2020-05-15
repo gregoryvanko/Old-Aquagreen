@@ -19,5 +19,4 @@ class FunctionClient{
         }
     }
 }
-
 module.exports.FunctionClient = FunctionClient
