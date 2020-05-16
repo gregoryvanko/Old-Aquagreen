@@ -1,18 +1,18 @@
 class FunctionAdmin{
-    constructor(AppName, MongoUrl, MyApp, PinIO){
+    constructor(AppName, MongoUrl, MyApp){
         // Varaible interne MongoDB
         let MongoR = require('@gregvanko/corex').Mongo
         this._Mongo = new MongoR(MongoUrl,AppName)
         this._MyApp = MyApp
-        this._PinIO = PinIO
     }
 
-    ApiPinIo(Data, Res, UserId){
-        this._MyApp.LogAppliInfo("Call Admin ApiConfig + " + JSON.stringify(Data))
+    ApiGpio(Data, Res, UserId){
+        this._MyApp.LogAppliInfo("Call Admin ApiGpio + " + JSON.stringify(Data))
         if (Data.Fct == "GetConfig"){
-            Res.json({Error: false, ErrorMsg: "Config PinIO", Data: this._PinIO})
+            // Todo
+            Res.json({Error: false, ErrorMsg: null, Data: null})
         } else {
-            Res.json({Error: true, ErrorMsg: "ApiConfig error, fct not found: " + Data.Fct, Data: null})
+            Res.json({Error: true, ErrorMsg: `ApiGpio error, fct ${Data.Fct} not found`, Data: null})
         }
     }
 }

@@ -1,4 +1,4 @@
-class PinIo{
+class Gpio{
     constructor(HtmlId){
         this._DivApp = document.getElementById(HtmlId)
         this._DivApp.setAttribute("class", "DivContent")
@@ -8,24 +8,24 @@ class PinIo{
         // Clear view
         this.ClearView()
         // Titre
-        this._DivApp.appendChild(CoreXBuild.DivTexte("Test pin relay", "", "Titre", "margin-top:4%"))
+        this._DivApp.appendChild(CoreXBuild.DivTexte("GPIO configuration", "", "Titre", "margin-top:4%"))
         // Conteneur pour la liste des blogs
         let Conteneur = CoreXBuild.DivFlexColumn("Conteneur")
         this._DivApp.appendChild(Conteneur)
         // on construit le texte d'attente des Blog
-        this._DivApp.appendChild(CoreXBuild.DivTexte("Get Configuration...","TxtPinIo","Text","text-align: center;"))
+        this._DivApp.appendChild(CoreXBuild.DivTexte("Get GPIO Configuration...","TxtGpio","Text","text-align: center;"))
         // on construit le texte du message d'erreur
-        this._DivApp.appendChild(CoreXBuild.DivTexte("","ErrorPinIo","Text","color:red; text-align: center;"))
+        this._DivApp.appendChild(CoreXBuild.DivTexte("","ErrorGpio","Text","color:red; text-align: center;"))
         // Call API Get Config
         let ApiData = new Object()
         ApiData.Fct = "GetConfig"
-        GlobalCallApiPromise("PinIo", ApiData, "", "").then((reponse)=>{
-            document.getElementById("TxtPinIo").innerHTML = ""
-            document.getElementById("ErrorPinIo").innerHTML = ""
-            this.BuildViewTestIO(Conteneur, reponse)
+        GlobalCallApiPromise("Gpio", ApiData, "", "").then((reponse)=>{
+            document.getElementById("TxtGpio").innerHTML = ""
+            document.getElementById("ErrorGpio").innerHTML = ""
+            this.BuildViewConfigGpio(Conteneur, reponse)
         },(erreur)=>{
-            document.getElementById("TxtPinIo").innerHTML = ""
-            document.getElementById("ErrorPinIo").innerHTML = erreur
+            document.getElementById("TxtGpio").innerHTML = ""
+            document.getElementById("ErrorGpio").innerHTML = erreur
         })
     }
     /** Clear view */
@@ -37,36 +37,52 @@ class PinIo{
         this._DivApp.innerHTML=""
     }
 
-    /**
-     * Build view to test Pin IO
-     * @param {html element} Conteneur html conteneur
-     * @param {array} PinIO list of PinIo configuration
-     */
-    BuildViewTestIO(Conteneur, PinIO){
-        let DivSelectPin = CoreXBuild.DivFlexRowStart("")
-        Conteneur.appendChild(DivSelectPin)
-        DivSelectPin.appendChild(CoreXBuild.DivTexte("Select Pin to test : ","","Text",""))
-        // Drop dow list
-        let DropDown = document.createElement("select")
-        DropDown.setAttribute("id", "PinIoList")
-        DropDown.setAttribute("class", "Text DorpDown")
-        PinIO.forEach(PinIOElement => {
-            let option = document.createElement("option")
-            option.setAttribute("value", PinIOElement.value)
-            option.innerHTML = PinIOElement.txt
-            DropDown.appendChild(option)
-        });
-        DivSelectPin.appendChild(DropDown)
 
-        let DivAction = CoreXBuild.DivFlexRowStart("")
-        Conteneur.appendChild(DivAction)
-        DivAction.appendChild(CoreXBuild.DivTexte("Actions : ","","Text",""))
-        // ToDo
+    /**
+     * 
+     * @param {HtmlElement} Conteneur Html element du conteneur de l'application
+     * @param {Array} ConfigGpio Liste de la configuration des GPIO
+     */
+    BuildViewConfigGpio(Conteneur, ConfigGpio){
+        if (ConfigGpio == null){
+            Conteneur.appendChild(CoreXBuild.DivTexte("No Configuration available","","Text",""))
+        } else {
+            // ToDo
+        }
+        // Action Button
+        // Todo
     }
+
+    // /**
+    //  * Build view to test Pin IO
+    //  * @param {html element} Conteneur html conteneur
+    //  * @param {array} PinIO list of PinIo configuration
+    //  */
+    // BuildViewTestIO(Conteneur, PinIO){
+    //     let DivSelectPin = CoreXBuild.DivFlexRowStart("")
+    //     Conteneur.appendChild(DivSelectPin)
+    //     DivSelectPin.appendChild(CoreXBuild.DivTexte("Select Pin to test : ","","Text",""))
+    //     // Drop dow list
+    //     let DropDown = document.createElement("select")
+    //     DropDown.setAttribute("id", "PinIoList")
+    //     DropDown.setAttribute("class", "Text DorpDown")
+    //     PinIO.forEach(PinIOElement => {
+    //         let option = document.createElement("option")
+    //         option.setAttribute("value", PinIOElement.value)
+    //         option.innerHTML = PinIOElement.txt
+    //         DropDown.appendChild(option)
+    //     });
+    //     DivSelectPin.appendChild(DropDown)
+
+    //     let DivAction = CoreXBuild.DivFlexRowStart("")
+    //     Conteneur.appendChild(DivAction)
+    //     DivAction.appendChild(CoreXBuild.DivTexte("Actions : ","","Text",""))
+    //     // ToDo
+    // }
 
     /** Get Titre de l'application */
     GetTitre(){
-        return "Pin Io"
+        return "GPIO"
     }
     /** Get Img Src de l'application */
     GetImgSrc(){
@@ -75,6 +91,6 @@ class PinIo{
 }
 
 // Creation de l'application 1
-let PinIoApp = new PinIo(GlobalCoreXGetAppContentId())
+let GpioApp = new Gpio(GlobalCoreXGetAppContentId())
 // Ajout de l'application 1
-GlobalCoreXAddApp(PinIoApp.GetTitre(), PinIoApp.GetImgSrc(),PinIoApp.Start.bind(PinIoApp))
+GlobalCoreXAddApp(GpioApp.GetTitre(), GpioApp.GetImgSrc(),GpioApp.Start.bind(GpioApp))
