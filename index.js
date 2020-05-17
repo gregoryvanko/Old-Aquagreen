@@ -14,10 +14,10 @@ class Aquagreen {
         this._PinConfig = PinConfig
 
         let FunctionClientR = require('./FunctionClient').FunctionClient
-        this._FunctionClient = new FunctionClientR(this._OptionApplication.AppName, this._OptionApplication.MongoUrl, this._MyApp, this._PinConfig)
+        this._FunctionClient = new FunctionClientR(this._MyApp, this._PinConfig)
 
-        let FunctionAdminR = require('./FunctionAdmin').FunctionAdmin
-        this._FunctionAdmin = new FunctionAdminR(this._OptionApplication.AppName, this._OptionApplication.MongoUrl, this._MyApp)
+        let FunctionAdminGpioR = require('./FunctionAdminGpio').FunctionAdminGpio
+        this._FunctionAdminGpio = new FunctionAdminGpioR(this._MyApp)
     }
 
     /* Start de l'application */
@@ -53,7 +53,7 @@ class Aquagreen {
         // Api Client
         this._MyApp.AddApiFct("Worker", this._FunctionClient.ApiWorker.bind(this._FunctionClient))
         // Api Admin
-        this._MyApp.AddApiAdminFct("Gpio", this._FunctionAdmin.ApiGpio.bind(this._FunctionAdmin))
+        this._MyApp.AddApiAdminFct("Gpio", this._FunctionAdminGpio.ApiGpio.bind(this._FunctionAdminGpio))
         // Start App
         this._MyApp.Start()
     }

@@ -1,10 +1,12 @@
 class FunctionClient{
-    constructor(AppName, MongoUrl, MyApp, PinConfig= null){
-        // Varaible interne MongoDB
-        let MongoR = require('@gregvanko/corex').Mongo
-        this._Mongo = new MongoR(MongoUrl,AppName)
+    constructor(MyApp, PinConfig= null){
         this._MyApp = MyApp
         this._PinConfig = PinConfig
+        // Varaible interne MongoDB
+        let MongoR = require('@gregvanko/corex').Mongo
+        this.AppName = this._MyApp.AppName
+        this.MongoUrl = this._MyApp.MongoUrl
+        this._Mongo = new MongoR(this.MongoUrl ,this.AppName)
     }
     ApiWorker(Data, Res, UserId){
         this._MyApp.LogAppliInfo("Call ApiWorker + " + JSON.stringify(Data))

@@ -19,6 +19,7 @@ class Gpio{
         // Call API Get Config
         let ApiData = new Object()
         ApiData.Fct = "GetConfig"
+        ApiData.Data = ""
         GlobalCallApiPromise("Gpio", ApiData, "", "").then((reponse)=>{
             document.getElementById("TxtGpio").innerHTML = ""
             document.getElementById("ErrorGpio").innerHTML = ""
@@ -48,6 +49,7 @@ class Gpio{
             Conteneur.appendChild(CoreXBuild.DivTexte("No Configuration available","","Text",""))
         } else {
             // ToDo
+            console.log(ConfigGpio)
         }
         // Action Button
         // Todo

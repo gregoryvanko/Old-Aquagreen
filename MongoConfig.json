@@ -1,0 +1,8 @@
+{
+    "ConfigCollection":{
+        "Collection": "Config",
+        "Key": "Key",
+        "Value": "Value",
+        "GpioConfigKey" : "GpioConfig"
+    } 
+}
