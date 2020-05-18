@@ -1,5 +1,4 @@
 class Gpio{
-    // coucou
     constructor(HtmlId){
         this._DivApp = document.getElementById(HtmlId)
         this._DivApp.setAttribute("class", "DivContent")
@@ -53,7 +52,18 @@ class Gpio{
             console.log(ConfigGpio)
         }
         // Action Button
-        // Todo
+        let DivContentButton = CoreXBuild.DivFlexRowAr("DivContentButton")
+        Conteneur.appendChild(DivContentButton)
+        DivContentButton.appendChild(CoreXBuild.Button("Add Relay", this.AddRelayConfigGpio,"Button"))
+        DivContentButton.appendChild(CoreXBuild.Button("Add Button", this.AddButtonConfigGpio,"Button"))
+    }
+
+    AddRelayConfigGpio(){
+        alert("add relais")
+    }
+
+    AddButtonConfigGpio(){
+        alert("add button")
     }
 
     // /**
