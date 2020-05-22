@@ -2,20 +2,26 @@ class Gpio{
     constructor(HtmlId){
         this._DivApp = document.getElementById(HtmlId)
         this._DivApp.setAttribute("class", "DivContent")
+
+        this._ConfigGpio = null
     }
-    /** Start de l'application */
-    Start(){
+    /**
+     * Start de l'application
+     */
+    BuildViewConfigGpio(){
         // Clear view
         this.ClearView()
         // Titre
         this._DivApp.appendChild(CoreXBuild.DivTexte("GPIO configuration", "", "Titre", "margin-top:4%"))
-        // Conteneur pour la liste des blogs
+        // Conteneur
         let Conteneur = CoreXBuild.DivFlexColumn("Conteneur")
         this._DivApp.appendChild(Conteneur)
-        // on construit le texte d'attente des Blog
+        // on construit le texte d'info
         this._DivApp.appendChild(CoreXBuild.DivTexte("Get GPIO Configuration...","TxtGpio","Text","text-align: center;"))
         // on construit le texte du message d'erreur
         this._DivApp.appendChild(CoreXBuild.DivTexte("","ErrorGpio","Text","color:red; text-align: center;"))
+        // On laisse un blanc avant la fin de la page
+        this._DivApp.appendChild(CoreXBuild.Div("","","margin-bottom: 2%;"))
         // Call API Get Config
         let ApiData = new Object()
         ApiData.Fct = "GetConfig"
@@ -23,75 +29,164 @@ class Gpio{
         GlobalCallApiPromise("Gpio", ApiData, "", "").then((reponse)=>{
             document.getElementById("TxtGpio").innerHTML = ""
             document.getElementById("ErrorGpio").innerHTML = ""
-            this.BuildViewConfigGpio(Conteneur, reponse)
+            this._ConfigGpio = reponse
+            this.ViewConfigGpio(Conteneur)
         },(erreur)=>{
             document.getElementById("TxtGpio").innerHTML = ""
             document.getElementById("ErrorGpio").innerHTML = erreur
         })
     }
-    /** Clear view */
+    
+    /**
+     * Clear view 
+     */
     ClearView(){
         // Global action
         GlobalClearActionList()
-        GlobalAddActionInList("Refresh", this.Start.bind(this))
+        GlobalAddActionInList("Refresh", this.BuildViewConfigGpio.bind(this))
         // Clear view
         this._DivApp.innerHTML=""
     }
 
-
     /**
-     * 
+     * Construction de la vue qui liste la config GPIO
      * @param {HtmlElement} Conteneur Html element du conteneur de l'application
      * @param {Array} ConfigGpio Liste de la configuration des GPIO
      */
-    BuildViewConfigGpio(Conteneur, ConfigGpio){
-        if (ConfigGpio == null){
-            Conteneur.appendChild(CoreXBuild.DivTexte("No Configuration available","","Text",""))
+    ViewConfigGpio(Conteneur){
+        // affichier le header du tableau Number - Type - Name - Param
+        let BoxTitre = CoreXBuild.DivFlexRowAr("")
+        Conteneur.appendChild(BoxTitre)
+        BoxTitre.appendChild(CoreXBuild.DivTexte("Number","","TextBoxTitre", "width: 20%;color: var(--CoreX-color);"))
+        BoxTitre.appendChild(CoreXBuild.DivTexte("Type","","TextBoxTitre", "width: 25%;color: var(--CoreX-color);"))
+        BoxTitre.appendChild(CoreXBuild.DivTexte("Name","","TextBoxTitre", "width: 25%;color: var(--CoreX-color);"))
+        BoxTitre.appendChild(CoreXBuild.DivTexte("Param","","TextBoxTitre", "width: 30%;color: var(--CoreX-color);"))
+        // Ajout d'une ligne
+        Conteneur.appendChild(CoreXBuild.Line("100%", "Opacity:0.5;"))
+        // Ajout de la configuration
+        if (this._ConfigGpio == null){
+            Conteneur.appendChild(CoreXBuild.DivTexte("No Configuration saved","","Text",""))
         } else {
             // ToDo
-            console.log(ConfigGpio)
+            console.log(this._ConfigGpio)
         }
         // Action Button
         let DivContentButton = CoreXBuild.DivFlexRowAr("DivContentButton")
         Conteneur.appendChild(DivContentButton)
-        DivContentButton.appendChild(CoreXBuild.Button("Add Relay", this.AddRelayConfigGpio,"Button"))
-        DivContentButton.appendChild(CoreXBuild.Button("Add Button", this.AddButtonConfigGpio,"Button"))
+        DivContentButton.appendChild(CoreXBuild.Button("Add Relay", this.BuildViewAddRelayConfigGpio.bind(this),"Button"))
+        DivContentButton.appendChild(CoreXBuild.Button("Add Button", this.BuildViewAddButtonConfigGpio.bind(this),"Button"))
     }
 
-    AddRelayConfigGpio(){
-        alert("add relais")
+    /**
+     * Construction de la vue qui permet d'ajouter un Relay
+     */
+    BuildViewAddRelayConfigGpio(){
+        this.ClearView()
+        // Titre
+        this._DivApp.appendChild(CoreXBuild.DivTexte("Add Relay", "", "Titre", "margin-top:4%"))
+        // Conteneur
+        let Conteneur = CoreXBuild.DivFlexColumn("Conteneur")
+        this._DivApp.appendChild(Conteneur)
+        // on ajoute la vue de la configuration des relais
+        this.RelayConfigGpio(Conteneur)
+        // on construit le texte d'info
+        this._DivApp.appendChild(CoreXBuild.DivTexte("","TxtRelayConfig","Text","text-align: center;"))
+        // on construit le texte du message d'erreur
+        this._DivApp.appendChild(CoreXBuild.DivTexte("","ErrorRelayConfig","Text","color:red; text-align: center;"))
+        // Action Button
+        let DivContentButton = CoreXBuild.DivFlexRowAr("DivContentButton")
+        Conteneur.appendChild(DivContentButton)
+        DivContentButton.appendChild(CoreXBuild.Button("Add Relay", this.AddRelay.bind(this),"Button"))
+        DivContentButton.appendChild(CoreXBuild.Button("Cancel", this.BuildViewConfigGpio.bind(this),"Button"))
+        // On laisse un blanc avant la fin de la page
+        this._DivApp.appendChild(CoreXBuild.Div("","","margin-bottom: 2%;"))
     }
 
-    AddButtonConfigGpio(){
-        alert("add button")
+    /**
+     * Construction de la vue de configuration d'un relay
+     * @param {HtmlElement} Conteneur Conteneur de la config d'un relay
+     */
+    RelayConfigGpio(Conteneur){
+        // Gpio Number
+        let DivSelectNumber = CoreXBuild.DivFlexRowStart("")
+        Conteneur.appendChild(DivSelectNumber)
+        DivSelectNumber.appendChild(CoreXBuild.DivTexte("Gpio number : ","","Text InputText",""))
+        let InputNumber = CoreXBuild.Input("GpioNumber","","Input WidthSmall","","text","GpioNumber","Set GPIO Number")
+        DivSelectNumber.appendChild(InputNumber)
+        // Relay name
+        let DivSelectName = CoreXBuild.DivFlexRowStart("")
+        Conteneur.appendChild(DivSelectName)
+        DivSelectName.appendChild(CoreXBuild.DivTexte("Relay name : ","","Text InputText",""))
+        let InputName = CoreXBuild.Input("Name","","Input WidthSmall","","text","Name","Set Relay Name")
+        DivSelectName.appendChild(InputName)
+        // Relay Status
+        let DivSelectStatus = CoreXBuild.DivFlexRowStart("")
+        Conteneur.appendChild(DivSelectStatus)
+        DivSelectStatus.appendChild(CoreXBuild.DivTexte("Relay Status : ","","Text InputText",""))
+        let DropDownStatus = document.createElement("select")
+        DropDownStatus.setAttribute("id", "Status")
+        DropDownStatus.setAttribute("class", "Text DorpDown WidthSmall")
+        let optionStatus1 = document.createElement("option")
+        optionStatus1.setAttribute("value", "in")
+        optionStatus1.innerHTML = "In"
+        DropDownStatus.appendChild(optionStatus1)
+        let optionStatus2 = document.createElement("option")
+        optionStatus2.setAttribute("value", "high")
+        optionStatus2.innerHTML = "High"
+        DropDownStatus.appendChild(optionStatus2)
+        let optionStatus3 = document.createElement("option")
+        optionStatus3.setAttribute("value", "low")
+        optionStatus3.innerHTML = "Low"
+        DropDownStatus.appendChild(optionStatus3)
+        DivSelectStatus.appendChild(DropDownStatus)
+        // Relay ActiveLow
+        let DivSelectActiveLow = CoreXBuild.DivFlexRowStart("")
+        Conteneur.appendChild(DivSelectActiveLow)
+        DivSelectActiveLow.appendChild(CoreXBuild.DivTexte("Relay ActiveLow : ","","Text InputText",""))
+        let DropDownActiveLow = document.createElement("select")
+        DropDownActiveLow.setAttribute("id", "Status")
+        DropDownActiveLow.setAttribute("class", "Text DorpDown WidthSmall")
+        let optionActiveLow1 = document.createElement("option")
+        optionActiveLow1.setAttribute("value", "True")
+        optionActiveLow1.innerHTML = "True"
+        DropDownActiveLow.appendChild(optionActiveLow1)
+        let optionActiveLow2 = document.createElement("option")
+        optionActiveLow2.setAttribute("value", "False")
+        optionActiveLow2.innerHTML = "False"
+        DropDownActiveLow.appendChild(optionActiveLow2)
+        DivSelectActiveLow.appendChild(DropDownActiveLow)
+        // Relay TimeOut
+        let DivSelectTimeOut = CoreXBuild.DivFlexRowStart("")
+        Conteneur.appendChild(DivSelectTimeOut)
+        DivSelectTimeOut.appendChild(CoreXBuild.DivTexte("Relay TimeOut : ","","Text InputText",""))
+        let InputTimeOut = CoreXBuild.Input("TimeOut","","Input WidthSmall","","text","TimeOut","Set Relay TimeOut")
+        DivSelectTimeOut.appendChild(InputTimeOut)
     }
 
-    // /**
-    //  * Build view to test Pin IO
-    //  * @param {html element} Conteneur html conteneur
-    //  * @param {array} PinIO list of PinIo configuration
-    //  */
-    // BuildViewTestIO(Conteneur, PinIO){
-    //     let DivSelectPin = CoreXBuild.DivFlexRowStart("")
-    //     Conteneur.appendChild(DivSelectPin)
-    //     DivSelectPin.appendChild(CoreXBuild.DivTexte("Select Pin to test : ","","Text",""))
-    //     // Drop dow list
-    //     let DropDown = document.createElement("select")
-    //     DropDown.setAttribute("id", "PinIoList")
-    //     DropDown.setAttribute("class", "Text DorpDown")
-    //     PinIO.forEach(PinIOElement => {
-    //         let option = document.createElement("option")
-    //         option.setAttribute("value", PinIOElement.value)
-    //         option.innerHTML = PinIOElement.txt
-    //         DropDown.appendChild(option)
-    //     });
-    //     DivSelectPin.appendChild(DropDown)
+    /**
+     * Add Relay
+     */
+    AddRelay(){
+        // ToDo Data Validation
+        alert("ToDo")
+    }
 
-    //     let DivAction = CoreXBuild.DivFlexRowStart("")
-    //     Conteneur.appendChild(DivAction)
-    //     DivAction.appendChild(CoreXBuild.DivTexte("Actions : ","","Text",""))
-    //     // ToDo
-    // }
+    /**
+     * Construit la vue qui permet d'ajouter un Relay
+     */
+    BuildViewAddButtonConfigGpio(){
+        // ToDo
+        alert("ToDo")
+    }
+
+    /**
+     * Construit la vue de configuration d'un button
+     * @param {HtmlElement} Conteneur Conteneur de la config d'un button
+     */
+    ButtonConfigGpio(Conteneur){
+         // ToDo
+         alert("ToDo")
+    }
 
     /** Get Titre de l'application */
     GetTitre(){
@@ -106,4 +201,4 @@ class Gpio{
 // Creation de l'application 1
 let GpioApp = new Gpio(GlobalCoreXGetAppContentId())
 // Ajout de l'application 1
-GlobalCoreXAddApp(GpioApp.GetTitre(), GpioApp.GetImgSrc(),GpioApp.Start.bind(GpioApp))
+GlobalCoreXAddApp(GpioApp.GetTitre(), GpioApp.GetImgSrc(),GpioApp.BuildViewConfigGpio.bind(GpioApp))

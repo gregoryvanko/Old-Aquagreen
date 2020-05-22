@@ -1,3 +1,11 @@
+/* Content de l'application */
+.DivContent{
+    padding: 1px;
+    margin: 20px auto 10px auto;
+    width: 96%;
+    margin-left: auto;
+    margin-right: auto;
+}
 /* Titre */
 .Titre{
     margin: 1% 1% 1% 1%;
@@ -17,6 +25,12 @@
     margin: 1%;
     font-size: var(--CoreX-font-size);
 }
+/* Texte dans un titre box */
+.TextBoxTitre{
+    font-size: calc(var(--CoreX-font-size)*1.1);
+    font-family: "nyt-cheltenham", georgia, "times new roman", times, serif;
+    color: black;
+}
 /* Button */
 .Button{
     margin: 4vh 0vh 1vh 0vh;
@@ -35,17 +49,36 @@
 .Button:hover{
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.7);
 }
-.DivContent{
-    padding: 1px;
-    margin: 20px auto 10px auto;
-    width: 96%;
-    margin-left: auto;
-    margin-right: auto;
+/* Input Text */
+.InputText{
+    width: 20%;
+    text-align: right;
+}
+/* Input */
+.Input {
+    font-size: var(--CoreX-font-size);
+    padding: 1vh;
+    border: solid 0px #dcdcdc;
+    border-bottom: solid 1px transparent;
+    margin: 1% 0px 1% 0px;
+}
+.Input:focus,
+.Input.focus {
+    outline: none;
+    border: solid 0px #707070;
+    border-bottom-width: 1px;
+    border-color: var(--CoreX-color);
+}
+.Input:hover{
+    border-bottom-width: 1px;
+    border-color: var(--CoreX-color);
+}
+.WidthSmall {
+    width: 30%;
 }
 /* Drop Down */
 .DorpDown{
     background: transparent;
-    width: 10%;
 }
 .DorpDown:focus {
     outline: 0;
@@ -58,14 +91,25 @@ screen and (max-width: 700px)
     .Titre{font-size: var(--CoreX-TitreIphone-font-size);}
     .SousTitre{font-size: 5vw;}
     .Text{font-size: var(--CoreX-Iphone-font-size);}
+    .TextBoxTitre{font-size: calc(var(--CoreX-Iphone-font-size)*1.1);}
     .Button{font-size: var(--CoreX-Iphone-font-size); border-radius: 40px;}
+    .InputText{width: 40%;}
+    .Input {
+        font-size: var(--CoreX-Iphone-font-size);
+        border-bottom: solid 1px #dcdcdc;
+    }
+    .WidthSmall {
+        width: 50%;
+    }
 }
 
 @media screen and (min-width: 1200px)
 {
+    .DivContent{width: 1100px;}
     .Titre{font-size: var(--CoreX-TitreMax-font-size);}
     .SousTitre{font-size: 24px;}
     .Text{font-size: var(--CoreX-Max-font-size);}
+    .TextBoxTitre{font-size: calc(var(--CoreX-Max-font-size)*1.1);}
     .Button{font-size: var(--CoreX-Max-font-size); border-radius: 40px;}
-    .DivContent{width: 1100px;}
+    .Input {font-size: var(--CoreX-Max-font-size);}
 }
