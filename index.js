@@ -34,6 +34,11 @@ class Aquagreen {
             },
             Color:{
                 Normale:"rgb(20, 163, 255)" //--CoreX-color
+            },
+            AppContent:{
+                WidthNormale:"96%",
+                WidthIphone:"96%",
+                WidthMax:"1100px"
             }
         }
         // Affichier les message de debug du serveur

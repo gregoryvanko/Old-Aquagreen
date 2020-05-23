@@ -1,7 +1,6 @@
 class Gpio{
     constructor(HtmlId){
         this._DivApp = document.getElementById(HtmlId)
-        this._DivApp.setAttribute("class", "DivContent")
 
         this._ConfigGpio = null
     }
@@ -12,7 +11,7 @@ class Gpio{
         // Clear view
         this.ClearView()
         // Titre
-        this._DivApp.appendChild(CoreXBuild.DivTexte("GPIO configuration", "", "Titre", "margin-top:4%"))
+        this._DivApp.appendChild(CoreXBuild.DivTexte("GPIO configuration", "", "Titre", ""))
         // Conteneur
         let Conteneur = CoreXBuild.DivFlexColumn("Conteneur")
         this._DivApp.appendChild(Conteneur)
@@ -83,7 +82,7 @@ class Gpio{
     BuildViewAddRelayConfigGpio(){
         this.ClearView()
         // Titre
-        this._DivApp.appendChild(CoreXBuild.DivTexte("Add Relay", "", "Titre", "margin-top:4%"))
+        this._DivApp.appendChild(CoreXBuild.DivTexte("Add Relay", "", "Titre", ""))
         // Conteneur
         let Conteneur = CoreXBuild.DivFlexColumn("Conteneur")
         this._DivApp.appendChild(Conteneur)
