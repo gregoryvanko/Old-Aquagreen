@@ -65,17 +65,15 @@ class FunctionAdminGpio{
         this._Mongo.FindPromise(Querry, Projection, this._MongoConfigCollection.Collection).then((reponse)=>{
             if(reponse.length == 0){
                 // Creation de la config en DB
-                console.log("creation")
                 let DataToMongo = { [this._MongoConfigCollection.Key]: this._MongoConfigCollection.GpioConfigKey, [this._MongoConfigCollection.Value]: Data}
                 this._Mongo.InsertOnePromise(DataToMongo, this._MongoConfigCollection.Collection).then((reponseCreation)=>{
-                    if (Res != null){Res.json({Error: false, ErrorMsg: null, Data: "Gpio Config saved"})}
+                    if (Res != null){Res.json({Error: false, ErrorMsg: null, Data: Data})}
                 },(erreur)=>{
                     me._MyApp.LogAppliError("ApiGpio SetConfig Post DB error : " + erreur)
                     if (Res != null){Res.json({Error: true, ErrorMsg: "ApiGpio SetConfig Post DB error", Data: null})}
                 })
             } else {
                 // Update de la config en DB
-                console.log("update")
                 let DataToDb = new Object()
                 DataToDb[this._MongoConfigCollection.Value]= Data
                 let ConfigId = reponse[0]._id
@@ -84,7 +82,7 @@ class FunctionAdminGpio{
                         me._MyApp.LogAppliError("Update Gpio config error: Id config not found")
                         if (Res != null){Res.json({Error: true, ErrorMsg: "Update Gpio config error: Id config not found", Data: null})}
                     } else {
-                        if (Res != null){Res.json({Error: false, ErrorMsg: null, Data: "Gpio Config updated"})}
+                        if (Res != null){Res.json({Error: false, ErrorMsg: null, Data: Data})}
                     }
                 },(erreur)=>{
                     me._MyApp.LogAppliError("ApiGpio SetConfig DB error : " + erreur)

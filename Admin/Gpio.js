@@ -29,7 +29,7 @@ class Gpio{
             document.getElementById("TxtGpio").innerHTML = ""
             document.getElementById("ErrorGpio").innerHTML = ""
             this._ConfigGpio = reponse
-            this.ViewConfigGpio(Conteneur)
+            this.ViewConfigGpio()
         },(erreur)=>{
             document.getElementById("TxtGpio").innerHTML = ""
             document.getElementById("ErrorGpio").innerHTML = erreur
@@ -52,7 +52,10 @@ class Gpio{
      * @param {HtmlElement} Conteneur Html element du conteneur de l'application
      * @param {Array} ConfigGpio Liste de la configuration des GPIO
      */
-    ViewConfigGpio(Conteneur){
+    ViewConfigGpio(){
+        let Conteneur = document.getElementById("Conteneur")
+        // Vider le conteneur
+        Conteneur.innerHTML = ""
         // affichier le header du tableau Number - Type - Name - Param
         let BoxTitre = CoreXBuild.DivFlexRowAr("")
         Conteneur.appendChild(BoxTitre)
@@ -67,7 +70,6 @@ class Gpio{
             Conteneur.appendChild(CoreXBuild.DivTexte("No Configuration saved","","Text",""))
         } else {
             // ToDo
-            console.log(this._ConfigGpio)
         }
         // Action Button
         let DivContentButton = CoreXBuild.DivFlexRowAr("DivContentButton")
@@ -143,7 +145,7 @@ class Gpio{
         Conteneur.appendChild(DivSelectActiveLow)
         DivSelectActiveLow.appendChild(CoreXBuild.DivTexte("Relay ActiveLow : ","","Text InputText",""))
         let DropDownActiveLow = document.createElement("select")
-        DropDownActiveLow.setAttribute("id", "Status")
+        DropDownActiveLow.setAttribute("id", "ActiveLow")
         DropDownActiveLow.setAttribute("class", "Text DorpDown WidthSmall")
         let optionActiveLow1 = document.createElement("option")
         optionActiveLow1.setAttribute("value", "True")
@@ -166,8 +168,60 @@ class Gpio{
      * Add Relay
      */
     AddRelay(){
-        // ToDo Data Validation
-        alert("ToDo")
+        let ErrorMsg = ""
+        // Copier toutesles valeurs
+        let GpioNumber = document.getElementById("GpioNumber").value
+        let Name = document.getElementById("Name").value
+        let Status = document.getElementById("Status").value
+        let ActiveLow = document.getElementById("ActiveLow").value
+        let TimeOut = document.getElementById("TimeOut").value
+
+        // vérifier si le GPIO a un number
+        if (GpioNumber == ""){ErrorMsg += "Gpio Number must be fill. "}
+        // Verifier si le GPIO number est deja utilisé
+        if(this._ConfigGpio != null){
+            var found = this._ConfigGpio.find((element) => { return element.pin == GpioNumber })
+            if (found){ErrorMsg += "Gpio Number reseved in configuration. "}
+
+        }
+        // Vérifier si le GPIO number est un entier
+        if (!Number.isInteger(Number(GpioNumber))){ErrorMsg += "Gpio Number must be a interger. "}
+        // vérifier si le Relay a un nom
+        if (Name == ""){ErrorMsg += "Relay Name must be fill. "}
+        // vérifier si le Relay a un TimeOut
+        if (TimeOut == ""){ErrorMsg += "Relay TimeOut must be fill. "}
+        // Vérifier si le Relay TimeOut est un entier
+        if (!Number.isInteger(Number(TimeOut))){ErrorMsg += "Gpio TimeOut must be a interger. "}
+
+        // Si il y a des erreur => afficher les erreur
+        if(ErrorMsg != ""){
+            document.getElementById("ErrorRelayConfig").innerHTML = ErrorMsg
+        } else {
+            document.getElementById("ErrorRelayConfig").innerHTML = ""
+            // Creation de l'objet config relay
+            let ConfigRelay = new Object()
+            ConfigRelay.pin = GpioNumber
+            ConfigRelay.type = "Relais"
+            ConfigRelay.name = Name
+            ConfigRelay.status = Status
+            ConfigRelay.activeLow = ActiveLow
+            ConfigRelay.TimeOut = TimeOut
+            if (this._ConfigGpio == null) {this._ConfigGpio = new Array()}
+            this._ConfigGpio.push(ConfigRelay)
+             // Call API Set Config
+            let ApiData = new Object()
+            ApiData.Fct = "SetConfig"
+            ApiData.Data = this._ConfigGpio
+            GlobalCallApiPromise("Gpio", ApiData, "", "").then((reponse)=>{
+                document.getElementById("TxtRelayConfig").innerHTML = ""
+                document.getElementById("ErrorRelayConfig").innerHTML = ""
+                this._ConfigGpio = reponse
+                this.ViewConfigGpio()
+            },(erreur)=>{
+                document.getElementById("TxtRelayConfig").innerHTML = ""
+                document.getElementById("ErrorRelayConfig").innerHTML = erreur
+            })
+        }
     }
 
     /**
