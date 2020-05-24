@@ -69,7 +69,9 @@ class Gpio{
         if (this._ConfigGpio == null){
             Conteneur.appendChild(CoreXBuild.DivTexte("No Configuration saved","","Text",""))
         } else {
-            this.BuildListOfConfigData()
+            this._ConfigGpio.forEach(element => {
+                Conteneur.appendChild(this.BuildListElementOfConfigData(element))
+            })
         }
         // Action Button
         let DivContentButton = CoreXBuild.DivFlexRowAr("DivContentButton")
@@ -79,12 +81,24 @@ class Gpio{
     }
 
     /**
-     * Construit le tableau contenant la liste des config GPIO
+     * Construit l'element du tableau contenant la liste des config GPIO
      */
-    BuildListOfConfigData(){
-        this._ConfigGpio.forEach(element => {
-            // ToDo
-        })
+    BuildListElementOfConfigData(config){
+        let conteneur = CoreXBuild.Div("","","width:100%")
+        let divFlex = CoreXBuild.DivFlexRowAr("")
+        conteneur.appendChild(divFlex)
+        divFlex.appendChild(CoreXBuild.DivTexte(config.pin,"","Text", "width: 20%;"))
+        divFlex.appendChild(CoreXBuild.DivTexte(config.type,"","Text", "width: 25%"))
+        divFlex.appendChild(CoreXBuild.DivTexte(config.name,"","Text", "width: 25%;"))
+        let param = ""
+        if (config.type == "Relais"){
+            param = "{status:"+config.status+", activeLow:"+config.activeLow+", timeout:"+config.timeout+"}"
+        }
+        divFlex.appendChild(CoreXBuild.DivTexte(param,"","Text", "width: 30%;"))
+        // Ajout d'une ligne
+        conteneur.appendChild(CoreXBuild.Line("100%", "Opacity:0.5;"))
+        debugger
+        return conteneur
     }
 
     /**
@@ -214,7 +228,7 @@ class Gpio{
             ConfigRelay.name = Name
             ConfigRelay.status = Status
             ConfigRelay.activeLow = ActiveLow
-            ConfigRelay.TimeOut = TimeOut
+            ConfigRelay.timeout = TimeOut
             if (this._ConfigGpio == null) {this._ConfigGpio = new Array()}
             this._ConfigGpio.push(ConfigRelay)
              // Call API Set Config
