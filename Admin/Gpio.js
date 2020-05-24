@@ -69,13 +69,22 @@ class Gpio{
         if (this._ConfigGpio == null){
             Conteneur.appendChild(CoreXBuild.DivTexte("No Configuration saved","","Text",""))
         } else {
-            // ToDo
+            this.BuildListOfConfigData()
         }
         // Action Button
         let DivContentButton = CoreXBuild.DivFlexRowAr("DivContentButton")
         Conteneur.appendChild(DivContentButton)
         DivContentButton.appendChild(CoreXBuild.Button("Add Relay", this.BuildViewAddRelayConfigGpio.bind(this),"Button"))
         DivContentButton.appendChild(CoreXBuild.Button("Add Button", this.BuildViewAddButtonConfigGpio.bind(this),"Button"))
+    }
+
+    /**
+     * Construit le tableau contenant la liste des config GPIO
+     */
+    BuildListOfConfigData(){
+        this._ConfigGpio.forEach(element => {
+            // ToDo
+        })
     }
 
     /**
