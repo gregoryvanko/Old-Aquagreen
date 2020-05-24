@@ -309,19 +309,11 @@ class Gpio{
 
     /**
      * Construit la vue qui permet d'ajouter un boutton
+     * @param {Object} config Ancienne configuration d'un Button (ou null)
      */
-    BuildViewAddButtonConfigGpio(){
+    BuildViewAddButtonConfigGpio(config){
         // ToDo
         alert("ToDo")
-    }
-
-    /**
-     * Construit la vue de configuration d'un button
-     * @param {HtmlElement} Conteneur Conteneur de la config d'un button
-     */
-    ButtonConfigGpio(Conteneur){
-         // ToDo
-         alert("ToDo")
     }
 
     /** Get Titre de l'application */
