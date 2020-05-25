@@ -312,8 +312,37 @@ class Gpio{
      * @param {Object} config Ancienne configuration d'un Button (ou null)
      */
     BuildViewAddButtonConfigGpio(config){
+        this.ClearView()
+        let Action = (config == null) ? 'Add' : 'Update'
+        // Titre
+        this._DivApp.appendChild(CoreXBuild.DivTexte(Action +" Button", "", "Titre", ""))
+        // Conteneur
+        let Conteneur = CoreXBuild.DivFlexColumn("Conteneur")
+        this._DivApp.appendChild(Conteneur)
+        // on ajoute la vue de la configuration des relais
+        //this.RelayConfigGpio(Conteneur, config)
+        // on construit le texte d'info
+        this._DivApp.appendChild(CoreXBuild.DivTexte("","TxtButtonConfig","Text","text-align: center;"))
+        // on construit le texte du message d'erreur
+        this._DivApp.appendChild(CoreXBuild.DivTexte("","ErrorButtonConfig","Text","color:red; text-align: center;"))
+        // Action Button
+        let DivContentButton = CoreXBuild.DivFlexRowAr("DivContentButton")
+        Conteneur.appendChild(DivContentButton)
+        DivContentButton.appendChild(CoreXBuild.Button(Action, this.AddButton.bind(this, config),"Button"))
+        if (config != null){DivContentButton.appendChild(CoreXBuild.Button("Delete", this.DeleteButton.bind(this, config),"Button"))}
+        DivContentButton.appendChild(CoreXBuild.Button("Cancel", this.BuildViewConfigGpio.bind(this),"Button"))
+        // On laisse un blanc avant la fin de la page
+        this._DivApp.appendChild(CoreXBuild.Div("","","margin-bottom: 2%;"))
+    }
+
+    AddButton(OldConfig){
         // ToDo
-        alert("ToDo")
+        console.log("ToDo")
+    }
+
+    DeleteButton(ConfigToDel){
+        // ToDo
+        console.log("ToDo")
     }
 
     /** Get Titre de l'application */
