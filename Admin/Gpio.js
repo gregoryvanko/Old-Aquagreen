@@ -78,7 +78,7 @@ class Gpio{
         let DivContentButton = CoreXBuild.DivFlexRowAr("DivContentButton")
         Conteneur.appendChild(DivContentButton)
         DivContentButton.appendChild(CoreXBuild.Button("Add Relay", this.BuildViewAddRelayConfigGpio.bind(this, null),"Button"))
-        DivContentButton.appendChild(CoreXBuild.Button("Add Button", this.BuildViewAddButtonConfigGpio.bind(this),"Button"))
+        DivContentButton.appendChild(CoreXBuild.Button("Add Button", this.BuildViewAddButtonConfigGpio.bind(this, null),"Button"))
     }
 
     /**
@@ -88,7 +88,11 @@ class Gpio{
     BuildListElementOfConfigData(config){
         let conteneur = CoreXBuild.Div("","","width:100%")
         let data = CoreXBuild.Div("","ListElement","")
-        data.addEventListener("click", this.BuildViewAddRelayConfigGpio.bind(this, config))
+        if (config.type == "Relais"){
+            data.addEventListener("click", this.BuildViewAddRelayConfigGpio.bind(this, config))
+        } else if (config.type == "Button"){
+            data.addEventListener("click", this.BuildViewAddButtonConfigGpio.bind(this, config))
+        }
         conteneur.appendChild(data)
         let divFlex = CoreXBuild.DivFlexRowAr("")
         data.appendChild(divFlex)
@@ -97,7 +101,9 @@ class Gpio{
         divFlex.appendChild(CoreXBuild.DivTexte(config.name,"","Text", "width: 20%;"))
         let param = ""
         if (config.type == "Relais"){
-            param = "{status:"+config.status+", activeLow:"+config.activeLow+", timeout:"+config.timeout+"}"
+            param = "{status:"+config.status+", activeLow:"+config.activeLow+", timeout:"+config.timeout+"m }"
+        } else if (config.type == "Button"){
+            param = "{status:"+config.status+", debouncetimeout:"+config.debouncetimeout+"ms }"
         }
         divFlex.appendChild(CoreXBuild.DivTexte(param,"","Text", "width: 48%;"))
         // Ajout d'une ligne
@@ -147,19 +153,19 @@ class Gpio{
         // Gpio Number
         let DivSelectNumber = CoreXBuild.DivFlexRowStart("")
         Conteneur.appendChild(DivSelectNumber)
-        DivSelectNumber.appendChild(CoreXBuild.DivTexte("Gpio number : ","","Text InputText",""))
+        DivSelectNumber.appendChild(CoreXBuild.DivTexte("Number : ","","Text InputText",""))
         let InputNumber = CoreXBuild.Input("GpioNumber",GpioNumer,"Input WidthSmall","","text","GpioNumber","Set GPIO Number")
         DivSelectNumber.appendChild(InputNumber)
         // Relay name
         let DivSelectName = CoreXBuild.DivFlexRowStart("")
         Conteneur.appendChild(DivSelectName)
-        DivSelectName.appendChild(CoreXBuild.DivTexte("Relay name : ","","Text InputText",""))
+        DivSelectName.appendChild(CoreXBuild.DivTexte("Name : ","","Text InputText",""))
         let InputName = CoreXBuild.Input("Name",RelayName,"Input WidthSmall","","text","Name","Set Relay Name")
         DivSelectName.appendChild(InputName)
         // Relay Status
         let DivSelectStatus = CoreXBuild.DivFlexRowStart("")
         Conteneur.appendChild(DivSelectStatus)
-        DivSelectStatus.appendChild(CoreXBuild.DivTexte("Relay Status : ","","Text InputText",""))
+        DivSelectStatus.appendChild(CoreXBuild.DivTexte("Status : ","","Text InputText",""))
         let DropDownStatus = document.createElement("select")
         DropDownStatus.setAttribute("id", "Status")
         DropDownStatus.setAttribute("class", "Text DorpDown WidthSmall")
@@ -182,7 +188,7 @@ class Gpio{
         // Relay ActiveLow
         let DivSelectActiveLow = CoreXBuild.DivFlexRowStart("")
         Conteneur.appendChild(DivSelectActiveLow)
-        DivSelectActiveLow.appendChild(CoreXBuild.DivTexte("Relay ActiveLow : ","","Text InputText",""))
+        DivSelectActiveLow.appendChild(CoreXBuild.DivTexte("ActiveLow : ","","Text InputText",""))
         let DropDownActiveLow = document.createElement("select")
         DropDownActiveLow.setAttribute("id", "ActiveLow")
         DropDownActiveLow.setAttribute("class", "Text DorpDown WidthSmall")
@@ -200,7 +206,7 @@ class Gpio{
         // Relay TimeOut
         let DivSelectTimeOut = CoreXBuild.DivFlexRowStart("")
         Conteneur.appendChild(DivSelectTimeOut)
-        DivSelectTimeOut.appendChild(CoreXBuild.DivTexte("Relay TimeOut : ","","Text InputText",""))
+        DivSelectTimeOut.appendChild(CoreXBuild.DivTexte("TimeOut : ","","Text InputText",""))
         let InputTimeOut = CoreXBuild.Input("TimeOut",RelayTimeOut,"Input WidthSmall","","text","TimeOut","Set Relay TimeOut")
         DivSelectTimeOut.appendChild(InputTimeOut)
     }
@@ -236,6 +242,18 @@ class Gpio{
         if (!Number.isInteger(Number(GpioNumber))){ErrorMsg += "Gpio Number must be a interger. "}
         // vérifier si le Relay a un nom
         if (Name == ""){ErrorMsg += "Relay Name must be fill. "}
+        // Vérifier si le nom est déja utilisé
+        if(this._ConfigGpio != null){
+            if (OldConfig == null){
+                var found = this._ConfigGpio.find((element) => { return element.name == Name })
+                if (found){ErrorMsg += "Name reseved in configuration. "}
+            } else {
+                if (OldConfig.name != Name){
+                    var found = this._ConfigGpio.find((element) => { return element.name == Name })
+                    if (found){ErrorMsg += "Name reseved in configuration. "}
+                }
+            }
+        }
         // vérifier si le Relay a un TimeOut
         if (TimeOut == ""){ErrorMsg += "Relay TimeOut must be fill. "}
         // Vérifier si le Relay TimeOut est un entier
@@ -244,7 +262,13 @@ class Gpio{
         // Si il y a des erreur => afficher les erreur
         if(ErrorMsg != ""){
             document.getElementById("ErrorRelayConfig").innerHTML = ErrorMsg
-        } else {
+        } else { 
+            document.getElementById("Conteneur").innerHTML = ""
+            if (OldConfig == null){
+                document.getElementById("TxtRelayConfig").innerHTML = "Save Relay..."
+            } else {
+                document.getElementById("TxtRelayConfig").innerHTML = "Update Relay..."
+            }
             document.getElementById("ErrorRelayConfig").innerHTML = ""
             // Creation de l'objet config relay
             let ConfigRelay = new Object()
@@ -256,7 +280,6 @@ class Gpio{
             ConfigRelay.timeout = TimeOut
             if (this._ConfigGpio == null) {this._ConfigGpio = new Array()}
             if (OldConfig == null){
-                console.log("save")
                 this._ConfigGpio.push(ConfigRelay)
             } else {
                 let index = this._ConfigGpio.indexOf(OldConfig)
@@ -283,10 +306,12 @@ class Gpio{
 
     /**
      * Delete un relais de la config
-     * @param {Object} ConfigToDel Object config a deleter
+     * @param {Object} ConfigToDel Object config Relay a deleter
      */
     DeleteRelay(ConfigToDel){
         if (confirm("Delete this relay of the configuration")){
+            document.getElementById("Conteneur").innerHTML = ""
+            document.getElementById("TxtRelayConfig").innerHTML = "Delete Relay..."
             let index = this._ConfigGpio.indexOf(ConfigToDel)
             if (index > -1) {
                 this._ConfigGpio.splice(index, 1)
@@ -296,8 +321,6 @@ class Gpio{
             ApiData.Fct = "SetConfig"
             ApiData.Data = this._ConfigGpio
             GlobalCallApiPromise("Gpio", ApiData, "", "").then((reponse)=>{
-                document.getElementById("TxtRelayConfig").innerHTML = ""
-                document.getElementById("ErrorRelayConfig").innerHTML = ""
                 this._ConfigGpio = reponse
                 this.ViewConfigGpio()
             },(erreur)=>{
@@ -320,7 +343,7 @@ class Gpio{
         let Conteneur = CoreXBuild.DivFlexColumn("Conteneur")
         this._DivApp.appendChild(Conteneur)
         // on ajoute la vue de la configuration des relais
-        //this.RelayConfigGpio(Conteneur, config)
+        this.ButtonConfigGpio(Conteneur, config)
         // on construit le texte d'info
         this._DivApp.appendChild(CoreXBuild.DivTexte("","TxtButtonConfig","Text","text-align: center;"))
         // on construit le texte du message d'erreur
@@ -335,14 +358,174 @@ class Gpio{
         this._DivApp.appendChild(CoreXBuild.Div("","","margin-bottom: 2%;"))
     }
 
-    AddButton(OldConfig){
-        // ToDo
-        console.log("ToDo")
+    /**
+     * Construction de la vue de configuration d'un relay
+     * @param {HtmlElement} Conteneur Conteneur de la config d'un relay
+     * @param {Object} config Ancienne configuration d'un relay (ou null)
+     */
+    ButtonConfigGpio(Conteneur, config){
+        let GpioNumer = (config == null) ? '' : config.pin
+        let ButtonName = (config == null) ? '' : config.name
+        let ButtonStatus = (config == null) ? '' : config.status
+        let ButtonDebounceTimeout = (config == null) ? '' : config.debouncetimeout
+        // Gpio Number
+        let DivSelectNumber = CoreXBuild.DivFlexRowStart("")
+        Conteneur.appendChild(DivSelectNumber)
+        DivSelectNumber.appendChild(CoreXBuild.DivTexte("Number : ","","Text InputText",""))
+        let InputNumber = CoreXBuild.Input("GpioNumber",GpioNumer,"Input WidthSmall","","text","GpioNumber","Set GPIO Number")
+        DivSelectNumber.appendChild(InputNumber)
+        // Button name
+        let DivSelectName = CoreXBuild.DivFlexRowStart("")
+        Conteneur.appendChild(DivSelectName)
+        DivSelectName.appendChild(CoreXBuild.DivTexte("Name : ","","Text InputText",""))
+        let InputName = CoreXBuild.Input("Name",ButtonName,"Input WidthSmall","","text","Name","Set Button Name")
+        DivSelectName.appendChild(InputName)
+        // Button Status
+        let DivSelectStatus = CoreXBuild.DivFlexRowStart("")
+        Conteneur.appendChild(DivSelectStatus)
+        DivSelectStatus.appendChild(CoreXBuild.DivTexte("Status : ","","Text InputText",""))
+        let DropDownStatus = document.createElement("select")
+        DropDownStatus.setAttribute("id", "Status")
+        DropDownStatus.setAttribute("class", "Text DorpDown WidthSmall")
+        let optionStatus1 = document.createElement("option")
+        optionStatus1.setAttribute("value", "rising")
+        if(ButtonStatus == "rising"){optionStatus1.setAttribute("selected", "selected")}
+        optionStatus1.innerHTML = "Rising"
+        DropDownStatus.appendChild(optionStatus1)
+        let optionStatus2 = document.createElement("option")
+        optionStatus2.setAttribute("value", "falling")
+        if(ButtonStatus == "falling"){optionStatus2.setAttribute("selected", "selected")}
+        optionStatus2.innerHTML = "Falling"
+        DropDownStatus.appendChild(optionStatus2)
+        let optionStatus3 = document.createElement("option")
+        optionStatus3.setAttribute("value", "both")
+        if(ButtonStatus == "both"){optionStatus3.setAttribute("selected", "selected")}
+        optionStatus3.innerHTML = "Both"
+        DropDownStatus.appendChild(optionStatus3)
+        DivSelectStatus.appendChild(DropDownStatus)
+        // Button debounceTimeout
+        let DivSelectTimeOut = CoreXBuild.DivFlexRowStart("")
+        Conteneur.appendChild(DivSelectTimeOut)
+        DivSelectTimeOut.appendChild(CoreXBuild.DivTexte("Debounce Timeout : ","","Text InputText",""))
+        let InputTimeOut = CoreXBuild.Input("DebounceTimeout",ButtonDebounceTimeout,"Input WidthSmall","","text","TimeOut","Set Button Debounce TimeOut")
+        DivSelectTimeOut.appendChild(InputTimeOut)
     }
 
+    /**
+     * Ajoute un Button a la configuration
+     * @param {Object} OldConfig Ancienne configuration d'un Button (ou null)
+     */
+    AddButton(OldConfig){
+        let ErrorMsg = ""
+        // Copier toutesles valeurs
+        let GpioNumber = document.getElementById("GpioNumber").value
+        let Name = document.getElementById("Name").value
+        let Status = document.getElementById("Status").value
+        let DebounceTimeout = document.getElementById("DebounceTimeout").value
+
+        // vérifier si le GPIO a un number
+        if (GpioNumber == ""){ErrorMsg += "Gpio Number must be fill. "}
+        // Verifier si le GPIO number est deja utilisé
+        if(this._ConfigGpio != null){
+            if (OldConfig == null){
+                var found = this._ConfigGpio.find((element) => { return element.pin == GpioNumber })
+                if (found){ErrorMsg += "Gpio Number reseved in configuration. "}
+            } else {
+                if (OldConfig.pin != GpioNumber){
+                    var found = this._ConfigGpio.find((element) => { return element.pin == GpioNumber })
+                    if (found){ErrorMsg += "Gpio Number reseved in configuration. "}
+                }
+            }
+        }
+        // Vérifier si le GPIO number est un entier
+        if (!Number.isInteger(Number(GpioNumber))){ErrorMsg += "Gpio Number must be a interger. "}
+        // vérifier si le Button a un nom
+        if (Name == ""){ErrorMsg += "Button Name must be fill. "}
+        // Vérifier si le nom est déja utilisé
+        if(this._ConfigGpio != null){
+            if (OldConfig == null){
+                var found = this._ConfigGpio.find((element) => { return element.name == Name })
+                if (found){ErrorMsg += "Name reseved in configuration. "}
+            } else {
+                if (OldConfig.name != Name){
+                    var found = this._ConfigGpio.find((element) => { return element.name == Name })
+                    if (found){ErrorMsg += "Name reseved in configuration. "}
+                }
+            }
+        }
+        // vérifier si le Button a un Debounce Timout
+        if (DebounceTimeout == ""){ErrorMsg += "Button Debounce Timeout must be fill. "}
+        // Vérifier si le Relay TimeOut est un entier
+        if (!Number.isInteger(Number(DebounceTimeout))){ErrorMsg += "Button Debounce Timeout must be a interger. "}
+
+        // Si il y a des erreur => afficher les erreur
+        if(ErrorMsg != ""){
+            document.getElementById("ErrorButtonConfig").innerHTML = ErrorMsg
+        } else {
+            document.getElementById("Conteneur").innerHTML = ""
+            if (OldConfig == null){
+                document.getElementById("TxtButtonConfig").innerHTML = "Save Button..."
+            } else {
+                document.getElementById("TxtButtonConfig").innerHTML = "Update Button..."
+            }
+            document.getElementById("ErrorButtonConfig").innerHTML = ""
+            // Creation de l'objet config relay
+            let ConfigButton = new Object()
+            ConfigButton.pin = GpioNumber
+            ConfigButton.type = "Button"
+            ConfigButton.name = Name
+            ConfigButton.status = Status
+            ConfigButton.debouncetimeout = DebounceTimeout
+            if (this._ConfigGpio == null) {this._ConfigGpio = new Array()}
+            if (OldConfig == null){
+                this._ConfigGpio.push(ConfigButton)
+            } else {
+                let index = this._ConfigGpio.indexOf(OldConfig)
+                if (index > -1) {
+                    this._ConfigGpio.splice(index, 1)
+                    this._ConfigGpio.push(ConfigButton)
+                }
+            }
+            // Call API Set Config
+            let ApiData = new Object()
+            ApiData.Fct = "SetConfig"
+            ApiData.Data = this._ConfigGpio
+            GlobalCallApiPromise("Gpio", ApiData, "", "").then((reponse)=>{
+                document.getElementById("TxtButtonConfig").innerHTML = ""
+                document.getElementById("ErrorButtonConfig").innerHTML = ""
+                this._ConfigGpio = reponse
+                this.ViewConfigGpio()
+            },(erreur)=>{
+                document.getElementById("TxtButtonConfig").innerHTML = ""
+                document.getElementById("ErrorButtonConfig").innerHTML = erreur
+            })
+        }
+    }
+
+    /**
+     * Delete un Button de la config
+     * @param {Object} ConfigToDel Object config Button a deleter
+     */
     DeleteButton(ConfigToDel){
-        // ToDo
-        console.log("ToDo")
+        if (confirm("Delete this Button of the configuration")){
+            document.getElementById("Conteneur").innerHTML = ""
+            document.getElementById("TxtButtonConfig").innerHTML = "Delete Button..."
+            let index = this._ConfigGpio.indexOf(ConfigToDel)
+            if (index > -1) {
+                this._ConfigGpio.splice(index, 1)
+            }
+            // Call API Set Config
+            let ApiData = new Object()
+            ApiData.Fct = "SetConfig"
+            ApiData.Data = this._ConfigGpio
+            GlobalCallApiPromise("Gpio", ApiData, "", "").then((reponse)=>{
+                this._ConfigGpio = reponse
+                this.ViewConfigGpio()
+            },(erreur)=>{
+                document.getElementById("TxtButtonConfig").innerHTML = ""
+                document.getElementById("ErrorButtonConfig").innerHTML = erreur
+            })
+        }
     }
 
     /** Get Titre de l'application */
