@@ -1,5 +1,5 @@
 class FunctionAdminGpio{
-    constructor(MyApp){
+    constructor(MyApp, WorkerAdress){
         this._MyApp = MyApp
 
         // Varaible interne
@@ -7,6 +7,7 @@ class FunctionAdminGpio{
         let MongoR = require('@gregvanko/corex').Mongo
         this._Mongo = new MongoR(this._MyApp.MongoUrl ,this._MyApp.AppName)
         this._MongoConfigCollection = MongoConfig.ConfigCollection
+        this._WorkerAdress = WorkerAdress
     }
 
     /**
@@ -23,6 +24,9 @@ class FunctionAdminGpio{
                 break
             case "SetConfig":
                 this.SetConfig(Data.Data, Res)
+                break
+            case "UpdateWorker":
+                this.UpdateWorker(Res)
                 break
             default:
                 Res.json({Error: true, ErrorMsg: `ApiGpio error, fct ${Data.Fct} not found`, Data: null})
@@ -92,6 +96,44 @@ class FunctionAdminGpio{
         },(erreur)=>{
             me._MyApp.LogAppliError("ApiGpio GetConfig DB error : " + erreur)
             if (Res != null){Res.json({Error: true, ErrorMsg: "ApiGpio GetConfig DB Error", Data: null})}
+        })
+    }
+
+     /**
+     * Update the GPIO to the worker
+     * @param {Res} Res Reponse à la requete de l'API
+     */
+    UpdateWorker(Res){
+        // Get Gpio Config in DB
+        let me = this
+        const Querry = {[this._MongoConfigCollection.Key]: this._MongoConfigCollection.GpioConfigKey}
+        const Projection = { projection:{_id: 0, [this._MongoConfigCollection.Value]: 1}}
+        this._Mongo.FindPromise(Querry, Projection, this._MongoConfigCollection.Collection).then((reponse)=>{
+            if(reponse.length == 0){
+                Res.json({Error: true, ErrorMsg: "No configuration found in DB", Data: null})
+            } else {
+                let GpioConfig = reponse[0][this._MongoConfigCollection.Value]
+                if (this._WorkerAdress != null){
+                    const axios = require('axios')
+                    axios.post(this._WorkerAdress, {FctName:"setconfig", FctData:{config:GpioConfig}}).then(res => {
+                        if (res.data.Error){
+                            me._MyApp.LogAppliError("ApiGpio UpdateWorker res error : " + res.data.ErrorMsg)
+                            Res.json({Error: true, ErrorMsg: res.data.ErrorMsg, Data: null})
+                        } else {
+                            Res.json({Error: false, ErrorMsg: null, Data: "Configuration updated to the worker"})
+                        }
+                    }).catch(error => {
+                        me._MyApp.LogAppliError("ApiGpio UpdateWorker error : " + error)
+                        Res.json({Error: true, ErrorMsg: error.stack, Data: null})
+                    })
+                } else {
+                    me._MyApp.LogAppliError("ApiGpio UpdateWorker => WorkerAdress not defined")
+                    Res.json({Error: true, ErrorMsg: "ApiGpio UpdateWorker => WorkerAdress not defined", Data: null})
+                }
+            }
+        },(erreur)=>{
+            me._MyApp.LogAppliError("ApiGpio UpdateWorker DB error : " + erreur)
+            Res.json({Error: true, ErrorMsg: "ApiGpio UpdateWorker DB Error", Data: null})
         })
     }
 }

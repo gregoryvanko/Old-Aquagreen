@@ -1,5 +1,5 @@
 class Aquagreen {
-    constructor(Name = "AppName", Port = 4000, Debug = true){
+    constructor(Name = "AppName", Port = 4000, Debug = true, WorkerAdress = null){
         // Creation de l'application CoreX
         let corex = require('@gregvanko/corex').corex
         this._OptionApplication = {
@@ -11,12 +11,13 @@ class Aquagreen {
         this._MyApp = new corex(this._OptionApplication)
         // Variable interne
         this._Debug = Debug
+        this._WorkerAdress = WorkerAdress
 
         let FunctionClientR = require('./FunctionClient').FunctionClient
         this._FunctionClient = new FunctionClientR(this._MyApp)
 
         let FunctionAdminGpioR = require('./FunctionAdminGpio').FunctionAdminGpio
-        this._FunctionAdminGpio = new FunctionAdminGpioR(this._MyApp)
+        this._FunctionAdminGpio = new FunctionAdminGpioR(this._MyApp, this._WorkerAdress)
     }
 
     /* Start de l'application */

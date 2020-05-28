@@ -79,6 +79,12 @@ class Gpio{
         Conteneur.appendChild(DivContentButton)
         DivContentButton.appendChild(CoreXBuild.Button("Add Relay", this.BuildViewAddRelayConfigGpio.bind(this, null),"Button"))
         DivContentButton.appendChild(CoreXBuild.Button("Add Button", this.BuildViewAddButtonConfigGpio.bind(this, null),"Button"))
+         // Action Button update worker
+         if (this._ConfigGpio != null){
+            let DivContentButton2 = CoreXBuild.DivFlexRowAr("DivContentButton")
+            Conteneur.appendChild(DivContentButton2)
+            DivContentButton2.appendChild(CoreXBuild.Button("Update worker", this.UpdateWorker.bind(this),"Button"))
+         }
     }
 
     /**
@@ -526,6 +532,25 @@ class Gpio{
                 document.getElementById("ErrorButtonConfig").innerHTML = erreur
             })
         }
+    }
+
+    /**
+     * Update the configuration to the worker
+     */
+    UpdateWorker(){
+        document.getElementById("TxtGpio").innerHTML = ""
+        document.getElementById("ErrorGpio").innerHTML = ""
+        // Call API Get Config
+        let ApiData = new Object()
+        ApiData.Fct = "UpdateWorker"
+        ApiData.Data = ""
+        GlobalCallApiPromise("Gpio", ApiData, "", "").then((reponse)=>{
+            document.getElementById("TxtGpio").innerHTML = reponse
+            document.getElementById("ErrorGpio").innerHTML = ""
+        },(erreur)=>{
+            document.getElementById("TxtGpio").innerHTML = ""
+            document.getElementById("ErrorGpio").innerHTML = erreur
+        })
     }
 
     /** Get Titre de l'application */
