@@ -1,28 +1,30 @@
-class ConfigZone{
+class PlayZone{
     constructor(HtmlId){
         this._DivApp = document.getElementById(HtmlId)
-        this._DivApp.setAttribute("class", "DivContent")
     }
     /** Start de l'application */
     Start(){
         // Clear view
         this.ClearView()
         // Titre
-        this._DivApp.appendChild(CoreXBuild.DivTexte("Zone configuration", "", "Titre", "margin-top:4%"))
+        this._DivApp.appendChild(CoreXBuild.DivTexte("Play a zone", "", "Titre", "margin-top:4%"))
         // Conteneur pour la liste des blogs
         let Conteneur = CoreXBuild.DivFlexColumn("Conteneur")
         this._DivApp.appendChild(Conteneur)
         // on construit le texte d'attente des Blog
-        Conteneur.appendChild(CoreXBuild.DivTexte("Wainting for configuration...","TxtConfigZone","Text"))
+        Conteneur.appendChild(CoreXBuild.DivTexte("Wainting for configuration...","TxtPlayZone","Text"))
         // on construit le texte du message d'erreur
-        let DivErrorTexte = CoreXBuild.DivTexte("","ErrorConfigZone","Text","color:red; text-align: center;")
+        let DivErrorTexte = CoreXBuild.DivTexte("","ErrorPlayZone","Text","color:red; text-align: center;")
         this._DivApp.appendChild(DivErrorTexte)
-        // On appel l'API
-        GlobalCallApiPromise("Config", "", "", "").then((reponse)=>{
-            this.BuildListOfConfigZone(reponse)
+        // Call API Get Config
+        let ApiData = new Object()
+        ApiData.Fct = "GetConfig"
+        ApiData.Data = ""
+        GlobalCallApiPromise("PlayZone", ApiData, "", "").then((reponse)=>{
+            this.BuildPlayZone(reponse, Conteneur)
         },(erreur)=>{
-            document.getElementById("TxtConfigZone").innerHTML = ""
-            document.getElementById("ErrorConfigZone").innerHTML = erreur
+            document.getElementById("TxtPlayZone").innerHTML = ""
+            document.getElementById("ErrorPlayZone").innerHTML = erreur
         })
     }
     /** Clear view */
@@ -38,13 +40,16 @@ class ConfigZone{
      * Build view of the list of configuration zone
      * @param {array} ListofCongifZone Liste of all zone configuration
      */
-    BuildListOfConfigZone(ListofCongifZone){
-        alert('ToDo')
+    BuildPlayZone(GpioConfig, Conteneur){
+        document.getElementById("TxtPlayZone").innerHTML = ""
+        document.getElementById("ErrorPlayZone").innerHTML = ""
+        // ToDo
+        console.log(GpioConfig)
     }
 
     /** Get Titre de l'application */
     GetTitre(){
-        return "Config Zone"
+        return "Play Zone"
     }
     /** Get Img Src de l'application */
     GetImgSrc(){
@@ -53,6 +58,6 @@ class ConfigZone{
 }
 
 // Creation de l'application 1
-let ConfigZoneApp = new ConfigZone(GlobalCoreXGetAppContentId())
+let PlayZoneApp = new PlayZone(GlobalCoreXGetAppContentId())
 // Ajout de l'application 1
-GlobalCoreXAddApp(ConfigZoneApp.GetTitre(), ConfigZoneApp.GetImgSrc(),ConfigZoneApp.Start.bind(ConfigZoneApp))
+GlobalCoreXAddApp(PlayZoneApp.GetTitre(), PlayZoneApp.GetImgSrc(),PlayZoneApp.Start.bind(PlayZoneApp))

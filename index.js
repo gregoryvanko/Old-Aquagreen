@@ -1,5 +1,5 @@
 class Aquagreen {
-    constructor(Name = "AppName", Port = 4000, Debug = true, WorkerAdress = null){
+    constructor(Name = "AppName", Port = 4000, Debug = true, RpiGpioAdress = null){
         // Creation de l'application CoreX
         let corex = require('@gregvanko/corex').corex
         this._OptionApplication = {
@@ -11,13 +11,16 @@ class Aquagreen {
         this._MyApp = new corex(this._OptionApplication)
         // Variable interne
         this._Debug = Debug
-        this._WorkerAdress = WorkerAdress
+        this._RpiGpioAdress = RpiGpioAdress
 
-        let FunctionClientR = require('./FunctionClient').FunctionClient
-        this._FunctionClient = new FunctionClientR(this._MyApp)
+        let WorkerR = require('./Worker').Worker
+        this._Worker = new WorkerR(this._MyApp)
+
+        let FunctionClientPlayZoneR = require('./FunctionClientPlayZone').FunctionClientPlayZone
+        this._FunctionClientPlayZone = new FunctionClientPlayZoneR(this._MyApp, this._Worker)
 
         let FunctionAdminGpioR = require('./FunctionAdminGpio').FunctionAdminGpio
-        this._FunctionAdminGpio = new FunctionAdminGpioR(this._MyApp, this._WorkerAdress)
+        this._FunctionAdminGpio = new FunctionAdminGpioR(this._MyApp, this._RpiGpioAdress, this._Worker)
     }
 
     /* Start de l'application */
@@ -55,10 +58,12 @@ class Aquagreen {
         this._MyApp.AdminAppFolder = __dirname + "/Admin"
         // Chemin relatif de l'icone
         this._MyApp.IconRelPath = __dirname + "/apple-icon-192x192.png"
-        // Api Client
-        this._MyApp.AddApiFct("Worker", this._FunctionClient.ApiWorker.bind(this._FunctionClient))
+        // Api Worker
+        this._MyApp.AddApiFct("Worker", this._Worker.ApiWork.bind(this._Worker))
         // Api Admin
         this._MyApp.AddApiAdminFct("Gpio", this._FunctionAdminGpio.ApiGpio.bind(this._FunctionAdminGpio))
+        // Api Client
+        this._MyApp.AddApiFct("PlayZone", this._FunctionClientPlayZone.ApiPlayZone.bind(this._FunctionClientPlayZone))
         // Start App
         this._MyApp.Start()
     }

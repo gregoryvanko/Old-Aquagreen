@@ -83,7 +83,7 @@ class Gpio{
          if (this._ConfigGpio != null){
             let DivContentButton2 = CoreXBuild.DivFlexRowAr("DivContentButton")
             Conteneur.appendChild(DivContentButton2)
-            DivContentButton2.appendChild(CoreXBuild.Button("Update worker", this.UpdateWorker.bind(this),"Button"))
+            DivContentButton2.appendChild(CoreXBuild.Button("Update worker", this.UpdateRpiGpio.bind(this),"Button"))
          }
     }
 
@@ -302,7 +302,7 @@ class Gpio{
                 document.getElementById("TxtRelayConfig").innerHTML = ""
                 document.getElementById("ErrorRelayConfig").innerHTML = ""
                 this._ConfigGpio = reponse
-                this.ViewConfigGpio()
+                this.BuildViewConfigGpio()
             },(erreur)=>{
                 document.getElementById("TxtRelayConfig").innerHTML = ""
                 document.getElementById("ErrorRelayConfig").innerHTML = erreur
@@ -537,12 +537,12 @@ class Gpio{
     /**
      * Update the configuration to the worker
      */
-    UpdateWorker(){
+    UpdateRpiGpio(){
         document.getElementById("TxtGpio").innerHTML = ""
         document.getElementById("ErrorGpio").innerHTML = ""
         // Call API Get Config
         let ApiData = new Object()
-        ApiData.Fct = "UpdateWorker"
+        ApiData.Fct = "UpdateRpiGpio"
         ApiData.Data = ""
         GlobalCallApiPromise("Gpio", ApiData, "", "").then((reponse)=>{
             document.getElementById("TxtGpio").innerHTML = reponse
