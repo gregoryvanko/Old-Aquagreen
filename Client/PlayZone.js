@@ -17,15 +17,15 @@ class PlayZone{
         let DivErrorTexte = CoreXBuild.DivTexte("","ErrorPlayZone","Text","color:red; text-align: center;")
         this._DivApp.appendChild(DivErrorTexte)
         // Call API Get Config
-        let ApiData = new Object()
-        ApiData.Fct = "GetConfig"
-        ApiData.Data = ""
-        GlobalCallApiPromise("PlayZone", ApiData, "", "").then((reponse)=>{
-            this.BuildPlayZone(reponse, Conteneur)
-        },(erreur)=>{
-            document.getElementById("TxtPlayZone").innerHTML = ""
-            document.getElementById("ErrorPlayZone").innerHTML = erreur
-        })
+        // let ApiData = new Object()
+        // ApiData.Fct = "GetConfig"
+        // ApiData.Data = ""
+        // GlobalCallApiPromise("PlayZone", ApiData, "", "").then((reponse)=>{
+        //     this.BuildPlayZone(reponse, Conteneur)
+        // },(erreur)=>{
+        //     document.getElementById("TxtPlayZone").innerHTML = ""
+        //     document.getElementById("ErrorPlayZone").innerHTML = erreur
+        // })
     }
     /** Clear view */
     ClearView(){

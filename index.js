@@ -63,7 +63,7 @@ class Aquagreen {
         // Api Admin
         this._MyApp.AddApiAdminFct("Gpio", this._FunctionAdminGpio.ApiGpio.bind(this._FunctionAdminGpio))
         // Api Client
-        this._MyApp.AddApiFct("PlayZone", this._FunctionClientPlayZone.ApiPlayZone.bind(this._FunctionClientPlayZone))
+        //this._MyApp.AddApiFct("PlayZone", this._FunctionClientPlayZone.ApiPlayZone.bind(this._FunctionClientPlayZone))
         // Start App
         this._MyApp.Start()
     }
