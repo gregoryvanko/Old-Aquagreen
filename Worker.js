@@ -2,7 +2,7 @@ class Worker {
     constructor(MyApp){
         this._MyApp = MyApp
 
-        this._IsRunning = true
+        this._IsRunning = false
 
         // Varaible interne MongoDB
         let MongoR = require('@gregvanko/corex').Mongo

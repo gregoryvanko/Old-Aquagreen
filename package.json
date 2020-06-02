@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/gregoryvanko/Aquagreen#readme",
   "dependencies": {
-    "@gregvanko/corex": "^4.19.0",
+    "@gregvanko/corex": "^4.20.0",
     "axios": "^0.19.2"
   }
 }
