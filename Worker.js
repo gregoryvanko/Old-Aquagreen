@@ -1,13 +1,17 @@
 class Worker {
-    constructor(MyApp, PinConfig= null){
+    constructor(MyApp){
         this._MyApp = MyApp
-        this._PinConfig = PinConfig
+
+        this._IsRunning = true
+
         // Varaible interne MongoDB
         let MongoR = require('@gregvanko/corex').Mongo
         this._Mongo = new MongoR(this._MyApp.MongoUrl ,this._MyApp.AppName)
         let MongoConfig = require("./MongoConfig.json")
         this._MongoConfigCollection = MongoConfig.ConfigCollection
     }
+
+    get IsRunning(){return this._IsRunning}
 
     /**
      * API du Worker

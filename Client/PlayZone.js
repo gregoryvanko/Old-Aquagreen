@@ -12,20 +12,25 @@ class PlayZone{
         let Conteneur = CoreXBuild.DivFlexColumn("Conteneur")
         this._DivApp.appendChild(Conteneur)
         // on construit le texte d'attente des Blog
-        Conteneur.appendChild(CoreXBuild.DivTexte("Wainting for configuration...","TxtPlayZone","Text"))
+        Conteneur.appendChild(CoreXBuild.DivTexte("Wainting server data...","TxtPlayZone","Text"))
         // on construit le texte du message d'erreur
         let DivErrorTexte = CoreXBuild.DivTexte("","ErrorPlayZone","Text","color:red; text-align: center;")
         this._DivApp.appendChild(DivErrorTexte)
-        // Call API Get Config
-        // let ApiData = new Object()
-        // ApiData.Fct = "GetConfig"
-        // ApiData.Data = ""
-        // GlobalCallApiPromise("PlayZone", ApiData, "", "").then((reponse)=>{
-        //     this.BuildPlayZone(reponse, Conteneur)
-        // },(erreur)=>{
-        //     document.getElementById("TxtPlayZone").innerHTML = ""
-        //     document.getElementById("ErrorPlayZone").innerHTML = erreur
-        // })
+
+        // SocketIo Listener
+        let SocketIo = GlobalGetSocketIo()
+        SocketIo.on('Error', (Value) => {
+            this.Error(Value)
+        })
+        SocketIo.on('BuildPlayZoneVue', (Value) => {
+            this.BuildPlayZoneVue(Value, Conteneur)
+        })
+        SocketIo.on('BuildWorkerStatusVue', (Value) => {
+            this.BuildWorkerStatusVue(Value, Conteneur)
+        })
+
+        // Send status to serveur
+        GlobalSendSocketIo("PlayZone", "Start", "")
     }
     /** Clear view */
     ClearView(){
@@ -37,14 +42,36 @@ class PlayZone{
     }
 
     /**
-     * Build view of the list of configuration zone
-     * @param {array} ListofCongifZone Liste of all zone configuration
+     * Affichage du message d'erreur venant du serveur
+     * @param {String} ErrorMsg Message d'erreur envoyé du serveur
      */
-    BuildPlayZone(GpioConfig, Conteneur){
+    Error(ErrorMsg){
+        document.getElementById("TxtPlayZone").innerHTML = ""
+        document.getElementById("ErrorPlayZone").innerHTML = ErrorMsg
+    }
+
+    /**
+     * Construit la vue permettant de lancer le fonctionnement d'une zone
+     * @param {array} GpioConfig Liste des objets config
+     * @param {HtmlElement} Conteneur Html Element Conteneur de la vue
+     */
+    BuildPlayZoneVue(GpioConfig, Conteneur){
         document.getElementById("TxtPlayZone").innerHTML = ""
         document.getElementById("ErrorPlayZone").innerHTML = ""
         // ToDo
-        console.log(GpioConfig)
+        document.getElementById("TxtPlayZone").innerHTML = "BuildPlayZoneVue " + GpioConfig
+    }
+
+    /**
+     * Construit la vue permettant de visualiser le statu du worker actuel
+     * @param {string} WorkerValue Statu du worker
+     * @param {HtmlElement} Conteneur Html Element Conteneur de la vue
+     */
+    BuildWorkerStatusVue(WorkerValue, Conteneur){
+        document.getElementById("TxtPlayZone").innerHTML = ""
+        document.getElementById("ErrorPlayZone").innerHTML = ""
+        // ToDo
+        document.getElementById("TxtPlayZone").innerHTML = "BuildWorkerStatusVue " + WorkerValue
     }
 
     /** Get Titre de l'application */

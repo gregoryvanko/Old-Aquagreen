@@ -51,7 +51,7 @@ class Aquagreen {
         // Css de base de l'application
         this._MyApp.CSS = CSS
         // L'application utilise SocketIo
-        this._MyApp.Usesocketio = false
+        this._MyApp.Usesocketio = true
         // Chemin vers le dossier contenant les sources Js et CSS de l'app client
         this._MyApp.ClientAppFolder = __dirname + "/Client"
         // Chemin vers le dossier contenant les sources Js et CSS de l'app Admin
@@ -62,8 +62,8 @@ class Aquagreen {
         this._MyApp.AddApiFct("Worker", this._Worker.ApiWork.bind(this._Worker))
         // Api Admin
         this._MyApp.AddApiAdminFct("Gpio", this._FunctionAdminGpio.ApiGpio.bind(this._FunctionAdminGpio))
-        // Api Client
-        //this._MyApp.AddApiFct("PlayZone", this._FunctionClientPlayZone.ApiPlayZone.bind(this._FunctionClientPlayZone))
+        // SocketIo
+        this._MyApp.AddSocketIoFct("PlayZone", this._FunctionClientPlayZone.ApiPlayZone.bind(this._FunctionClientPlayZone))
         // Start App
         this._MyApp.Start()
     }
