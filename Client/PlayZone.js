@@ -58,8 +58,35 @@ class PlayZone{
     BuildPlayZoneVue(GpioConfig, Conteneur){
         document.getElementById("TxtPlayZone").innerHTML = ""
         document.getElementById("ErrorPlayZone").innerHTML = ""
-        // ToDo
-        document.getElementById("TxtPlayZone").innerHTML = "BuildPlayZoneVue " + GpioConfig
+        let ActionBox = CoreXBuild.Div("","ActionBox")
+        Conteneur.appendChild(ActionBox)
+        let FlexActionBox = CoreXBuild.DivFlexColumn("")
+        ActionBox.appendChild(FlexActionBox)
+        FlexActionBox.appendChild(this.BuildDropDownZone(GpioConfig))
+        let InputName = CoreXBuild.Input("Delay", "","Input ActionSmallWidth","","text","Delay","Set Delay")
+        InputName.setAttribute("onfocus", "this.placeholder = ''")
+        InputName.setAttribute("onblur", "this.placeholder = 'Set Delay'")
+        FlexActionBox.appendChild(InputName)
+        FlexActionBox.appendChild(CoreXBuild.Button("Start", this.StartZone.bind(this),"Button ActionSmallWidth"))
+    }
+
+    BuildDropDownZone(GpioConfig){
+        let DropDown = document.createElement("select")
+        DropDown.setAttribute("id", "Zone")
+        DropDown.setAttribute("class", "Text DorpDown ActionWidth")
+        GpioConfig.forEach(element => {
+            if(element.type == "Relais"){
+                let option = document.createElement("option")
+                option.setAttribute("value", element.name)
+                option.innerHTML = element.name
+                DropDown.appendChild(option)
+            }
+        });
+        return DropDown
+    }
+
+    StartZone(){
+        alert("Start")
     }
 
     /**

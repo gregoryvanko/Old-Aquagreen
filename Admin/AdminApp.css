@@ -71,6 +71,7 @@
     background: transparent;
     margin: 1%;
     padding: 1vh;
+    border-radius: 15px;
 }
 .DorpDown:focus {
     outline: 0;
