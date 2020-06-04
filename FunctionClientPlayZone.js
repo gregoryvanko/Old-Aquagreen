@@ -3,6 +3,8 @@ class FunctionClientPlayZone{
         this._MyApp = MyApp
         this._Worker = Worker
 
+        this._WorkerConfigList = null
+
         // Varaible interne MongoDB
         let MongoR = require('@gregvanko/corex').Mongo
         this._Mongo = new MongoR(this._MyApp.MongoUrl ,this._MyApp.AppName)
@@ -19,15 +21,19 @@ class FunctionClientPlayZone{
         this._MyApp.LogAppliInfo("Call SoketIO ApiPlayZone + " + JSON.stringify(Data))
         switch (Data.Action) {
             case "Start":
-                this.StartClientVue(Socket)
+                this.CommandeStartClientVue(Socket)
+                break
+            case "PlayWorker":
+                this.CommandeStartWorker(Socket, Data.Value)
                 break
             default:
                 this._MyApp.LogAppliInfo(`ApiPlayZone error, Action ${Data.Action} not found`)
+                Socket.emit("Error", `ApiPlayZone error, Action ${Data.Action} not found`)
                 break
         }
     }
 
-    StartClientVue(Socket){
+    CommandeStartClientVue(Socket){
         if(this._Worker.IsRunning){
             // Send Status of Worker
             // ToDo
@@ -48,6 +54,12 @@ class FunctionClientPlayZone{
                 Socket.emit("Error", "StartClientVue GetConfig DB Error")
             })
         }
+    }
+
+    CommandeStartWorker(Socket, WorkerConfigList){
+        this._WorkerConfigList = WorkerConfigList
+        // ToDo
+        Socket.emit("BuildWorkerStatusVue", "99")
     }
     
 }

@@ -1,6 +1,7 @@
 class PlayZone{
     constructor(HtmlId){
         this._DivApp = document.getElementById(HtmlId)
+        this._GpioConfig = null
     }
     /** Start de l'application */
     Start(){
@@ -8,14 +9,13 @@ class PlayZone{
         this.ClearView()
         // Titre
         this._DivApp.appendChild(CoreXBuild.DivTexte("Play a zone", "", "Titre", "margin-top:4%"))
-        // Conteneur pour la liste des blogs
+        // Conteneur pour la liste
         let Conteneur = CoreXBuild.DivFlexColumn("Conteneur")
         this._DivApp.appendChild(Conteneur)
-        // on construit le texte d'attente des Blog
-        Conteneur.appendChild(CoreXBuild.DivTexte("Wainting server data...","TxtPlayZone","Text"))
+        // on construit le texte d'attente
+        this._DivApp.appendChild(CoreXBuild.DivTexte("Wainting server data...","TxtPlayZone","Text", "text-align: center;"))
         // on construit le texte du message d'erreur
-        let DivErrorTexte = CoreXBuild.DivTexte("","ErrorPlayZone","Text","color:red; text-align: center;")
-        this._DivApp.appendChild(DivErrorTexte)
+        this._DivApp.appendChild(CoreXBuild.DivTexte("","ErrorPlayZone","Text","color:red; text-align: center;"))
 
         // SocketIo Listener
         let SocketIo = GlobalGetSocketIo()
@@ -23,7 +23,8 @@ class PlayZone{
             this.Error(Value)
         })
         SocketIo.on('BuildPlayZoneVue', (Value) => {
-            this.BuildPlayZoneVue(Value, Conteneur)
+            this._GpioConfig = Value
+            this.BuildPlayZoneVue(Conteneur)
         })
         SocketIo.on('BuildWorkerStatusVue', (Value) => {
             this.BuildWorkerStatusVue(Value, Conteneur)
@@ -55,26 +56,26 @@ class PlayZone{
      * @param {array} GpioConfig Liste des objets config
      * @param {HtmlElement} Conteneur Html Element Conteneur de la vue
      */
-    BuildPlayZoneVue(GpioConfig, Conteneur){
+    BuildPlayZoneVue(Conteneur){
         document.getElementById("TxtPlayZone").innerHTML = ""
         document.getElementById("ErrorPlayZone").innerHTML = ""
         let ActionBox = CoreXBuild.Div("","ActionBox")
         Conteneur.appendChild(ActionBox)
         let FlexActionBox = CoreXBuild.DivFlexColumn("")
         ActionBox.appendChild(FlexActionBox)
-        FlexActionBox.appendChild(this.BuildDropDownZone(GpioConfig))
-        let InputName = CoreXBuild.Input("Delay", "","Input ActionSmallWidth","","text","Delay","Set Delay")
-        InputName.setAttribute("onfocus", "this.placeholder = ''")
-        InputName.setAttribute("onblur", "this.placeholder = 'Set Delay'")
-        FlexActionBox.appendChild(InputName)
-        FlexActionBox.appendChild(CoreXBuild.Button("Start", this.StartZone.bind(this),"Button ActionSmallWidth"))
+        FlexActionBox.appendChild(this.BuildDropDownZone())
+        FlexActionBox.appendChild(this.BuildDropDownDelay())
+        FlexActionBox.appendChild(CoreXBuild.Button("Start", this.StartZone.bind(this),"Button ActionSmallWidth", "StartButton"))
     }
 
-    BuildDropDownZone(GpioConfig){
+    /**
+     * Build DropDown Zone
+     */
+    BuildDropDownZone(){
         let DropDown = document.createElement("select")
         DropDown.setAttribute("id", "Zone")
         DropDown.setAttribute("class", "Text DorpDown ActionWidth")
-        GpioConfig.forEach(element => {
+        this._GpioConfig.forEach(element => {
             if(element.type == "Relais"){
                 let option = document.createElement("option")
                 option.setAttribute("value", element.name)
@@ -82,11 +83,63 @@ class PlayZone{
                 DropDown.appendChild(option)
             }
         });
+        DropDown.onchange = this.UpdateDropDownDelay.bind(this)
         return DropDown
     }
 
+    /**
+     * Build DropDown Delay
+     */
+    BuildDropDownDelay(){
+        let DropDown = document.createElement("select")
+        DropDown.setAttribute("id", "Delay")
+        DropDown.setAttribute("class", "Text DorpDown ActionSmallWidth")
+        let MaxDelay = this._GpioConfig[0].timeout
+        for (let index = 1; index <= MaxDelay; index++){
+            let option = document.createElement("option")
+            option.setAttribute("value", index)
+            option.innerHTML = index
+            DropDown.appendChild(option)
+        }
+        return DropDown
+    }
+
+    /**
+     * Update DropDown Delay Option
+     */
+    UpdateDropDownDelay(){
+        let DropDownZoneValue = document.getElementById("Zone").value
+        let DropDownDelay = document.getElementById("Delay")
+        let length =  DropDownDelay.options.length
+        for (let i = length-1; i >= 0; i--) {
+            DropDownDelay.options[i] = null;
+        }
+        var found = this._GpioConfig.find((element) => { return element.name == DropDownZoneValue })
+        if (found){
+            let MaxDelay = found.timeout
+            for (let index = 1; index <= MaxDelay; index++){
+                let option = document.createElement("option")
+                option.setAttribute("value", index)
+                option.innerHTML = index
+                DropDownDelay.appendChild(option)
+            }
+        }
+    }
+
+    /**
+     * Start Zone
+     */
     StartZone(){
-        alert("Start")
+        let WorkerConfigList = new Array()
+        let WorkerConfig = new Object()
+        WorkerConfig.ZoneName = document.getElementById("Zone").value
+        WorkerConfig.Delay = document.getElementById("Delay").value
+        WorkerConfigList.push(WorkerConfig)
+        // Send status to serveur
+        GlobalSendSocketIo("PlayZone", "PlayWorker", WorkerConfigList)
+        document.getElementById("Conteneur").innerHTML = ""
+        document.getElementById("TxtPlayZone").innerHTML = "Command send to server..."
+        document.getElementById("ErrorPlayZone").innerHTML = ""
     }
 
     /**
