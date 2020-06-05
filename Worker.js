@@ -2,7 +2,20 @@ class Worker {
     constructor(MyApp){
         this._MyApp = MyApp
 
-        this._IsRunning = false
+        this._Status = new Object()
+        this._Status.IsRunning = false
+        this._Status.WorkerConfigList = null
+        this._Status.StepTotal = 0
+        this._Status.StepCurrent = 0
+        this._Status.TotalSecond = 0
+        this._Status.ZoneName = ""
+        this._Status.ZoneStepTotal = 0
+        this._Status.ZoneStepCurrent = 0
+        this._Status.ZoneNumberTotal = 0
+        this._Status.ZoneNumberCurrent = 0
+
+        this._ListOfStep = new Array()
+        this._WorkerInterval = null
 
         // Varaible interne MongoDB
         let MongoR = require('@gregvanko/corex').Mongo
@@ -12,9 +25,10 @@ class Worker {
     }
 
     get IsRunning(){return this._IsRunning}
+    get Status(){return this._Status}
 
     /**
-     * API du Worker
+     * HTTP API du Worker
      * @param {Object} Data {Fct, Data} Object de parametre de l'API
      * @param {Res} Res Reponse à la requete de l'API
      * @param {String} UserId UserId de l'user qui a appeler l'API
@@ -23,6 +37,7 @@ class Worker {
         this._MyApp.LogAppliInfo("Call ApiWorker + " + JSON.stringify(Data))
         if (Data.Fct == "ButtonPressed"){
             Res.json({Error: false, ErrorMsg: "Worker", Data: "Worker Started by: " + Data.Name})
+            // ToDo
         } else if(Data.Fct == "Ping"){
             Res.json({Error: false, ErrorMsg: "Worker", Data: "Pong"})
         } else if(Data.Fct == "GetConfig"){
@@ -52,5 +67,52 @@ class Worker {
             Res.json({Error: true, ErrorMsg: "ApiWork GetConfig DB Error", Data: null})
         })
     }
+
+    StartWorking(WorkerConfigList){
+        this._WorkerConfigList = WorkerConfigList
+        let lengthOfWorkerConfigList = this._WorkerConfigList.length
+
+        this._Status.IsRunning = true
+        this._Status.StepTotal = 20 // ToDo
+        this._Status.StepCurrent = 0
+        this._Status.TotalSecond = this._Status.StepTotal - this._Status.StepCurrent
+        this._Status.ZoneName = "Zone 1" // ToDo
+        this._Status.ZoneStepTotal = 20 // ToDo
+        this._Status.ZoneStepCurrent = 0
+        this._Status.ZoneNumberTotal = lengthOfWorkerConfigList
+        this._Status.ZoneNumberCurrent = 1
+        let Io = this._MyApp.Io
+        Io.emit("BuildWorkerStatusVue", this._Status)
+
+        this._WorkerInterval = setInterval(this.UpdateWorkerStatus.bind(this), 1000)
+        
+    }
+
+    UpdateWorkerStatus(){
+        this._Status.StepCurrent++
+        this._Status.TotalSecond--
+
+        if (this._Status.StepCurrent > this._Status.StepTotal){
+            this.StopWorker()
+        } else {
+            let Io = this._MyApp.Io
+            Io.emit("BuildWorkerStatusVue", this._Status)
+        }
+    }
+
+    StopWorker(){
+        clearInterval(this._WorkerInterval)
+        this._Status.IsRunning = false
+        this._Status.WorkerConfigList = null
+        this._Status.StepTotal = 0
+        this._Status.StepCurrent = 0
+        this._Status.TotalSecond = 0
+        this._Status.ZoneName = ""
+        this._Status.ZoneStepTotal = 0
+        this._Status.ZoneStepCurrent = 0
+        this._Status.ZoneNumberTotal = 0
+        this._Status.ZoneNumberCurrent = 0
+    }
+
 }
 module.exports.Worker = Worker

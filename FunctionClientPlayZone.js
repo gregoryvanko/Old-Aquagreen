@@ -3,8 +3,6 @@ class FunctionClientPlayZone{
         this._MyApp = MyApp
         this._Worker = Worker
 
-        this._WorkerConfigList = null
-
         // Varaible interne MongoDB
         let MongoR = require('@gregvanko/corex').Mongo
         this._Mongo = new MongoR(this._MyApp.MongoUrl ,this._MyApp.AppName)
@@ -14,7 +12,7 @@ class FunctionClientPlayZone{
     
 
     /**
-     * API de la page Client PlayZone
+     * socket API de la page Client PlayZone
      * @param {Object} Data {Action, Value} Object de parametre de l'API
      */
     ApiPlayZone(Data, Socket){
@@ -24,7 +22,7 @@ class FunctionClientPlayZone{
                 this.CommandeStartClientVue(Socket)
                 break
             case "PlayWorker":
-                this.CommandeStartWorker(Socket, Data.Value)
+                this.CommandeStartWorker(Data.Value)
                 break
             default:
                 this._MyApp.LogAppliInfo(`ApiPlayZone error, Action ${Data.Action} not found`)
@@ -33,11 +31,13 @@ class FunctionClientPlayZone{
         }
     }
 
+    /**
+     * Commande recue du client lorsque il ouvre la vue Play Zone
+     * @param {SocketIo} Socket Client socket
+     */
     CommandeStartClientVue(Socket){
-        if(this._Worker.IsRunning){
-            // Send Status of Worker
-            // ToDo
-            Socket.emit("BuildWorkerStatusVue", "20")
+        if(this._Worker.Status.IsRunning){
+            Socket.emit("BuildWorkerStatusVue", this._Worker.Status)
         } else {
             // Send Gpio Config from DB
             let me = this
@@ -56,10 +56,12 @@ class FunctionClientPlayZone{
         }
     }
 
-    CommandeStartWorker(Socket, WorkerConfigList){
-        this._WorkerConfigList = WorkerConfigList
-        // ToDo
-        Socket.emit("BuildWorkerStatusVue", "99")
+    /**
+     * Commande recue du client lorsqu'il veux activer une Zone pendant un Delay
+     * @param {Object} WorkerConfigList Liste des object de configuration du worker
+     */
+    CommandeStartWorker(WorkerConfigList){
+        this._Worker.StartWorking(WorkerConfigList)
     }
     
 }

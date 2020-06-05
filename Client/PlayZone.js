@@ -57,6 +57,7 @@ class PlayZone{
      * @param {HtmlElement} Conteneur Html Element Conteneur de la vue
      */
     BuildPlayZoneVue(Conteneur){
+        Conteneur.innerHTML =""
         document.getElementById("TxtPlayZone").innerHTML = ""
         document.getElementById("ErrorPlayZone").innerHTML = ""
         let ActionBox = CoreXBuild.Div("","ActionBox")
@@ -148,10 +149,19 @@ class PlayZone{
      * @param {HtmlElement} Conteneur Html Element Conteneur de la vue
      */
     BuildWorkerStatusVue(WorkerValue, Conteneur){
+        Conteneur.innerHTML = ""
         document.getElementById("TxtPlayZone").innerHTML = ""
         document.getElementById("ErrorPlayZone").innerHTML = ""
         // ToDo
-        document.getElementById("TxtPlayZone").innerHTML = "BuildWorkerStatusVue " + WorkerValue
+        let Pourcent = Math.floor((WorkerValue.StepCurrent/WorkerValue.StepTotal)*100)
+        Conteneur.appendChild(CoreXBuild.DivTexte(Pourcent, "", "Text", ""))
+        let Minute = Math.floor(WorkerValue.TotalSecond/60)
+        let Seconde = WorkerValue.TotalSecond - (Minute * 60)
+        Conteneur.appendChild(CoreXBuild.DivTexte(Minute + "min " + Seconde + "sec", "", "Text", ""))
+        Conteneur.appendChild(CoreXBuild.DivTexte("Step Name: " + WorkerValue.ZoneName, "", "Text", ""))
+        let PourcentZone = Math.floor((WorkerValue.ZoneStepCurrent/WorkerValue.ZoneStepTotal)*100)
+        Conteneur.appendChild(CoreXBuild.DivTexte("Step Status: " + PourcentZone, "", "Text", ""))
+        Conteneur.appendChild(CoreXBuild.DivTexte("Step progress: " + WorkerValue.ZoneNumberCurrent + "/" + WorkerValue.ZoneNumberTotal, "", "Text", ""))
     }
 
     /** Get Titre de l'application */

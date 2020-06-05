@@ -104,7 +104,7 @@ screen and (max-width: 700px)
     .Input {font-size: var(--CoreX-Iphone-font-size);}
     .ActionBox{width: 90%;}
     .ActionWidth {width: 90%;}
-    .ActionSmallWidth {width: 90%;}
+    .ActionSmallWidth {width: 50%;}
 }
 
 @media screen and (min-width: 1200px)
