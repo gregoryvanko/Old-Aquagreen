@@ -29,6 +29,13 @@ class PlayZone{
         SocketIo.on('BuildWorkerStatusVue', (Value) => {
             this.BuildWorkerStatusVue(Value, Conteneur)
         })
+        SocketIo.on('WorkerStopped', () => {
+            Conteneur.innerHTML =""
+            document.getElementById("TxtPlayZone").innerHTML = ""
+            document.getElementById("ErrorPlayZone").innerHTML = ""
+            // Send status to serveur
+            GlobalSendSocketIo("PlayZone", "Start", "")
+        })
 
         // Send status to serveur
         GlobalSendSocketIo("PlayZone", "Start", "")

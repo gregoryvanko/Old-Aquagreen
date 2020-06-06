@@ -14,7 +14,7 @@ class Worker {
         this._Status.ZoneNumberTotal = 0
         this._Status.ZoneNumberCurrent = 0
 
-        this._ListOfStep = new Array()
+        this._ListOfActions = new Array()
         this._WorkerInterval = null
 
         // Varaible interne MongoDB
@@ -72,15 +72,38 @@ class Worker {
         this._WorkerConfigList = WorkerConfigList
         let lengthOfWorkerConfigList = this._WorkerConfigList.length
 
+        let TempStep = 0
+
+        WorkerConfigList.forEach(element => {
+            TempStep++
+            // Open
+            let ObjectActionOpen = new Object()
+            ObjectActionOpen.Step = TempStep
+            ObjectActionOpen.ZoneName = element.ZoneName
+            ObjectActionOpen.Type = "Start"
+            ObjectActionOpen.Delay = element.Delay * 60
+            TempStep = TempStep + (element.Delay * 60)
+            this._ListOfActions.push(ObjectActionOpen)
+            // Close
+            let ObjectActionClose = new Object()
+            ObjectActionClose.Step = TempStep
+            ObjectActionClose.ZoneName = element.ZoneName
+            ObjectActionClose.Type = "Stop"
+            ObjectActionClose.Delay = 5
+            TempStep = TempStep + 5
+            this._ListOfActions.push(ObjectActionClose)
+        })
+
         this._Status.IsRunning = true
-        this._Status.StepTotal = 20 // ToDo
+        this._Status.StepTotal = TempStep
         this._Status.StepCurrent = 0
         this._Status.TotalSecond = this._Status.StepTotal - this._Status.StepCurrent
-        this._Status.ZoneName = "Zone 1" // ToDo
-        this._Status.ZoneStepTotal = 20 // ToDo
+        this._Status.ZoneName = "Start Worker"
+        this._Status.ZoneStepTotal = 1
         this._Status.ZoneStepCurrent = 0
         this._Status.ZoneNumberTotal = lengthOfWorkerConfigList
-        this._Status.ZoneNumberCurrent = 1
+        this._Status.ZoneNumberCurrent = 0
+
         let Io = this._MyApp.Io
         Io.emit("BuildWorkerStatusVue", this._Status)
 
@@ -91,7 +114,23 @@ class Worker {
     UpdateWorkerStatus(){
         this._Status.StepCurrent++
         this._Status.TotalSecond--
+        this._Status.ZoneStepCurrent++
 
+        if (this._ListOfActions.length > 0){
+            if (this._Status.StepCurrent >= this._ListOfActions[0].Step){
+                if (this._ListOfActions[0].Type == "Start"){
+                    // ToDo Set GPIO => 1
+                    this._Status.ZoneName = "Start " + this._ListOfActions[0].ZoneName
+                    this._Status.ZoneNumberCurrent++
+                } else {
+                    // ToDo Set GPIO => 0
+                    this._Status.ZoneName = "Stop " + this._ListOfActions[0].ZoneName
+                }
+                this._Status.ZoneStepTotal = this._ListOfActions[0].Delay
+                this._Status.ZoneStepCurrent = 0
+                this._ListOfActions.shift()
+            }
+        }
         if (this._Status.StepCurrent > this._Status.StepTotal){
             this.StopWorker()
         } else {
@@ -112,6 +151,8 @@ class Worker {
         this._Status.ZoneStepCurrent = 0
         this._Status.ZoneNumberTotal = 0
         this._Status.ZoneNumberCurrent = 0
+        let Io = this._MyApp.Io
+        Io.emit("WorkerStopped", "")
     }
 
 }
