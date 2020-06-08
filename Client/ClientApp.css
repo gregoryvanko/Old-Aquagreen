@@ -91,6 +91,24 @@
 }
 .ActionSmallWidth {
     width: 30%;
+}d
+
+/* Progress */
+.WorkerProgressSemiCircle {
+    width: 300px;
+    height: 150px;
+}
+.WorkerProgressSemiCircle__label{
+    color: blue;
+    position: absolute;
+    left: 50%;
+    padding: 0;
+    margin: 0;
+    transform: translate(-50%, -50%);
+    font-size: calc(var(--CoreX-font-size)*2);
+}
+.WorkerProgressLine{
+    width: 20%;
 }
 
 @media only screen and (min-device-width: 375px) and (max-device-width: 667px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait),
@@ -105,6 +123,7 @@ screen and (max-width: 700px)
     .ActionBox{width: 90%;}
     .ActionWidth {width: 90%;}
     .ActionSmallWidth {width: 50%;}
+    .WorkerProgressSemiCircle__label{font-size: calc(var(--CoreX-Iphone-font-size)*2);}
 }
 
 @media screen and (min-width: 1200px)
@@ -114,4 +133,5 @@ screen and (max-width: 700px)
     .Text{font-size: var(--CoreX-Max-font-size);}
     .Button{font-size: var(--CoreX-Max-font-size); border-radius: 40px;}
     .Input {font-size: var(--CoreX-Max-font-size);}
+    .WorkerProgressSemiCircle__label{font-size: calc(var(--CoreX-Max-font-size)*2);}
 }

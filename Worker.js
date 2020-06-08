@@ -37,7 +37,7 @@ class Worker {
         this._MyApp.LogAppliInfo("Call ApiWorker + " + JSON.stringify(Data))
         if (Data.Fct == "ButtonPressed"){
             Res.json({Error: false, ErrorMsg: "Worker", Data: "Worker Started by: " + Data.Name})
-            // ToDo
+            //  ToDo Start Button Fct
         } else if(Data.Fct == "Ping"){
             Res.json({Error: false, ErrorMsg: "Worker", Data: "Pong"})
         } else if(Data.Fct == "GetConfig"){

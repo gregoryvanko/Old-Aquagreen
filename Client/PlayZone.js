@@ -2,6 +2,9 @@ class PlayZone{
     constructor(HtmlId){
         this._DivApp = document.getElementById(HtmlId)
         this._GpioConfig = null
+        this._WorkerStatusVueExiste = false
+        this._WorkerProgressSemiCircle = null
+        this._WorkerProgressLine = null
     }
     /** Start de l'application */
     Start(){
@@ -64,6 +67,7 @@ class PlayZone{
      * @param {HtmlElement} Conteneur Html Element Conteneur de la vue
      */
     BuildPlayZoneVue(Conteneur){
+        this._WorkerStatusVueExiste = false
         Conteneur.innerHTML =""
         document.getElementById("TxtPlayZone").innerHTML = ""
         document.getElementById("ErrorPlayZone").innerHTML = ""
@@ -156,19 +160,73 @@ class PlayZone{
      * @param {HtmlElement} Conteneur Html Element Conteneur de la vue
      */
     BuildWorkerStatusVue(WorkerValue, Conteneur){
-        Conteneur.innerHTML = ""
-        document.getElementById("TxtPlayZone").innerHTML = ""
-        document.getElementById("ErrorPlayZone").innerHTML = ""
-        // ToDo
         let Pourcent = Math.floor((WorkerValue.StepCurrent/WorkerValue.StepTotal)*100)
-        Conteneur.appendChild(CoreXBuild.DivTexte(Pourcent, "", "Text", ""))
+        let PourcentZone = Math.floor((WorkerValue.ZoneStepCurrent/WorkerValue.ZoneStepTotal)*100)
         let Minute = Math.floor(WorkerValue.TotalSecond/60)
         let Seconde = WorkerValue.TotalSecond - (Minute * 60)
-        Conteneur.appendChild(CoreXBuild.DivTexte(Minute + "min " + Seconde + "sec", "", "Text", ""))
-        Conteneur.appendChild(CoreXBuild.DivTexte("Step Name: " + WorkerValue.ZoneName, "", "Text", ""))
-        let PourcentZone = Math.floor((WorkerValue.ZoneStepCurrent/WorkerValue.ZoneStepTotal)*100)
-        Conteneur.appendChild(CoreXBuild.DivTexte("Step Status: " + PourcentZone, "", "Text", ""))
-        Conteneur.appendChild(CoreXBuild.DivTexte("Step progress: " + WorkerValue.ZoneNumberCurrent + "/" + WorkerValue.ZoneNumberTotal, "", "Text", ""))
+        if(this._WorkerStatusVueExiste){
+            this._WorkerProgressSemiCircle.setText(Pourcent + "%")
+            this._WorkerProgressSemiCircle.animate(Pourcent/100)
+            if (PourcentZone == 0){
+                this._WorkerProgressLine.set(PourcentZone/100)
+            } else {
+                this._WorkerProgressLine.animate(PourcentZone/100)
+            }
+            document.getElementById("Timer").innerHTML= Minute + "min " + Seconde + "sec"
+            document.getElementById("StepName").innerHTML= WorkerValue.ZoneName
+            document.getElementById("Stepprogress").innerHTML= WorkerValue.ZoneNumberCurrent + "/" + WorkerValue.ZoneNumberTotal
+            
+        } else {
+            this._WorkerStatusVueExiste = true
+            Conteneur.innerHTML = ""
+            document.getElementById("TxtPlayZone").innerHTML = ""
+            document.getElementById("ErrorPlayZone").innerHTML = ""
+
+            let divWorkerProgressSemiCircle = CoreXBuild.Div("WorkerProgressSemiCircle", "WorkerProgressSemiCircle", "width: 300px; height: 150px;")
+            Conteneur.appendChild(divWorkerProgressSemiCircle)
+            this._WorkerProgressSemiCircle = new ProgressBar.SemiCircle("#WorkerProgressSemiCircle", {
+                color: 'blue',
+                duration: 1000,
+                easing: 'linear',
+                strokeWidth: 2,
+                trailWidth: 4,
+                text: {
+                    value: 'Text',
+                    className: 'WorkerProgressSemiCircle__label',
+                    style: null,
+                    alignToBottom: false
+                }
+            });
+            this._WorkerProgressSemiCircle.setText(Pourcent + "%")
+            this._WorkerProgressSemiCircle.set(Pourcent/100)
+
+            Conteneur.appendChild(CoreXBuild.Div("","","height:5vh;"))
+            Conteneur.appendChild(CoreXBuild.DivTexte(Minute + "min " + Seconde + "sec", "Timer", "Text", ""))
+
+            let DivStepName = CoreXBuild.DivFlexRowStart("")
+            Conteneur.appendChild(DivStepName)
+            DivStepName.appendChild(CoreXBuild.DivTexte("Step Name: ", "", "Text", "width: 49%; text-align: right;"))
+            DivStepName.appendChild(CoreXBuild.DivTexte(WorkerValue.ZoneName, "StepName", "Text", "text-align: left;"))
+            
+            let DivProgressLine = CoreXBuild.DivFlexRowStart("")
+            Conteneur.appendChild(DivProgressLine)
+            DivProgressLine.appendChild(CoreXBuild.DivTexte("Step Progress: ", "", "Text", "width: 49%; text-align: right;"))
+
+            DivProgressLine.appendChild(CoreXBuild.Div("WorkerProgressLine", "WorkerProgressLine"))
+            this._WorkerProgressLine = new ProgressBar.Line('#WorkerProgressLine', {
+                color: 'blue',
+                duration: 1000,
+                easing: 'linear',
+                strokeWidth: 4,
+                trailWidth: 4,
+            });
+            this._WorkerProgressLine.set(PourcentZone)
+
+            let DivStepprogress = CoreXBuild.DivFlexRowStart("")
+            Conteneur.appendChild(DivStepprogress)
+            DivStepprogress.appendChild(CoreXBuild.DivTexte("Step progress: ", "", "Text", "width: 49%; text-align: right;"))
+            DivStepprogress.appendChild(CoreXBuild.DivTexte(WorkerValue.ZoneNumberCurrent + "/" + WorkerValue.ZoneNumberTotal, "Stepprogress", "Text", "text-align: left;"))
+        }
     }
 
     /** Get Titre de l'application */
