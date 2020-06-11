@@ -8,7 +8,7 @@
 /* Sous Titre */
 .SousTitre{
     margin: 1%;
-    font-size: 2vw;
+    font-size: 3vw;
     color: var(--CoreX-color);
 }
 /* Texte */
@@ -93,7 +93,7 @@ only screen and (min-device-width: 414px) and (max-device-width: 736px) and (-we
 screen and (max-width: 700px)
 {
     .Titre{font-size: var(--CoreX-TitreIphone-font-size);}
-    .SousTitre{font-size: 5vw;}
+    .SousTitre{font-size: 6vw;}
     .Text{font-size: var(--CoreX-Iphone-font-size);}
     .TextBoxTitre{font-size: calc(var(--CoreX-Iphone-font-size)*1.1);}
     .Button{font-size: var(--CoreX-Iphone-font-size); border-radius: 40px;}
@@ -110,7 +110,7 @@ screen and (max-width: 700px)
 @media screen and (min-width: 1200px)
 {
     .Titre{font-size: var(--CoreX-TitreMax-font-size);}
-    .SousTitre{font-size: 24px;}
+    .SousTitre{font-size: 35px;}
     .Text{font-size: var(--CoreX-Max-font-size);}
     .TextBoxTitre{font-size: calc(var(--CoreX-Max-font-size)*1.1);}
     .Button{font-size: var(--CoreX-Max-font-size); border-radius: 40px;}

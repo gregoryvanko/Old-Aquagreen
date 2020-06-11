@@ -159,11 +159,16 @@ class PlayZone{
      */
     BuildWorkerStatusVue(WorkerValue, Conteneur){
         if(this._Player == null){
-            this._Player = new Player(Conteneur)
+            this._Player = new Player(Conteneur, this.PlayerAction.bind(this))
             this._Player.Build(WorkerValue)
         } else {
             this._Player.Update(WorkerValue)
         }
+    }
+
+    PlayerAction(Action){
+        alert(Action)
+        // ToDo
     }
 
     /** Get Titre de l'application */

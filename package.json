@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon —inspect exemple.js",
-    "save": "git add -A && git commit -a -m 'auto save' && npm version minor && npm publish && git push"
+    "save": "git add -A && git commit -a -m 'auto save' && npm version minor && npm publish && git push",
+    "prod": "npm --prefix /var/www/NodeJs/Production/Aquagreen update"
   },
   "repository": {
     "type": "git",

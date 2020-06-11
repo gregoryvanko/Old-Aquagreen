@@ -1,9 +1,11 @@
 class Player{
-    constructor(Conteneur){
+    constructor(Conteneur, ActionFct){
         this._Conteneur = Conteneur
+        this._ActionFct = ActionFct
 
         this._WorkerProgressSemiCircle = null
         this._WorkerProgressLine = null
+        this._WorkerInPause = false
     }
 
     Build(WorkerValue){
@@ -21,6 +23,7 @@ class Player{
         let FlexActionBox = CoreXBuild.DivFlexColumn("")
         ActionBox.appendChild(FlexActionBox)
 
+        FlexActionBox.appendChild(CoreXBuild.Div("","","height:5vh;"))
         let divWorkerProgressSemiCircle = CoreXBuild.Div("WorkerProgressSemiCircle", "WorkerProgressSemiCircle","")
         FlexActionBox.appendChild(divWorkerProgressSemiCircle)
         this._WorkerProgressSemiCircle = new ProgressBar.SemiCircle("#WorkerProgressSemiCircle", {
@@ -40,8 +43,9 @@ class Player{
         this._WorkerProgressSemiCircle.set(Pourcent/100)
 
         FlexActionBox.appendChild(CoreXBuild.Div("","","height:5vh;"))
+        FlexActionBox.appendChild(CoreXBuild.Div("","","height:5vh;"))
         FlexActionBox.appendChild(CoreXBuild.DivTexte(Minute + "min " + Seconde + "sec", "Timer", "Text", ""))
-
+        FlexActionBox.appendChild(CoreXBuild.Div("","","height:5vh;"))
         let DivStepName = CoreXBuild.DivFlexRowStart("")
         FlexActionBox.appendChild(DivStepName)
         DivStepName.appendChild(CoreXBuild.DivTexte("Step Name: ", "", "Text", "width: 49%; text-align: right;"))
@@ -68,8 +72,8 @@ class Player{
         // Action Button
         let DivContentButton = CoreXBuild.DivFlexRowAr("DivContentButton")
         FlexActionBox.appendChild(DivContentButton)
-        DivContentButton.appendChild(CoreXBuild.Button("&#9612 &#9612", this.Pause.bind(this),"Button ActionSmallWidth"))
-        DivContentButton.appendChild(CoreXBuild.Button("&#9632", this.Stop.bind(this),"Button ActionSmallWidth"))
+        DivContentButton.appendChild(CoreXBuild.Button("&#10073 &#10073", this.PlayPause.bind(this),"Button ActionSmallWidth", "PlayPause"))
+        DivContentButton.appendChild(CoreXBuild.Button("&#9726", this.Stop.bind(this),"Button ActionSmallWidth"))
     }
 
     Update(WorkerValue){
@@ -90,11 +94,19 @@ class Player{
         document.getElementById("Stepprogress").innerHTML= WorkerValue.ZoneNumberCurrent + "/" + WorkerValue.ZoneNumberTotal
     }
 
-    Pause(){
-        alert("ToDo")
+    PlayPause(){
+        if (this._WorkerInPause){
+            this._WorkerInPause = false
+            document.getElementById("PlayPause").innerHTML = "&#10073 &#10073"
+            this._ActionFct("Play")
+        } else {
+            this._WorkerInPause = true
+            document.getElementById("PlayPause").innerHTML = "&#9658"
+            this._ActionFct("Pause")
+        }
     }
 
     Stop(){
-        alert("ToDo")
+        this._ActionFct("Stop")
     }
 }

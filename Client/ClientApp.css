@@ -9,7 +9,7 @@
 /* Sous Titre */
 .SousTitre{
     margin: 1%;
-    font-size: 2vw;
+    font-size: 3vw;
     color: var(--CoreX-color);
 }
 /* Texte */
@@ -66,10 +66,28 @@
 }
 /* Drop Down */
 .DorpDown{
+    text-align-last:center; 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
     background: transparent;
     margin: 2%;
-    padding: 1vh;
+    padding: 1.4vh;
     border-radius: 15px;
+
+    background-image:
+      linear-gradient(45deg, transparent 50%, gray 50%),
+      linear-gradient(135deg, gray 50%, transparent 50%),
+      linear-gradient(to right, #ccc, #ccc);
+    background-position:
+      calc(100% - 20px) calc(1em + 2px),
+      calc(100% - 15px) calc(1em + 2px),
+      calc(100% - 2.5em) 0.5em;
+    background-size:
+      5px 5px,
+      5px 5px,
+      1px 1.5em;
+    background-repeat: no-repeat;
 }
 .DorpDown:focus {
     outline: 0;
@@ -79,6 +97,7 @@
     border-color: var(--CoreX-color);
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.7);
 }
+
 /* Action Box */
 .ActionBox{
     border: 1px solid var(--CoreX-color);
@@ -121,10 +140,11 @@ only screen and (min-device-width: 414px) and (max-device-width: 736px) and (-we
 screen and (max-width: 700px)
 {
     .Titre{font-size: var(--CoreX-TitreIphone-font-size);}
-    .SousTitre{font-size: 5vw;}
+    .SousTitre{font-size: 6vw;}
     .Text{font-size: var(--CoreX-Iphone-font-size);}
     .Button{font-size: var(--CoreX-Iphone-font-size); border-radius: 40px;}
     .Input {font-size: var(--CoreX-Iphone-font-size);}
+    .DorpDown{padding: 1.2vh;}
     .ActionBox{width: 90%;}
     .PlayerBox{width: 80%;}
     .ActionWidth {width: 90%;}
@@ -135,7 +155,7 @@ screen and (max-width: 700px)
 @media screen and (min-width: 1200px)
 {
     .Titre{font-size: var(--CoreX-TitreMax-font-size);}
-    .SousTitre{font-size: 24px;}
+    .SousTitre{font-size: 35px;}
     .Text{font-size: var(--CoreX-Max-font-size);}
     .Button{font-size: var(--CoreX-Max-font-size); border-radius: 40px;}
     .Input {font-size: var(--CoreX-Max-font-size);}

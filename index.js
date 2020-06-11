@@ -29,7 +29,7 @@ class Aquagreen {
         const CSS= {
             FontSize:{
                 TexteNomrale:"1.5vw",       //--CoreX-font-size
-                TexteIphone:"3vw",          //--CoreX-Iphone-font-size
+                TexteIphone:"4.5vw",          //--CoreX-Iphone-font-size
                 TexteMax:"18px",            //--CoreX-Max-font-size
                 TitreNormale:"4vw",         //--CoreX-Titrefont-size
                 TitreIphone:"7vw",          //--CoreX-TitreIphone-font-size
