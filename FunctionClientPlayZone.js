@@ -24,6 +24,9 @@ class FunctionClientPlayZone{
             case "PlayWorker":
                 this.CommandeStartWorker(Data.Value)
                 break
+            case "ActionWorker":
+                this.CommandeActionWorker(Data.Value, Socket)
+                break
             default:
                 this._MyApp.LogAppliInfo(`ApiPlayZone error, Action ${Data.Action} not found`)
                 Socket.emit("Error", `ApiPlayZone error, Action ${Data.Action} not found`)
@@ -62,6 +65,10 @@ class FunctionClientPlayZone{
      */
     CommandeStartWorker(WorkerConfigList){
         this._Worker.StartWorking(WorkerConfigList)
+    }
+
+    CommandeActionWorker(Action, Socket){
+        console.log(Action)
     }
     
 }

@@ -167,8 +167,8 @@ class PlayZone{
     }
 
     PlayerAction(Action){
-        alert(Action)
-        // ToDo
+        // Send Action to serveur
+        GlobalSendSocketIo("PlayZone", "ActionWorker", Action)
     }
 
     /** Get Titre de l'application */
