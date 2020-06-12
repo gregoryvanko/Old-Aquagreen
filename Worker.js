@@ -14,6 +14,8 @@ class Worker {
         this._Status.ZoneNumberTotal = 0
         this._Status.ZoneNumberCurrent = 0
 
+        this._CurrentZoneName = ""
+        this._CurrentZoneStatus = ""
         this._ListOfActions = new Array()
         this._WorkerInterval = null
 
@@ -126,21 +128,29 @@ class Worker {
                     // ToDo Set GPIO => 0
                     this._Status.ZoneName = "Stop " + this._ListOfActions[0].ZoneName
                 }
+                this._CurrentZoneName = this._ListOfActions[0].ZoneName
+                this._CurrentZoneStatus = this._ListOfActions[0].Type
                 this._Status.ZoneStepTotal = this._ListOfActions[0].Delay
                 this._Status.ZoneStepCurrent = 0
                 this._ListOfActions.shift()
             }
         }
         if (this._Status.StepCurrent > this._Status.StepTotal){
-            this.StopWorker()
+            // On stop le worker en emettant un message Stop aux sockets
+            this.InitWorkerStatus()
+            let Io = this._MyApp.Io
+            Io.emit("WorkerStopped", "")
         } else {
             let Io = this._MyApp.Io
             Io.emit("BuildWorkerStatusVue", this._Status)
         }
     }
 
-    StopWorker(){
-        clearInterval(this._WorkerInterval)
+    InitWorkerStatus(){
+        if (this._WorkerInterval != null){
+            clearInterval(this._WorkerInterval)
+            this._WorkerInterval = null
+        }
         this._Status.IsRunning = false
         this._Status.WorkerConfigList = null
         this._Status.StepTotal = 0
@@ -151,8 +161,42 @@ class Worker {
         this._Status.ZoneStepCurrent = 0
         this._Status.ZoneNumberTotal = 0
         this._Status.ZoneNumberCurrent = 0
-        let Io = this._MyApp.Io
-        Io.emit("WorkerStopped", "")
+        this._ListOfActions = new Array()
+
+        this._CurrentZoneName = ""
+        this._CurrentZoneStatus = ""
+    }
+
+    CommandePlay(){
+        this._WorkerInterval = setInterval(this.UpdateWorkerStatus.bind(this), 1000)
+        this._Status.ZoneName = this._CurrentZoneStatus + " " + this._CurrentZoneName
+        if (this._CurrentZoneStatus == "Start"){
+            // ToDo Set GPIO => 1 de this._CurrentZoneName
+            console.log("GPIO => 1")
+        }
+        this._MyApp.Io.emit("BuildWorkerStatusVue", this._Status)
+    }
+
+    CommandePause(){
+        if (this._WorkerInterval != null){
+            clearInterval(this._WorkerInterval)
+            this._WorkerInterval = null
+            this._Status.ZoneName = "Pause " + this._CurrentZoneName
+            if (this._CurrentZoneStatus == "Start"){
+                // ToDo Set GPIO => 0 de this._CurrentZoneName
+                console.log("GPIO => 0")
+            }
+            this._MyApp.Io.emit("BuildWorkerStatusVue", this._Status)
+        }
+    }
+
+    CommandeStop(){
+        if (this._CurrentZoneStatus == "Start"){
+            // ToDo Set GPIO => 0 de this._CurrentZoneName
+            console.log("GPIO => 0")
+        }
+        this.InitWorkerStatus()
+        this._MyApp.Io.emit("WorkerStopped", "")
     }
 
 }

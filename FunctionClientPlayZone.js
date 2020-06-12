@@ -10,7 +10,6 @@ class FunctionClientPlayZone{
         this._MongoConfigCollection = MongoConfig.ConfigCollection
     }
     
-
     /**
      * socket API de la page Client PlayZone
      * @param {Object} Data {Action, Value} Object de parametre de l'API
@@ -67,8 +66,27 @@ class FunctionClientPlayZone{
         this._Worker.StartWorking(WorkerConfigList)
     }
 
+    /**
+     * Reception de la commande (play, pause, stop) d'un worker
+     * @param {String} Action Action recue du worker (play, pause, stop)
+     * @param {Socket} Socket Socket qui a emit l'action
+     */
     CommandeActionWorker(Action, Socket){
-        console.log(Action)
+        switch (Action) {
+            case "Play":
+                this._Worker.CommandePlay()
+                break
+            case "Pause":
+                this._Worker.CommandePause()
+                break
+            case "Stop":
+                this._Worker.CommandeStop()
+                break
+            default:
+                this._MyApp.LogAppliInfo(`CommandeActionWorker error, Action ${Action} not found`)
+                Socket.emit("Error", `CommandeActionWorker error, Action ${Action} not found`)
+                break
+        }
     }
     
 }
