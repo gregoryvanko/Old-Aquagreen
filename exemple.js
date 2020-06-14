@@ -4,8 +4,8 @@ const Port = 5000
 const Debug = true
 //const RpiGpioAdress = "http://192.168.30.10:3000/api"
 const RpiGpioAdress = "http://192.168.10.21:3000/api"
-const UseWorker = false
-let MyApp = new Aquagreen(Name, Port, Debug, RpiGpioAdress, UseWorker)
+const UseRpiGpio = false
+let MyApp = new Aquagreen(Name, Port, Debug, RpiGpioAdress, UseRpiGpio)
 MyApp.Start()
 
 
