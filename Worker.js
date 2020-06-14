@@ -20,7 +20,7 @@ class Worker {
         this._ListOfActions = new Array()
         this._WorkerInterval = null
 
-        // Varaible interne MongoDB
+        // MongoDB
         let MongoR = require('@gregvanko/corex').Mongo
         this._Mongo = new MongoR(this._MyApp.MongoUrl ,this._MyApp.AppName)
         let MongoConfig = require("./MongoConfig.json")

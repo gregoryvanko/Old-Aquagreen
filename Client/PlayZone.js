@@ -4,6 +4,7 @@ class PlayZone{
         this._GpioConfig = null
         this._Player = null
     }
+
     /** Start de l'application */
     Start(){
         // Clear view
@@ -40,6 +41,7 @@ class PlayZone{
         // Send status to serveur
         GlobalSendSocketIo("PlayZone", "Start", "")
     }
+    
     /** Clear view */
     ClearView(){
         // Global action

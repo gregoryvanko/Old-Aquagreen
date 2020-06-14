@@ -1,7 +1,10 @@
 class FunctionClientPlayZone{
-    constructor(MyApp, Worker){
+    constructor(MyApp, RpiGpioAdress, Worker){
         this._MyApp = MyApp
+        this._RpiGpioAdress = RpiGpioAdress
         this._Worker = Worker
+
+        this._UseWorker = false // aide pour debugger si le worker n'est pas present
 
         // Varaible interne MongoDB
         let MongoR = require('@gregvanko/corex').Mongo
@@ -38,6 +41,32 @@ class FunctionClientPlayZone{
      * @param {SocketIo} Socket Client socket
      */
     CommandeStartClientVue(Socket){
+        if (this._UseWorker){
+            // On ping le worker pour vérifier sa présence
+            let me = this
+            const axios = require('axios')
+            axios.post(this._RpiGpioAdress, {FctName:"ping", FctData:""}).then(res => {
+                if (res.data.Error){
+                    me._MyApp.LogAppliError("CommandeStartClientVue ping res error : " + res.data.ErrorMsg)
+                    Socket.emit("Error", "Worker ping error: " + res.data.ErrorMsg)
+                } else {
+                    this.StartClientVue(Socket)
+                }
+            }).catch(error => {
+                me._MyApp.LogAppliError("CommandeStartClientVue ping Worker error : " + error)
+                Socket.emit("Error", "Worker not connected")
+            })
+        } else {
+            this.StartClientVue(Socket)
+        }
+        
+    }
+
+    /**
+     * Start du choix de la vue client
+     * @param {SocketIo} Socket Client socket
+     */
+    StartClientVue(Socket){
         if(this._Worker.Status.IsRunning){
             Socket.emit("BuildWorkerStatusVue", this._Worker.Status)
         } else {
@@ -52,8 +81,8 @@ class FunctionClientPlayZone{
                     Socket.emit("BuildPlayZoneVue", reponse[0][this._MongoConfigCollection.Value])
                 }
             },(erreur)=>{
-                me._MyApp.LogAppliError("ApiWork GetConfig DB error : " + erreur)
-                Socket.emit("Error", "StartClientVue GetConfig DB Error")
+                me._MyApp.LogAppliError("CommandeStartClientVue GetConfig DB error : " + erreur)
+                Socket.emit("Error", "CommandeStartClientVue GetConfig DB Error")
             })
         }
     }
