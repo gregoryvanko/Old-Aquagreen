@@ -14,7 +14,7 @@ class Aquagreen {
         this._RpiGpioAdress = RpiGpioAdress
 
         let WorkerR = require('./Worker').Worker
-        this._Worker = new WorkerR(this._MyApp)
+        this._Worker = new WorkerR(this._MyApp, this._RpiGpioAdress)
 
         let FunctionClientPlayZoneR = require('./FunctionClientPlayZone').FunctionClientPlayZone
         this._FunctionClientPlayZone = new FunctionClientPlayZoneR(this._MyApp, this._Worker)
