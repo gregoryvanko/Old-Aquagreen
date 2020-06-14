@@ -4,6 +4,12 @@ const Port = 5000
 const Debug = true
 //const RpiGpioAdress = "http://192.168.30.10:3000/api"
 const RpiGpioAdress = "http://192.168.10.21:3000/api"
+const UseWorker = false
+let MyApp = new Aquagreen(Name, Port, Debug, RpiGpioAdress, UseWorker)
+MyApp.Start()
+
+
+
 // const PinConfig = [
 //     {"pin":2, "type": "Relais", "name": "Relais1", "status": "high", "activelow" : true, "timeout": 10},
 //     {"pin":3, "type": "Relais", "name": "Relais2", "status": "high", "activelow" : true, "timeout": 1},
@@ -15,5 +21,3 @@ const RpiGpioAdress = "http://192.168.10.21:3000/api"
 //     {"pin":9, "type": "Relais", "name": "Relais8", "status": "high", "activelow" : true, "timeout": 1},
 //     {"pin":7, "type": "Button", "name": "Button1", "status": "rising", "debouncetimeout" : 500}
 // ]
-let MyApp = new Aquagreen(Name, Port, Debug, RpiGpioAdress)
-MyApp.Start()

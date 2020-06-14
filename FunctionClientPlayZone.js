@@ -1,10 +1,10 @@
 class FunctionClientPlayZone{
-    constructor(MyApp, RpiGpioAdress, Worker){
+    constructor(MyApp, RpiGpioAdress, Worker, UseWorker){
         this._MyApp = MyApp
         this._RpiGpioAdress = RpiGpioAdress
         this._Worker = Worker
 
-        this._UseWorker = false // aide pour debugger si le worker n'est pas present
+        this._UseWorker = UseWorker // aide pour debugger si le worker n'est pas present
 
         // Varaible interne MongoDB
         let MongoR = require('@gregvanko/corex').Mongo

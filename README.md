@@ -14,6 +14,7 @@ let Aquagreen = require('@gregvanko/aquagreen').Aquagreen
 const Name = "Aquagreen"
 const Port = 9002
 const Debug = true
-let MyApp = new Aquagreen(Name, Port, Debug)
+const UseWorker = false
+let MyApp = new Aquagreen(Name, Port, Debug, UseWorker)
 MyApp.Start()
 ```

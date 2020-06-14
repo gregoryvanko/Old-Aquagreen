@@ -1,5 +1,5 @@
 class Aquagreen {
-    constructor(Name = "AppName", Port = 4000, Debug = true, RpiGpioAdress = null){
+    constructor(Name = "AppName", Port = 4000, Debug = true, RpiGpioAdress = null, UseWorker = false){
         // Creation de l'application CoreX
         let corex = require('@gregvanko/corex').corex
         this._OptionApplication = {
@@ -12,12 +12,13 @@ class Aquagreen {
         // Variable interne
         this._Debug = Debug
         this._RpiGpioAdress = RpiGpioAdress
+        this._UseWorker = UseWorker
 
         let WorkerR = require('./Worker').Worker
         this._Worker = new WorkerR(this._MyApp, this._RpiGpioAdress)
 
         let FunctionClientPlayZoneR = require('./FunctionClientPlayZone').FunctionClientPlayZone
-        this._FunctionClientPlayZone = new FunctionClientPlayZoneR(this._MyApp, this._RpiGpioAdress, this._Worker)
+        this._FunctionClientPlayZone = new FunctionClientPlayZoneR(this._MyApp, this._RpiGpioAdress, this._Worker, this._UseWorker )
 
         let FunctionAdminGpioR = require('./FunctionAdminGpio').FunctionAdminGpio
         this._FunctionAdminGpio = new FunctionAdminGpioR(this._MyApp, this._RpiGpioAdress, this._Worker)
