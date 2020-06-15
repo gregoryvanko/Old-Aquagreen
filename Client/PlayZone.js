@@ -9,33 +9,29 @@ class PlayZone{
     Start(){
         // Clear view
         this.ClearView()
-        // Conteneur pour la liste
+        // espace vide au dessus du conteneur
         this._DivApp.appendChild(CoreXBuild.Div("","","height:10vh;"))
+        // Conteneur de la page
         let Conteneur = CoreXBuild.DivFlexColumn("Conteneur")
         this._DivApp.appendChild(Conteneur)
         // on construit le texte d'attente
-        this._DivApp.appendChild(CoreXBuild.DivTexte("Wainting server data...","TxtPlayZone","Text", "text-align: center;"))
+        this._DivApp.appendChild(CoreXBuild.DivTexte("Waiting server data...","TxtPlayZone","Text", "text-align: center;"))
         // on construit le texte du message d'erreur
         this._DivApp.appendChild(CoreXBuild.DivTexte("","ErrorPlayZone","Text","color:red; text-align: center;"))
 
         // SocketIo Listener
         let SocketIo = GlobalGetSocketIo()
-        SocketIo.on('Error', (Value) => {
+        SocketIo.on('PlayZoneError', (Value) => {
             this.Error(Value)
         })
         SocketIo.on('BuildPlayZoneVue', (Value) => {
             this._GpioConfig = Value
             this.BuildPlayZoneVue(Conteneur)
         })
-        SocketIo.on('BuildWorkerStatusVue', (Value) => {
-            this.BuildWorkerStatusVue(Value, Conteneur)
-        })
-        SocketIo.on('WorkerStopped', () => {
-            Conteneur.innerHTML =""
+        SocketIo.on('BuildPlayerVue', (Value) => {
             document.getElementById("TxtPlayZone").innerHTML = ""
-            document.getElementById("ErrorPlayZone").innerHTML = ""
-            // Send status to serveur
-            GlobalSendSocketIo("PlayZone", "Start", "")
+            this._Player = new Player(Conteneur,this.BuildPlayZoneVue.bind(this, Conteneur))
+            this._Player.Build(Value)
         })
 
         // Send status to serveur
@@ -152,25 +148,6 @@ class PlayZone{
         document.getElementById("Conteneur").innerHTML = ""
         document.getElementById("TxtPlayZone").innerHTML = "Command send to server..."
         document.getElementById("ErrorPlayZone").innerHTML = ""
-    }
-
-    /**
-     * Construit la vue permettant de visualiser le statu du worker actuel
-     * @param {string} WorkerValue Statu du worker
-     * @param {HtmlElement} Conteneur Html Element Conteneur de la vue
-     */
-    BuildWorkerStatusVue(WorkerValue, Conteneur){
-        if(this._Player == null){
-            this._Player = new Player(Conteneur, this.PlayerAction.bind(this))
-            this._Player.Build(WorkerValue)
-        } else {
-            this._Player.Update(WorkerValue)
-        }
-    }
-
-    PlayerAction(Action){
-        // Send Action to serveur
-        GlobalSendSocketIo("PlayZone", "ActionWorker", Action)
     }
 
     /** Get Titre de l'application */

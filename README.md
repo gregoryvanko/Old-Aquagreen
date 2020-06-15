@@ -14,7 +14,8 @@ let Aquagreen = require('@gregvanko/aquagreen').Aquagreen
 const Name = "Aquagreen"
 const Port = 9002
 const Debug = true
-const UseWorker = false
-let MyApp = new Aquagreen(Name, Port, Debug, UseWorker)
+const RpiGpioAdress = "http://192.168.30.10:3000/api"
+const UseRpiGpio = true
+let MyApp = new Aquagreen(Name, Port, Debug, RpiGpioAdress, UseRpiGpio)
 MyApp.Start()
 ```

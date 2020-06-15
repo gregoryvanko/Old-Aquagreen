@@ -1,11 +1,27 @@
 class Player{
-    constructor(Conteneur, ActionFct){
+    constructor(Conteneur, StopPlayer){
         this._Conteneur = Conteneur
-        this._ActionFct = ActionFct
+        this._StopPlayer = StopPlayer
 
         this._WorkerProgressSemiCircle = null
         this._WorkerProgressLine = null
         this._WorkerInPause = false
+
+        // SocketIo Listener
+        let SocketIo = GlobalGetSocketIo()
+        SocketIo.on('PlayerError', (Value) => {
+            document.getElementById("ErrorPlayer").innerHTML = Value
+        })
+        SocketIo.on('PlayerUpdate', (Value) => {
+            this.Update(Value)
+        })
+        SocketIo.on('PlayerStop', (Value) => {
+            this._WorkerProgressSemiCircle.destroy()
+            this._WorkerProgressLine.destroy()
+            this._WorkerProgressSemiCircle = null
+            this._WorkerProgressLine = null
+            this._StopPlayer()
+        })
     }
 
     Build(WorkerValue){
@@ -15,9 +31,6 @@ class Player{
         let Seconde = WorkerValue.TotalSecond - (Minute * 60)
 
         this._Conteneur.innerHTML = ""
-        document.getElementById("TxtPlayZone").innerHTML = ""
-        document.getElementById("ErrorPlayZone").innerHTML = ""
-
         let ActionBox = CoreXBuild.Div("","PlayerBox")
         this._Conteneur.appendChild(ActionBox)
         let FlexActionBox = CoreXBuild.DivFlexColumn("")
@@ -69,6 +82,8 @@ class Player{
         FlexActionBox.appendChild(DivStepprogress)
         DivStepprogress.appendChild(CoreXBuild.DivTexte("Step progress: ", "", "Text", "width: 49%; text-align: right;"))
         DivStepprogress.appendChild(CoreXBuild.DivTexte(WorkerValue.ZoneNumberCurrent + "/" + WorkerValue.ZoneNumberTotal, "Stepprogress", "Text", "text-align: left;"))
+        // Erreur
+        FlexActionBox.appendChild(CoreXBuild.DivTexte("","ErrorPlayer","Text","color:red; text-align: center; height:5vh;"))
         // Action Button
         let DivContentButton = CoreXBuild.DivFlexRowAr("DivContentButton")
         FlexActionBox.appendChild(DivContentButton)
@@ -77,11 +92,17 @@ class Player{
     }
 
     Update(WorkerValue){
-        let Pourcent = Math.floor((WorkerValue.StepCurrent/WorkerValue.StepTotal)*100)
-        let PourcentZone = Math.floor((WorkerValue.ZoneStepCurrent/WorkerValue.ZoneStepTotal)*100)
-        let Minute = Math.floor(WorkerValue.TotalSecond/60)
-        let Seconde = WorkerValue.TotalSecond - (Minute * 60)
-
+        let Pourcent = 0
+        let PourcentZone = 0
+        let Minute = 0
+        let Seconde = 0
+        if (WorkerValue.IsRunning){
+            Pourcent = Math.floor((WorkerValue.StepCurrent/WorkerValue.StepTotal)*100)
+            PourcentZone = Math.floor((WorkerValue.ZoneStepCurrent/WorkerValue.ZoneStepTotal)*100)
+            Minute = Math.floor(WorkerValue.TotalSecond/60)
+            Seconde = WorkerValue.TotalSecond - (Minute * 60)
+        }
+        
         this._WorkerProgressSemiCircle.setText(Pourcent + "%")
         this._WorkerProgressSemiCircle.animate(Pourcent/100)
         if (PourcentZone == 0){
@@ -98,15 +119,15 @@ class Player{
         if (this._WorkerInPause){
             this._WorkerInPause = false
             document.getElementById("PlayPause").innerHTML = "&#10073 &#10073"
-            this._ActionFct("Play")
+            GlobalSendSocketIo("Player", "Action", "Play")
         } else {
             this._WorkerInPause = true
             document.getElementById("PlayPause").innerHTML = "&#9658"
-            this._ActionFct("Pause")
+            GlobalSendSocketIo("Player", "Action", "Pause")
         }
     }
 
     Stop(){
-        this._ActionFct("Stop")
+        GlobalSendSocketIo("Player", "Action", "Stop")
     }
 }

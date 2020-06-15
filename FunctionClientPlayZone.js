@@ -24,14 +24,11 @@ class FunctionClientPlayZone{
                 this.CommandeStartClientVue(Socket)
                 break
             case "PlayWorker":
-                this.CommandeStartWorker(Data.Value)
-                break
-            case "ActionWorker":
-                this.CommandeActionWorker(Data.Value, Socket)
+                this._Worker.StartWorking(Data.Value)
                 break
             default:
                 this._MyApp.LogAppliInfo(`ApiPlayZone error, Action ${Data.Action} not found`)
-                Socket.emit("Error", `ApiPlayZone error, Action ${Data.Action} not found`)
+                Socket.emit("PlayZoneError", `ApiPlayZone error, Action ${Data.Action} not found`)
                 break
         }
     }
@@ -48,13 +45,13 @@ class FunctionClientPlayZone{
             axios.post(this._RpiGpioAdress, {FctName:"ping", FctData:""}).then(res => {
                 if (res.data.Error){
                     me._MyApp.LogAppliError("CommandeStartClientVue ping res error : " + res.data.ErrorMsg)
-                    Socket.emit("Error", "Worker ping error: " + res.data.ErrorMsg)
+                    Socket.emit("PlayZoneError", "Worker ping error: " + res.data.ErrorMsg)
                 } else {
                     this.StartClientVue(Socket)
                 }
             }).catch(error => {
                 me._MyApp.LogAppliError("CommandeStartClientVue ping Worker error : " + error)
-                Socket.emit("Error", "Worker not connected")
+                Socket.emit("PlayZoneError", "Worker not connected")
             })
         } else {
             this.StartClientVue(Socket)
@@ -68,7 +65,7 @@ class FunctionClientPlayZone{
      */
     StartClientVue(Socket){
         if(this._Worker.Status.IsRunning){
-            Socket.emit("BuildWorkerStatusVue", this._Worker.Status)
+            Socket.emit("BuildPlayerVue", this._Worker.Status)
         } else {
             // Send Gpio Config from DB
             let me = this
@@ -82,39 +79,8 @@ class FunctionClientPlayZone{
                 }
             },(erreur)=>{
                 me._MyApp.LogAppliError("CommandeStartClientVue GetConfig DB error : " + erreur)
-                Socket.emit("Error", "CommandeStartClientVue GetConfig DB Error")
+                Socket.emit("PlayZoneError", "CommandeStartClientVue GetConfig DB Error")
             })
-        }
-    }
-
-    /**
-     * Commande recue du client lorsqu'il veux activer une Zone pendant un Delay
-     * @param {Object} WorkerConfigList Liste des object de configuration du worker
-     */
-    CommandeStartWorker(WorkerConfigList){
-        this._Worker.StartWorking(WorkerConfigList)
-    }
-
-    /**
-     * Reception de la commande (play, pause, stop) d'un worker
-     * @param {String} Action Action recue du worker (play, pause, stop)
-     * @param {Socket} Socket Socket qui a emit l'action
-     */
-    CommandeActionWorker(Action, Socket){
-        switch (Action) {
-            case "Play":
-                this._Worker.CommandePlay()
-                break
-            case "Pause":
-                this._Worker.CommandePause()
-                break
-            case "Stop":
-                this._Worker.CommandeStop()
-                break
-            default:
-                this._MyApp.LogAppliInfo(`CommandeActionWorker error, Action ${Action} not found`)
-                Socket.emit("Error", `CommandeActionWorker error, Action ${Action} not found`)
-                break
         }
     }
     

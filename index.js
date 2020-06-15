@@ -15,10 +15,13 @@ class Aquagreen {
         this._UseWorker = UseWorker
 
         let WorkerR = require('./Worker').Worker
-        this._Worker = new WorkerR(this._MyApp, this._RpiGpioAdress)
+        this._Worker = new WorkerR(this._MyApp, this._RpiGpioAdress, this._UseWorker)
 
         let FunctionClientPlayZoneR = require('./FunctionClientPlayZone').FunctionClientPlayZone
         this._FunctionClientPlayZone = new FunctionClientPlayZoneR(this._MyApp, this._RpiGpioAdress, this._Worker, this._UseWorker )
+
+        let FunctionClientPlayerR = require('./FunctionClientPlayer').FunctionClientPlayer
+        this._FunctionClientPlayer = new FunctionClientPlayerR(this._MyApp, this._RpiGpioAdress, this._Worker, this._UseWorker )
 
         let FunctionAdminGpioR = require('./FunctionAdminGpio').FunctionAdminGpio
         this._FunctionAdminGpio = new FunctionAdminGpioR(this._MyApp, this._RpiGpioAdress, this._Worker)
@@ -65,6 +68,7 @@ class Aquagreen {
         this._MyApp.AddApiAdminFct("Gpio", this._FunctionAdminGpio.ApiGpio.bind(this._FunctionAdminGpio))
         // SocketIo
         this._MyApp.AddSocketIoFct("PlayZone", this._FunctionClientPlayZone.ApiPlayZone.bind(this._FunctionClientPlayZone))
+        this._MyApp.AddSocketIoFct("Player", this._FunctionClientPlayer.ApiPlayer.bind(this._FunctionClientPlayer))
         // Start App
         this._MyApp.Start()
         // Init de Aquagreen
