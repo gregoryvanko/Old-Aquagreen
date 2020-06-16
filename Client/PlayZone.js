@@ -18,7 +18,6 @@ class PlayZone{
         this._DivApp.appendChild(CoreXBuild.DivTexte("Waiting server data...","TxtPlayZone","Text", "text-align: center;"))
         // on construit le texte du message d'erreur
         this._DivApp.appendChild(CoreXBuild.DivTexte("","ErrorPlayZone","Text","color:red; text-align: center;"))
-
         // SocketIo Listener
         let SocketIo = GlobalGetSocketIo()
         SocketIo.on('PlayZoneError', (Value) => {
@@ -30,21 +29,25 @@ class PlayZone{
         })
         SocketIo.on('BuildPlayerVue', (Value) => {
             document.getElementById("TxtPlayZone").innerHTML = ""
-            this._Player = new Player(Conteneur,this.BuildPlayZoneVue.bind(this, Conteneur))
+            this._Player = new Player(Conteneur,this.Start.bind(this))
             this._Player.Build(Value)
         })
-
         // Send status to serveur
         GlobalSendSocketIo("PlayZone", "Start", "")
     }
     
     /** Clear view */
     ClearView(){
-        // Global action
+        // Clear Global action
         GlobalClearActionList()
         GlobalAddActionInList("Refresh", this.Start.bind(this))
         // Clear view
         this._DivApp.innerHTML=""
+        // Clear socket
+        let SocketIo = GlobalGetSocketIo()
+        if(SocketIo.hasListeners('PlayZoneError')){SocketIo.off('PlayZoneError')}
+        if(SocketIo.hasListeners('BuildPlayZoneVue')){SocketIo.off('BuildPlayZoneVue')}
+        if(SocketIo.hasListeners('BuildPlayerVue')){SocketIo.off('BuildPlayerVue')}
     }
 
     /**
@@ -62,6 +65,7 @@ class PlayZone{
      * @param {HtmlElement} Conteneur Html Element Conteneur de la vue
      */
     BuildPlayZoneVue(Conteneur){
+        delete this._Player
         this._Player = null
         Conteneur.innerHTML =""
         document.getElementById("TxtPlayZone").innerHTML = ""

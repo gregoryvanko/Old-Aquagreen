@@ -77,39 +77,43 @@ class Aquagreen {
 
     InitAquagreeg(){
         // Check if worker is connected for sending config
-        let me = this
-        const axios = require('axios')
-        axios.post(this._RpiGpioAdress, {FctName:"ping", FctData:""}).then(res => {
-            if (res.data.Error == false){
-                // If config exist, send config
-                let MongoR = require('@gregvanko/corex').Mongo
-                let Mongo = new MongoR(this._MyApp.MongoUrl ,this._MyApp.AppName)
-                let MongoConfig = require("./MongoConfig.json")
-                let MongoConfigCollection = MongoConfig.ConfigCollection
-                const Querry = {[MongoConfigCollection.Key]: MongoConfigCollection.GpioConfigKey}
-                const Projection = { projection:{_id: 0, [MongoConfigCollection.Value]: 1}}
-                Mongo.FindPromise(Querry, Projection, MongoConfigCollection.Collection).then((reponse)=>{
-                    if(reponse.length != 0){
-                        let GpioConfig = reponse[0][MongoConfigCollection.Value]
-                        if (this._RpiGpioAdress != null){
-                            axios.post(this._RpiGpioAdress, {FctName:"setconfig", FctData:{config: GpioConfig}}).then(res => {
-                                if (res.data.Error){
-                                    me._MyApp.LogAppliInfo("InitAquagreeg UpdateRpiGpio res error : " + res.data.ErrorMsg)
-                                } else {
-                                    me._MyApp.LogAppliInfo("Config send to the worker")
-                                }
-                            }).catch(error => {
-                                me._MyApp.LogAppliInfo("InitAquagreeg UpdateRpiGpio error : " + error)
-                            })
+        if(this._UseWorker){
+            let me = this
+            const axios = require('axios')
+            axios.post(this._RpiGpioAdress, {FctName:"ping", FctData:""}).then(res => {
+                if (res.data.Error == false){
+                    // If config exist, send config
+                    let MongoR = require('@gregvanko/corex').Mongo
+                    let Mongo = new MongoR(this._MyApp.MongoUrl ,this._MyApp.AppName)
+                    let MongoConfig = require("./MongoConfig.json")
+                    let MongoConfigCollection = MongoConfig.ConfigCollection
+                    const Querry = {[MongoConfigCollection.Key]: MongoConfigCollection.GpioConfigKey}
+                    const Projection = { projection:{_id: 0, [MongoConfigCollection.Value]: 1}}
+                    Mongo.FindPromise(Querry, Projection, MongoConfigCollection.Collection).then((reponse)=>{
+                        if(reponse.length != 0){
+                            let GpioConfig = reponse[0][MongoConfigCollection.Value]
+                            if (this._RpiGpioAdress != null){
+                                axios.post(this._RpiGpioAdress, {FctName:"setconfig", FctData:{config: GpioConfig}}).then(res => {
+                                    if (res.data.Error){
+                                        me._MyApp.LogAppliInfo("InitAquagreeg UpdateRpiGpio res error : " + res.data.ErrorMsg)
+                                    } else {
+                                        me._MyApp.LogAppliInfo("Config send to the worker")
+                                    }
+                                }).catch(error => {
+                                    me._MyApp.LogAppliInfo("InitAquagreeg UpdateRpiGpio error : " + error)
+                                })
+                            }
                         }
-                    }
-                },(erreur)=>{
-                    me._MyApp.LogAppliInfo("InitAquagreeg GetConfig DB error : " + erreur)
-                })
-            }
-        }).catch(error => {
-            me._MyApp.LogAppliInfo("InitAquagreeg ping Worker error : " + error)
-        })
+                    },(erreur)=>{
+                        me._MyApp.LogAppliInfo("InitAquagreeg GetConfig DB error : " + erreur)
+                    })
+                }
+            }).catch(error => {
+                me._MyApp.LogAppliInfo("InitAquagreeg ping Worker error : " + error)
+            })
+        } else {
+            this._MyApp.LogAppliInfo("RpiGpio not used")
+        }
     }
 }
 

@@ -20,6 +20,9 @@ class Player{
             this._WorkerProgressLine.destroy()
             this._WorkerProgressSemiCircle = null
             this._WorkerProgressLine = null
+            SocketIo.off('PlayerError')
+            SocketIo.off('PlayerUpdate')
+            SocketIo.off('PlayerStop')
             this._StopPlayer()
         })
     }
