@@ -5,7 +5,7 @@ class Player{
 
         this._WorkerProgressSemiCircle = null
         this._WorkerProgressLine = null
-        this._WorkerInPause = false
+        this._CurrentZoneAction = ""
 
         // SocketIo Listener
         let SocketIo = GlobalGetSocketIo()
@@ -28,6 +28,7 @@ class Player{
     }
 
     Build(WorkerValue){
+        this._CurrentZoneAction = WorkerValue.ZoneAction
         let Pourcent = Math.floor((WorkerValue.StepCurrent/WorkerValue.StepTotal)*100)
         let PourcentZone = Math.floor((WorkerValue.ZoneStepCurrent/WorkerValue.ZoneStepTotal)*100)
         let Minute = Math.floor(WorkerValue.TotalSecond/60)
@@ -65,7 +66,8 @@ class Player{
         let DivStepName = CoreXBuild.DivFlexRowStart("")
         FlexActionBox.appendChild(DivStepName)
         DivStepName.appendChild(CoreXBuild.DivTexte("Step Name: ", "", "Text", "width: 49%; text-align: right;"))
-        DivStepName.appendChild(CoreXBuild.DivTexte(WorkerValue.ZoneName, "StepName", "Text", "text-align: left;"))
+        let StepNameTxt = WorkerValue.ZoneAction + " " + WorkerValue.ZoneName
+        DivStepName.appendChild(CoreXBuild.DivTexte(StepNameTxt, "StepName", "Text", "text-align: left;"))
         
         let DivProgressLine = CoreXBuild.DivFlexRowStart("")
         FlexActionBox.appendChild(DivProgressLine)
@@ -90,11 +92,13 @@ class Player{
         // Action Button
         let DivContentButton = CoreXBuild.DivFlexRowAr("DivContentButton")
         FlexActionBox.appendChild(DivContentButton)
-        DivContentButton.appendChild(CoreXBuild.Button("&#10073 &#10073", this.PlayPause.bind(this),"Button ActionSmallWidth", "PlayPause"))
+        let PlayPauseTxt = (WorkerValue.ZoneAction == "Pause") ? '&#9658' : '&#10073 &#10073'
+        DivContentButton.appendChild(CoreXBuild.Button(PlayPauseTxt, this.PlayPause.bind(this),"Button ActionSmallWidth", "PlayPause"))
         DivContentButton.appendChild(CoreXBuild.Button("&#9726", this.Stop.bind(this),"Button ActionSmallWidth"))
     }
 
     Update(WorkerValue){
+        this._CurrentZoneAction = WorkerValue.ZoneAction
         let Pourcent = 0
         let PourcentZone = 0
         let Minute = 0
@@ -114,18 +118,23 @@ class Player{
             this._WorkerProgressLine.animate(PourcentZone/100)
         }
         document.getElementById("Timer").innerHTML= Minute + "min " + Seconde + "sec"
-        document.getElementById("StepName").innerHTML= WorkerValue.ZoneName
+        document.getElementById("StepName").innerHTML= WorkerValue.ZoneAction + " " + WorkerValue.ZoneName
         document.getElementById("Stepprogress").innerHTML= WorkerValue.ZoneNumberCurrent + "/" + WorkerValue.ZoneNumberTotal
+        if (WorkerValue.ZoneAction == "Pause"){
+            document.getElementById("PlayPause").innerHTML = "&#9658"
+        } else {
+            document.getElementById("PlayPause").innerHTML = "&#10073 &#10073"
+        }
     }
 
     PlayPause(){
-        if (this._WorkerInPause){
+        if (this._CurrentZoneAction == "Pause"){
             this._WorkerInPause = false
-            document.getElementById("PlayPause").innerHTML = "&#10073 &#10073"
+            //document.getElementById("PlayPause").innerHTML = "&#10073 &#10073"
             GlobalSendSocketIo("Player", "Action", "Play")
         } else {
             this._WorkerInPause = true
-            document.getElementById("PlayPause").innerHTML = "&#9658"
+            //document.getElementById("PlayPause").innerHTML = "&#9658"
             GlobalSendSocketIo("Player", "Action", "Pause")
         }
     }

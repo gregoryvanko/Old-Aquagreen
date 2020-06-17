@@ -11,12 +11,14 @@ class Worker {
         this._Status.StepCurrent = 0
         this._Status.TotalSecond = 0
         this._Status.ZoneName = ""
+        this._Status.ZoneAction = ""
         this._Status.ZoneStepTotal = 0
         this._Status.ZoneStepCurrent = 0
         this._Status.ZoneNumberTotal = 0
         this._Status.ZoneNumberCurrent = 0
 
         this._CurrentZoneName = ""
+        this._CurrentZoneAction = ""
         this._CurrentZoneStatus = ""
         this._ListOfActions = new Array()
         this._WorkerInterval = null
@@ -83,7 +85,7 @@ class Worker {
             let ObjectActionOpen = new Object()
             ObjectActionOpen.Step = TempStep
             ObjectActionOpen.ZoneName = element.ZoneName
-            ObjectActionOpen.Type = "Start"
+            ObjectActionOpen.Type = "Open"
             ObjectActionOpen.Delay = element.Delay * 60
             TempStep = TempStep + (element.Delay * 60)
             this._ListOfActions.push(ObjectActionOpen)
@@ -91,7 +93,7 @@ class Worker {
             let ObjectActionClose = new Object()
             ObjectActionClose.Step = TempStep
             ObjectActionClose.ZoneName = element.ZoneName
-            ObjectActionClose.Type = "Stop"
+            ObjectActionClose.Type = "Close"
             ObjectActionClose.Delay = 5
             TempStep = TempStep + 5
             this._ListOfActions.push(ObjectActionClose)
@@ -101,7 +103,8 @@ class Worker {
         this._Status.StepTotal = TempStep
         this._Status.StepCurrent = 0
         this._Status.TotalSecond = this._Status.StepTotal - this._Status.StepCurrent
-        this._Status.ZoneName = "Start Worker"
+        this._Status.ZoneAction = "Start"
+        this._Status.ZoneName = "Worker"
         this._Status.ZoneStepTotal = 1
         this._Status.ZoneStepCurrent = 0
         this._Status.ZoneNumberTotal = lengthOfWorkerConfigList
@@ -120,7 +123,7 @@ class Worker {
         let me = this
         if (this._ListOfActions.length > 0){
             if (this._Status.StepCurrent >= this._ListOfActions[0].Step){
-                if (this._ListOfActions[0].Type == "Start"){
+                if (this._ListOfActions[0].Type == "Open"){
                     // Set GPIO => 1
                     if (this._UseWorker){
                         const axios = require('axios')
@@ -138,8 +141,8 @@ class Worker {
                     } else {
                         this._MyApp.LogAppliInfo("Setgpio done => 1 " + this._ListOfActions[0].ZoneName)
                     }
-                    
-                    this._Status.ZoneName = "Start " + this._ListOfActions[0].ZoneName
+                    this._Status.ZoneAction = "Open"
+                    this._Status.ZoneName = this._ListOfActions[0].ZoneName
                     this._Status.ZoneNumberCurrent++
                 } else {
                     // Set GPIO => 0
@@ -159,10 +162,11 @@ class Worker {
                     } else {
                         this._MyApp.LogAppliInfo("Setgpio done => 0 " + this._ListOfActions[0].ZoneName)
                     }
-
-                    this._Status.ZoneName = "Stop " + this._ListOfActions[0].ZoneName
+                    this._Status.ZoneAction = "Close"
+                    this._Status.ZoneName = this._ListOfActions[0].ZoneName
                 }
                 this._CurrentZoneName = this._ListOfActions[0].ZoneName
+                this._CurrentZoneAction = this._Status.ZoneAction
                 this._CurrentZoneStatus = this._ListOfActions[0].Type
                 this._Status.ZoneStepTotal = this._ListOfActions[0].Delay
                 this._Status.ZoneStepCurrent = 0
@@ -189,6 +193,7 @@ class Worker {
         this._Status.StepCurrent = 0
         this._Status.TotalSecond = 0
         this._Status.ZoneName = ""
+        this._Status.ZoneAction = ""
         this._Status.ZoneStepTotal = 0
         this._Status.ZoneStepCurrent = 0
         this._Status.ZoneNumberTotal = 0
@@ -196,14 +201,16 @@ class Worker {
         this._ListOfActions = new Array()
 
         this._CurrentZoneName = ""
+        this._CurrentZoneAction = ""
         this._CurrentZoneStatus = ""
     }
 
     CommandePlay(){
         if (this._Status.IsRunning){
             this._WorkerInterval = setInterval(this.UpdateWorkerStatus.bind(this), 1000)
-            this._Status.ZoneName = this._CurrentZoneStatus + " " + this._CurrentZoneName
-            if (this._CurrentZoneStatus == "Start"){
+            this._Status.ZoneAction = this._CurrentZoneStatus 
+            this._Status.ZoneName = this._CurrentZoneName
+            if (this._CurrentZoneStatus == "Open"){
                 // Set GPIO => 1 de this._CurrentZoneName
                 if (this._UseWorker){
                     let me = this
@@ -231,8 +238,9 @@ class Worker {
         if (this._WorkerInterval != null){
             clearInterval(this._WorkerInterval)
             this._WorkerInterval = null
-            this._Status.ZoneName = "Pause " + this._CurrentZoneName
-            if (this._CurrentZoneStatus == "Start"){
+            this._Status.ZoneAction = "Pause"
+            this._Status.ZoneName = this._CurrentZoneName
+            if (this._CurrentZoneStatus == "Open"){
                 // Set GPIO => 0 de this._CurrentZoneName
                 if (this._UseWorker){
                     let me = this
@@ -257,7 +265,7 @@ class Worker {
     }
 
     CommandeStop(){
-        if (this._CurrentZoneStatus == "Start"){
+        if (this._CurrentZoneStatus == "Open"){
             // Set GPIO => 0 de this._CurrentZoneName
             if (this._UseWorker){
                 let me = this
