@@ -127,7 +127,7 @@ class Worker {
                     // Set GPIO => 1
                     if (this._UseWorker){
                         const axios = require('axios')
-                        axios.post(this._RpiGpioAdress, {FctName:"setgpio", FctData:{name: this._ListOfActions[0].ZoneName, value: "1"}}).then(res => {
+                        axios.post(this._RpiGpioAdress, {FctName:"setgpio", FctData:{name: this._ListOfActions[0].ZoneName, value: 1}}).then(res => {
                             if (res.data.Error){
                                 me._MyApp.LogAppliError("UpdateWorkerStatus setgpio res error : " + res.data.ErrorMsg)
                                 me._MyApp.Io.emit("PlayerError", "Setgpio error : " + res.data.ErrorMsg)
@@ -148,7 +148,7 @@ class Worker {
                     // Set GPIO => 0
                     if (this._UseWorker){
                         const axios = require('axios')
-                        axios.post(this._RpiGpioAdress, {FctName:"setgpio", FctData:{name: this._ListOfActions[0].ZoneName, value: "0"}}).then(res => {
+                        axios.post(this._RpiGpioAdress, {FctName:"setgpio", FctData:{name: this._ListOfActions[0].ZoneName, value: 0}}).then(res => {
                             if (res.data.Error){
                                 me._MyApp.LogAppliError("UpdateWorkerStatus setgpio res error : " + res.data.ErrorMsg)
                                 me._MyApp.Io.emit("PlayerError", "Setgpio error : " + res.data.ErrorMsg)
