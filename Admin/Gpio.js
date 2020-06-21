@@ -107,7 +107,7 @@ class Gpio{
         divFlex.appendChild(CoreXBuild.DivTexte(config.name,"","Text", "width: 20%;"))
         let param = ""
         if (config.type == "Relais"){
-            param = "{status:"+config.status+", activeLow:"+config.activeLow+", timeout:"+config.timeout+"m }"
+            param = "{status:"+config.status+", activelow:"+config.activelow+", timeout:"+config.timeout+"m }"
         } else if (config.type == "Button"){
             param = "{status:"+config.status+", debouncetimeout:"+config.debouncetimeout+"ms }"
         }
@@ -154,7 +154,7 @@ class Gpio{
         let GpioNumer = (config == null) ? '' : config.pin
         let RelayName = (config == null) ? '' : config.name
         let RelayStatus = (config == null) ? '' : config.status
-        let RelayActiveLow = (config == null) ? '' : config.activeLow
+        let RelayActiveLow = (config == null) ? '' : config.activelow
         let RelayTimeOut = (config == null) ? '' : config.timeout
         // Gpio Number
         let DivSelectNumber = CoreXBuild.DivFlexRowStart("")
@@ -282,7 +282,7 @@ class Gpio{
             ConfigRelay.type = "Relais"
             ConfigRelay.name = Name
             ConfigRelay.status = Status
-            ConfigRelay.activeLow = ActiveLow
+            ConfigRelay.activelow = ActiveLow
             ConfigRelay.timeout = TimeOut
             if (this._ConfigGpio == null) {this._ConfigGpio = new Array()}
             if (OldConfig == null){
