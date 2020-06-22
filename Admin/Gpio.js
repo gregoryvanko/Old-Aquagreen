@@ -102,16 +102,16 @@ class Gpio{
         conteneur.appendChild(data)
         let divFlex = CoreXBuild.DivFlexRowAr("")
         data.appendChild(divFlex)
-        divFlex.appendChild(CoreXBuild.DivTexte(config.pin,"","Text", "width: 15%; margin-left:1%;"))
-        divFlex.appendChild(CoreXBuild.DivTexte(config.type,"","Text", "width: 15%"))
-        divFlex.appendChild(CoreXBuild.DivTexte(config.name,"","Text", "width: 20%;"))
+        divFlex.appendChild(CoreXBuild.DivTexte(config.pin,"","TextSmall", "width: 15%; margin-left:1%;"))
+        divFlex.appendChild(CoreXBuild.DivTexte(config.type,"","TextSmall", "width: 15%"))
+        divFlex.appendChild(CoreXBuild.DivTexte(config.name,"","TextSmall", "width: 20%;"))
         let param = ""
         if (config.type == "Relais"){
             param = "{status:"+config.status+", activelow:"+config.activelow+", timeout:"+config.timeout+"m }"
         } else if (config.type == "Button"){
             param = "{status:"+config.status+", debouncetimeout:"+config.debouncetimeout+"ms }"
         }
-        divFlex.appendChild(CoreXBuild.DivTexte(param,"","Text", "width: 46%;"))
+        divFlex.appendChild(CoreXBuild.DivTexte(param,"","TextSmall", "width: 46%;"))
         // Ajout d'une ligne
         conteneur.appendChild(CoreXBuild.Line("100%", "Opacity:0.5;"))
         return conteneur

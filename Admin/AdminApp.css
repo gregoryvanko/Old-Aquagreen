@@ -15,6 +15,10 @@
 .Text{
     font-size: var(--CoreX-font-size);
 }
+.TextSmall{
+    font-size: calc(var(--CoreX-font-size)*0.7);
+    word-wrap: break-word;
+}
 /* Texte dans un titre box */
 .TextBoxTitre{
     font-size: calc(var(--CoreX-font-size)*1.1);
@@ -95,6 +99,7 @@ screen and (max-width: 700px)
     .Titre{font-size: var(--CoreX-TitreIphone-font-size);}
     .SousTitre{font-size: 6vw;}
     .Text{font-size: var(--CoreX-Iphone-font-size);}
+    .TextSmall{font-size: calc(var(--CoreX-Iphone-font-size)*0.7);}
     .TextBoxTitre{font-size: calc(var(--CoreX-Iphone-font-size)*1.1);}
     .Button{font-size: var(--CoreX-Iphone-font-size); border-radius: 40px;}
     .InputText{width: 40%;}
@@ -112,6 +117,7 @@ screen and (max-width: 700px)
     .Titre{font-size: var(--CoreX-TitreMax-font-size);}
     .SousTitre{font-size: 35px;}
     .Text{font-size: var(--CoreX-Max-font-size);}
+    .TextSmall{font-size: calc(var(--CoreX-Max-font-size)*0.7);}
     .TextBoxTitre{font-size: calc(var(--CoreX-Max-font-size)*1.1);}
     .Button{font-size: var(--CoreX-Max-font-size); border-radius: 40px;}
     .Input {font-size: var(--CoreX-Max-font-size);}
