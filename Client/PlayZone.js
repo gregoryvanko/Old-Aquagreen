@@ -75,9 +75,13 @@ class PlayZone{
         let FlexActionBox = CoreXBuild.DivFlexColumn("")
         ActionBox.appendChild(FlexActionBox)
         FlexActionBox.appendChild(CoreXBuild.DivTexte("Play a zone", "", "SousTitre", "margin-top:2%"))
-        FlexActionBox.appendChild(this.BuildDropDownZone())
-        FlexActionBox.appendChild(this.BuildDropDownDelay())
-        FlexActionBox.appendChild(CoreXBuild.Button("Start", this.StartZone.bind(this),"Button ActionSmallWidth", "StartButton"))
+        if (this._GpioConfig != null){
+            FlexActionBox.appendChild(this.BuildDropDownZone())
+            FlexActionBox.appendChild(this.BuildDropDownDelay())
+            FlexActionBox.appendChild(CoreXBuild.Button("Start", this.StartZone.bind(this),"Button ActionSmallWidth", "StartButton"))
+        } else {
+            FlexActionBox.appendChild(CoreXBuild.DivTexte("Configuration not defined in DB...", "", "Text", ""))
+        }
     }
 
     /**
@@ -87,6 +91,7 @@ class PlayZone{
         let DropDown = document.createElement("select")
         DropDown.setAttribute("id", "Zone")
         DropDown.setAttribute("class", "Text DorpDown ActionWidth")
+        this._GpioConfig.sort((a,b) =>  a.name.localeCompare(b.name))
         this._GpioConfig.forEach(element => {
             if(element.type == "Relais"){
                 let option = document.createElement("option")
@@ -106,12 +111,15 @@ class PlayZone{
         let DropDown = document.createElement("select")
         DropDown.setAttribute("id", "Delay")
         DropDown.setAttribute("class", "Text DorpDown ActionSmallWidth")
-        let MaxDelay = this._GpioConfig[0].timeout
-        for (let index = 1; index <= MaxDelay; index++){
-            let option = document.createElement("option")
-            option.setAttribute("value", index)
-            option.innerHTML = index
-            DropDown.appendChild(option)
+        let relay = this._GpioConfig.filter((value, index, array) => (value.type == "Relais"))
+        if (relay.length > 0){
+            let MaxDelay = relay[0].timeout
+            for (let index = 1; index <= MaxDelay; index++){
+                let option = document.createElement("option")
+                option.setAttribute("value", index)
+                option.innerHTML = index
+                DropDown.appendChild(option)
+            }
         }
         return DropDown
     }
