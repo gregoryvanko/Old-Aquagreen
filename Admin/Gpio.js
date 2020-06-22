@@ -20,7 +20,7 @@ class Gpio{
         // on construit le texte du message d'erreur
         this._DivApp.appendChild(CoreXBuild.DivTexte("","ErrorGpio","Text","color:red; text-align: center;"))
         // On laisse un blanc avant la fin de la page
-        this._DivApp.appendChild(CoreXBuild.Div("","","margin-bottom: 2%;"))
+        this._DivApp.appendChild(CoreXBuild.Div("","","height:5vh;"))
         // Call API Get Config
         let ApiData = new Object()
         ApiData.Fct = "GetConfig"
@@ -59,10 +59,10 @@ class Gpio{
         // affichier le header du tableau Number - Type - Name - Param
         let BoxTitre = CoreXBuild.DivFlexRowAr("")
         Conteneur.appendChild(BoxTitre)
-        BoxTitre.appendChild(CoreXBuild.DivTexte("Number","","TextBoxTitre", "width: 15%;color: var(--CoreX-color); margin-left:1%;"))
+        BoxTitre.appendChild(CoreXBuild.DivTexte("Nb","","TextBoxTitre", "width: 15%;color: var(--CoreX-color); margin-left:1%;"))
         BoxTitre.appendChild(CoreXBuild.DivTexte("Type","","TextBoxTitre", "width: 15%;color: var(--CoreX-color);"))
         BoxTitre.appendChild(CoreXBuild.DivTexte("Name","","TextBoxTitre", "width: 20%;color: var(--CoreX-color);"))
-        BoxTitre.appendChild(CoreXBuild.DivTexte("Param","","TextBoxTitre", "width: 48%;color: var(--CoreX-color);"))
+        BoxTitre.appendChild(CoreXBuild.DivTexte("Param","","TextBoxTitre", "width: 46%;color: var(--CoreX-color);"))
         // Ajout d'une ligne
         Conteneur.appendChild(CoreXBuild.Line("100%", "Opacity:0.5; margin: 1% 0% 0% 0%;"))
         // Ajout de la configuration
@@ -111,7 +111,7 @@ class Gpio{
         } else if (config.type == "Button"){
             param = "{status:"+config.status+", debouncetimeout:"+config.debouncetimeout+"ms }"
         }
-        divFlex.appendChild(CoreXBuild.DivTexte(param,"","Text", "width: 48%;"))
+        divFlex.appendChild(CoreXBuild.DivTexte(param,"","Text", "width: 46%;"))
         // Ajout d'une ligne
         conteneur.appendChild(CoreXBuild.Line("100%", "Opacity:0.5;"))
         return conteneur
