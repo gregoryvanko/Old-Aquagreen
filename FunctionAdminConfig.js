@@ -1,6 +1,7 @@
 class FunctionAdminConfig{
-    constructor(MyApp){
+    constructor(MyApp, Worker){
         this._MyApp = MyApp
+        this._Worker = Worker
 
         // Varaible interne
         let MongoR = require('@gregvanko/corex').Mongo
@@ -19,8 +20,8 @@ class FunctionAdminConfig{
     ApiConfig(Data, Res, UserId){
         this._MyApp.LogAppliInfo("Call Admin Config + " + JSON.stringify(Data))
         switch (Data.Fct) {
-            case "GetConfigX":
-                //this._Worker.GetConfig(Res)
+            case "GetConfig":
+                this._Worker.GetConfig(Res)
                 break
             default:
                 Res.json({Error: true, ErrorMsg: `ApiConfig error, fct ${Data.Fct} not found`, Data: null})

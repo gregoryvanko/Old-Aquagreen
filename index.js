@@ -27,7 +27,7 @@ class Aquagreen {
         this._FunctionAdminGpio = new FunctionAdminGpioR(this._MyApp, this._RpiGpioAdress, this._Worker)
 
         let FunctionAdminConfigR = require('./FunctionAdminConfig').FunctionAdminConfig
-        this._FunctionAdminConfig = new FunctionAdminConfigR(this._MyApp)
+        this._FunctionAdminConfig = new FunctionAdminConfigR(this._MyApp, this._Worker)
     }
 
     /* Start de l'application */

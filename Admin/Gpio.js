@@ -56,7 +56,7 @@ class Gpio{
         let Conteneur = document.getElementById("Conteneur")
         // Vider le conteneur
         Conteneur.innerHTML = ""
-        // affichier le header du tableau Number - Type - Name - Param
+        // affichier le header du tableau Nb - Type - Name - Param
         let BoxTitre = CoreXBuild.DivFlexRowAr("")
         Conteneur.appendChild(BoxTitre)
         BoxTitre.appendChild(CoreXBuild.DivTexte("Nb","","TextBoxTitre", "width: 15%;color: var(--CoreX-color); margin-left:1%;"))
