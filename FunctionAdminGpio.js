@@ -18,20 +18,21 @@ class FunctionAdminGpio{
      * @param {Res} Res Reponse à la requete de l'API
      * @param {String} UserId UserId de l'user qui a appeler l'API
      */
-    ApiGpio(Data, Res, UserId){
-        this._MyApp.LogAppliInfo("Call Admin ApiGpio + " + JSON.stringify(Data))
+    ApiGpio(Data, Res, User, UserId){
+        this._MyApp.LogAppliInfo("ApiAdmin Gpio Data:" + JSON.stringify(Data), User, UserId)
         switch (Data.Fct) {
             case "GetConfig":
                 this._Worker.GetConfig(Res)
                 break
             case "SetConfig":
-                this.SetConfig(Data.Data, Res)
+                this.SetConfig(Data.Data, Res, User, UserId)
                 break
             case "UpdateRpiGpio":
-                this.UpdateRpiGpio(Res)
+                this.UpdateRpiGpio(Res, User, UserId)
                 break
             default:
-                Res.json({Error: true, ErrorMsg: `ApiGpio error, fct ${Data.Fct} not found`, Data: null})
+                Res.json({Error: true, ErrorMsg: `ApiGpio error, Fct ${Data.Fct} not found`, Data: null})
+                this._MyApp.LogAppliError(`ApiGpio error, Fct ${Data.Fct} not found`, User, UserId)
                 break
         }
     }
@@ -41,7 +42,7 @@ class FunctionAdminGpio{
      * @param {Json} Data Configuration des GPIO
      * @param {Res} Res Reponse à la requete de l'API
      */
-    SetConfig(Data,Res){
+    SetConfig(Data,Res, User, UserId){
         let me = this
         // on vérifie si la configuration existe en DB
         const Querry = {[this._MongoConfigCollection.Key]: this._MongoConfigCollection.GpioConfigKey}
@@ -53,7 +54,7 @@ class FunctionAdminGpio{
                 this._Mongo.InsertOnePromise(DataToMongo, this._MongoConfigCollection.Collection).then((reponseCreation)=>{
                     if (Res != null){Res.json({Error: false, ErrorMsg: null, Data: Data})}
                 },(erreur)=>{
-                    me._MyApp.LogAppliError("ApiGpio SetConfig Post DB error : " + erreur)
+                    me._MyApp.LogAppliError("ApiGpio SetConfig Post DB error : " + erreur, User, UserId)
                     if (Res != null){Res.json({Error: true, ErrorMsg: "ApiGpio SetConfig Post DB error", Data: null})}
                 })
             } else {
@@ -63,18 +64,18 @@ class FunctionAdminGpio{
                 let ConfigId = reponse[0]._id
                 this._Mongo.UpdateByIdPromise(ConfigId, DataToDb, this._MongoConfigCollection.Collection).then((reponse)=>{
                     if (reponse.matchedCount == 0){
-                        me._MyApp.LogAppliError("Update Gpio config error: Id config not found")
+                        me._MyApp.LogAppliError("Update Gpio config error: Id config not found", User, UserId)
                         if (Res != null){Res.json({Error: true, ErrorMsg: "Update Gpio config error: Id config not found", Data: null})}
                     } else {
                         if (Res != null){Res.json({Error: false, ErrorMsg: null, Data: Data})}
                     }
                 },(erreur)=>{
-                    me._MyApp.LogAppliError("ApiGpio SetConfig DB error : " + erreur)
+                    me._MyApp.LogAppliError("ApiGpio SetConfig DB error : " + erreur, User, UserId)
                     if (Res != null){Res.json({Error: true, ErrorMsg: "ApiGpio SetConfig DB error", Data: null})}
                 })
             }
         },(erreur)=>{
-            me._MyApp.LogAppliError("ApiGpio GetConfig DB error : " + erreur)
+            me._MyApp.LogAppliError("ApiGpio GetConfig DB error : " + erreur, User, UserId)
             if (Res != null){Res.json({Error: true, ErrorMsg: "ApiGpio GetConfig DB Error", Data: null})}
         })
     }
@@ -83,7 +84,7 @@ class FunctionAdminGpio{
      * Update the GPIO to the worker
      * @param {Res} Res Reponse à la requete de l'API
      */
-    UpdateRpiGpio(Res){
+    UpdateRpiGpio(Res, User, UserId){
         // Get Gpio Config in DB
         let me = this
         const Querry = {[this._MongoConfigCollection.Key]: this._MongoConfigCollection.GpioConfigKey}
@@ -97,22 +98,22 @@ class FunctionAdminGpio{
                     const axios = require('axios')
                     axios.post(this._RpiGpioAdress, {FctName:"setconfig", FctData:{config: GpioConfig}}).then(res => {
                         if (res.data.Error){
-                            me._MyApp.LogAppliError("ApiGpio UpdateRpiGpio res error : " + res.data.ErrorMsg)
+                            me._MyApp.LogAppliError("ApiGpio UpdateRpiGpio res error : " + res.data.ErrorMsg, User, UserId)
                             Res.json({Error: true, ErrorMsg: res.data.ErrorMsg, Data: null})
                         } else {
                             Res.json({Error: false, ErrorMsg: null, Data: "Configuration updated to the worker"})
                         }
                     }).catch(error => {
-                        me._MyApp.LogAppliError("ApiGpio UpdateRpiGpio error : " + error)
+                        me._MyApp.LogAppliError("ApiGpio UpdateRpiGpio error : " + error, User, UserId)
                         Res.json({Error: true, ErrorMsg: error.stack, Data: null})
                     })
                 } else {
-                    me._MyApp.LogAppliError("ApiGpio UpdateRpiGpio => RpiGpioAdress not defined")
+                    me._MyApp.LogAppliError("ApiGpio UpdateRpiGpio => RpiGpioAdress not defined", User, UserId)
                     Res.json({Error: true, ErrorMsg: "ApiGpio UpdateRpiGpio => RpiGpioAdress not defined", Data: null})
                 }
             }
         },(erreur)=>{
-            me._MyApp.LogAppliError("ApiGpio UpdateRpiGpio DB error : " + erreur)
+            me._MyApp.LogAppliError("ApiGpio UpdateRpiGpio DB error : " + erreur, User, UserId)
             Res.json({Error: true, ErrorMsg: "ApiGpio UpdateRpiGpio DB Error", Data: null})
         })
     }

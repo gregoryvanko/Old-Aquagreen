@@ -17,14 +17,15 @@ class FunctionAdminConfig{
      * @param {Res} Res Reponse à la requete de l'API
      * @param {String} UserId UserId de l'user qui a appeler l'API
      */
-    ApiConfig(Data, Res, UserId){
-        this._MyApp.LogAppliInfo("Call Admin Config + " + JSON.stringify(Data))
+    ApiConfig(Data, Res, User, UserId){
+        this._MyApp.LogAppliInfo("ApiAdmin Config Data:" + JSON.stringify(Data), User, UserId)
         switch (Data.Fct) {
             case "GetConfig":
                 this._Worker.GetConfig(Res)
                 break
             default:
-                Res.json({Error: true, ErrorMsg: `ApiConfig error, fct ${Data.Fct} not found`, Data: null})
+                Res.json({Error: true, ErrorMsg: `ApiConfig error, Fct ${Data.Fct} not found`, Data: null})
+                this._MyApp.LogAppliError(`ApiConfig error, Fct ${Data.Fct} not found`, User, UserId)
                 break
         }
     }

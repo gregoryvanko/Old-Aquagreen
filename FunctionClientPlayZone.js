@@ -17,17 +17,17 @@ class FunctionClientPlayZone{
      * socket API de la page Client PlayZone
      * @param {Object} Data {Action, Value} Object de parametre de l'API
      */
-    ApiPlayZone(Data, Socket){
-        this._MyApp.LogAppliInfo("Call SoketIO ApiPlayZone + " + JSON.stringify(Data))
+    ApiPlayZone(Data, Socket, User, UserId){
+        this._MyApp.LogAppliInfo("Call SoketIO ApiPlayZone Data:" + JSON.stringify(Data), User, UserId)
         switch (Data.Action) {
             case "Start":
-                this.CommandeStartClientVue(Socket)
+                this.CommandeStartClientVue(Socket, User, UserId)
                 break
             case "PlayWorker":
-                this._Worker.StartWorking(Data.Value)
+                this._Worker.StartWorking(Data.Value, User, UserId)
                 break
             default:
-                this._MyApp.LogAppliInfo(`ApiPlayZone error, Action ${Data.Action} not found`)
+                this._MyApp.LogAppliError(`ApiPlayZone error, Action ${Data.Action} not found`, User, UserId)
                 Socket.emit("PlayZoneError", `ApiPlayZone error, Action ${Data.Action} not found`)
                 break
         }
@@ -37,24 +37,24 @@ class FunctionClientPlayZone{
      * Commande recue du client lorsque il ouvre la vue Play Zone
      * @param {SocketIo} Socket Client socket
      */
-    CommandeStartClientVue(Socket){
+    CommandeStartClientVue(Socket, User, UserId){
         if (this._UseWorker){
             // On ping le worker pour vérifier sa présence
             let me = this
             const axios = require('axios')
             axios.post(this._RpiGpioAdress, {FctName:"ping", FctData:""}).then(res => {
                 if (res.data.Error){
-                    me._MyApp.LogAppliError("CommandeStartClientVue ping res error : " + res.data.ErrorMsg)
+                    me._MyApp.LogAppliError("CommandeStartClientVue ping res error : " + res.data.ErrorMsg, User, UserId)
                     Socket.emit("PlayZoneError", "Worker ping error: " + res.data.ErrorMsg)
                 } else {
                     this.StartClientVue(Socket)
                 }
             }).catch(error => {
-                me._MyApp.LogAppliError("CommandeStartClientVue ping Worker error : " + error)
+                me._MyApp.LogAppliError("CommandeStartClientVue ping Worker error : " + error, User, UserId)
                 Socket.emit("PlayZoneError", "Worker not connected")
             })
         } else {
-            this.StartClientVue(Socket)
+            this.StartClientVue(Socket, User, UserId)
         }
         
     }
@@ -63,7 +63,7 @@ class FunctionClientPlayZone{
      * Start du choix de la vue client
      * @param {SocketIo} Socket Client socket
      */
-    StartClientVue(Socket){
+    StartClientVue(Socket, User, UserId){
         if(this._Worker.Status.IsRunning){
             Socket.emit("BuildPlayerVue", this._Worker.Status)
         } else {
@@ -78,7 +78,7 @@ class FunctionClientPlayZone{
                     Socket.emit("BuildPlayZoneVue", reponse[0][this._MongoConfigCollection.Value])
                 }
             },(erreur)=>{
-                me._MyApp.LogAppliError("CommandeStartClientVue GetConfig DB error : " + erreur)
+                me._MyApp.LogAppliError("CommandeStartClientVue GetConfig DB error : " + erreur, User, UserId)
                 Socket.emit("PlayZoneError", "CommandeStartClientVue GetConfig DB Error")
             })
         }

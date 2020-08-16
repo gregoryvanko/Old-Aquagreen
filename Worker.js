@@ -38,17 +38,18 @@ class Worker {
      * @param {Res} Res Reponse à la requete de l'API
      * @param {String} UserId UserId de l'user qui a appeler l'API
      */
-    ApiWork(Data, Res, UserId){
-        this._MyApp.LogAppliInfo("Call ApiWorker + " + JSON.stringify(Data))
+    ApiWork(Data, Res, User, UserId){
+        this._MyApp.LogAppliInfo("Call ApiWorker Data:" + JSON.stringify(Data), User, UserId)
         if (Data.Fct == "ButtonPressed"){
             Res.json({Error: false, ErrorMsg: "Worker", Data: "Worker Started by: " + Data.Name})
             //  ToDo Start Button Fct
         } else if(Data.Fct == "Ping"){
             Res.json({Error: false, ErrorMsg: "Worker", Data: "Pong"})
         } else if(Data.Fct == "GetConfig"){
-            this.GetConfig(Res)
+            this.GetConfig(Res, User, UserId)
         } else {
-            Res.json({Error: true, ErrorMsg: "ApiWorker error, fct not found: " + Data.Fct, Data: null})
+            Res.json({Error: true, ErrorMsg: "ApiWorker error, Fct not found: " + Data.Fct, Data: null})
+            this._MyApp.LogAppliError(`ApiWork error, Fct ${Data.Fct} not found`, User, UserId)
         }
     }
 
@@ -56,7 +57,7 @@ class Worker {
      * Get de la config des GPIO en DB
      * @param {Res} Res Reponse à la requete de l'API
      */
-    GetConfig(Res){
+    GetConfig(Res, User, UserId){
         // Get Gpio Config in DB
         let me = this
         const Querry = {[this._MongoConfigCollection.Key]: this._MongoConfigCollection.GpioConfigKey}
@@ -68,12 +69,12 @@ class Worker {
                 Res.json({Error: false, ErrorMsg: null, Data: reponse[0][this._MongoConfigCollection.Value]})
             }
         },(erreur)=>{
-            me._MyApp.LogAppliError("ApiWork GetConfig DB error : " + erreur)
+            me._MyApp.LogAppliError("ApiWork GetConfig DB error : " + erreur, User, UserId)
             Res.json({Error: true, ErrorMsg: "ApiWork GetConfig DB Error", Data: null})
         })
     }
 
-    StartWorking(WorkerConfigList){
+    StartWorking(WorkerConfigList, User, UserId){
         this._WorkerConfigList = WorkerConfigList
         let lengthOfWorkerConfigList = this._WorkerConfigList.length
 
@@ -113,10 +114,10 @@ class Worker {
         let Io = this._MyApp.Io
         Io.emit("BuildPlayerVue", this._Status)
 
-        this._WorkerInterval = setInterval(this.UpdateWorkerStatus.bind(this), 1000)
+        this._WorkerInterval = setInterval(this.UpdateWorkerStatus.bind(this, User, UserId), 1000)
     }
 
-    UpdateWorkerStatus(){
+    UpdateWorkerStatus(User, UserId){
         this._Status.StepCurrent++
         this._Status.TotalSecond--
         this._Status.ZoneStepCurrent++
@@ -129,17 +130,17 @@ class Worker {
                         const axios = require('axios')
                         axios.post(this._RpiGpioAdress, {FctName:"setgpio", FctData:{name: this._ListOfActions[0].ZoneName, value: 1}}).then(res => {
                             if (res.data.Error){
-                                me._MyApp.LogAppliError("UpdateWorkerStatus setgpio res error : " + res.data.ErrorMsg)
+                                me._MyApp.LogAppliError("UpdateWorkerStatus setgpio res error : " + res.data.ErrorMsg, User, UserId)
                                 me._MyApp.Io.emit("PlayerError", "Setgpio error : " + res.data.ErrorMsg)
                             } else {
-                                me._MyApp.LogAppliInfo("Setgpio done: " + JSON.stringify(res.data.Data))
+                                me._MyApp.LogAppliInfo("Setgpio done: " + JSON.stringify(res.data.Data), User, UserId)
                             }
                         }).catch(error => {
-                            me._MyApp.LogAppliError("UpdateWorkerStatus setgpio error : " + error)
+                            me._MyApp.LogAppliError("UpdateWorkerStatus setgpio error : " + error, User, UserId)
                             me._MyApp.Io.emit("PlayerError", "Setgpio error : " + error)
                         })
                     } else {
-                        this._MyApp.LogAppliInfo("Setgpio done => 1 " + this._ListOfActions[0].ZoneName)
+                        this._MyApp.LogAppliInfo("Setgpio done => 1 " + this._ListOfActions[0].ZoneName, User, UserId)
                     }
                     this._Status.ZoneAction = "Open"
                     this._Status.ZoneName = this._ListOfActions[0].ZoneName
@@ -150,17 +151,17 @@ class Worker {
                         const axios = require('axios')
                         axios.post(this._RpiGpioAdress, {FctName:"setgpio", FctData:{name: this._ListOfActions[0].ZoneName, value: 0}}).then(res => {
                             if (res.data.Error){
-                                me._MyApp.LogAppliError("UpdateWorkerStatus setgpio res error : " + res.data.ErrorMsg)
+                                me._MyApp.LogAppliError("UpdateWorkerStatus setgpio res error : " + res.data.ErrorMsg, User, UserId)
                                 me._MyApp.Io.emit("PlayerError", "Setgpio error : " + res.data.ErrorMsg)
                             } else {
-                                me._MyApp.LogAppliInfo("Setgpio done: " + JSON.stringify(res.data.Data))
+                                me._MyApp.LogAppliInfo("Setgpio done: " + JSON.stringify(res.data.Data), User, UserId)
                             }
                         }).catch(error => {
-                            me._MyApp.LogAppliError("UpdateWorkerStatus setgpio error : " + error)
+                            me._MyApp.LogAppliError("UpdateWorkerStatus setgpio error : " + error, User, UserId)
                             me._MyApp.Io.emit("PlayerError", "Setgpio error : " + error)
                         })
                     } else {
-                        this._MyApp.LogAppliInfo("Setgpio done => 0 " + this._ListOfActions[0].ZoneName)
+                        this._MyApp.LogAppliInfo("Setgpio done => 0 " + this._ListOfActions[0].ZoneName, User, UserId)
                     }
                     this._Status.ZoneAction = "Close"
                     this._Status.ZoneName = this._ListOfActions[0].ZoneName
@@ -205,7 +206,7 @@ class Worker {
         this._CurrentZoneStatus = ""
     }
 
-    CommandePlay(){
+    CommandePlay(User, UserId){
         if (this._Status.IsRunning){
             this._WorkerInterval = setInterval(this.UpdateWorkerStatus.bind(this), 1000)
             this._Status.ZoneAction = this._CurrentZoneStatus 
@@ -217,24 +218,24 @@ class Worker {
                     const axios = require('axios')
                     axios.post(this._RpiGpioAdress, {FctName:"setgpio", FctData:{name: this._CurrentZoneName, value: "1"}}).then(res => {
                         if (res.data.Error){
-                            me._MyApp.LogAppliError("CommandePlay setgpio res error : " + res.data.ErrorMsg)
+                            me._MyApp.LogAppliError("CommandePlay setgpio res error : " + res.data.ErrorMsg, User, UserId)
                             me._MyApp.Io.emit("PlayerError", "Setgpio error : " + res.data.ErrorMsg)
                         } else {
-                            me._MyApp.LogAppliInfo("Setgpio done: " + JSON.stringify(res.data.Data))
+                            me._MyApp.LogAppliInfo("Setgpio done: " + JSON.stringify(res.data.Data), User, UserId)
                         }
                     }).catch(error => {
-                        me._MyApp.LogAppliError("CommandePlay setgpio error : " + error)
+                        me._MyApp.LogAppliError("CommandePlay setgpio error : " + error, User, UserId)
                         me._MyApp.Io.emit("PlayerError", "Setgpio error : " + error)
                     })
                 } else {
-                    this._MyApp.LogAppliInfo("Setgpio done => 1 " + this._CurrentZoneName)
+                    this._MyApp.LogAppliInfo("Setgpio done => 1 " + this._CurrentZoneName, User, UserId)
                 }
             }
         }
         this._MyApp.Io.emit("PlayerUpdate", this._Status)
     }
 
-    CommandePause(){
+    CommandePause(User, UserId){
         if (this._WorkerInterval != null){
             clearInterval(this._WorkerInterval)
             this._WorkerInterval = null
@@ -247,24 +248,24 @@ class Worker {
                     const axios = require('axios')
                     axios.post(this._RpiGpioAdress, {FctName:"setgpio", FctData:{name: this._CurrentZoneName, value: "0"}}).then(res => {
                         if (res.data.Error){
-                            me._MyApp.LogAppliError("CommandePause setgpio res error : " + res.data.ErrorMsg)
+                            me._MyApp.LogAppliError("CommandePause setgpio res error : " + res.data.ErrorMsg, User, UserId)
                             me._MyApp.Io.emit("PlayerError", "Setgpio error : " + res.data.ErrorMsg)
                         } else {
-                            me._MyApp.LogAppliInfo("Setgpio done: " + JSON.stringify(res.data.Data))
+                            me._MyApp.LogAppliInfo("Setgpio done: " + JSON.stringify(res.data.Data), User, UserId)
                         }
                     }).catch(error => {
-                        me._MyApp.LogAppliError("CommandePause setgpio error : " + error)
+                        me._MyApp.LogAppliError("CommandePause setgpio error : " + error, User, UserId)
                         me._MyApp.Io.emit("PlayerError", "Setgpio error : " + error)
                     })
                 } else {
-                    this._MyApp.LogAppliInfo("Setgpio done => 0 " + this._CurrentZoneName)
+                    this._MyApp.LogAppliInfo("Setgpio done => 0 " + this._CurrentZoneName, User, UserId)
                 }
             }
             this._MyApp.Io.emit("PlayerUpdate", this._Status)
         }
     }
 
-    CommandeStop(){
+    CommandeStop(User, UserId){
         if (this._CurrentZoneStatus == "Open"){
             // Set GPIO => 0 de this._CurrentZoneName
             if (this._UseWorker){
@@ -272,23 +273,23 @@ class Worker {
                 const axios = require('axios')
                 axios.post(this._RpiGpioAdress, {FctName:"setgpio", FctData:{name: this._CurrentZoneName, value: "0"}}).then(res => {
                     if (res.data.Error){
-                        me._MyApp.LogAppliError("CommandeStop setgpio res error : " + res.data.ErrorMsg)
+                        me._MyApp.LogAppliError("CommandeStop setgpio res error : " + res.data.ErrorMsg, User, UserId)
                         me._MyApp.Io.emit("PlayerError", "Setgpio error : " + res.data.ErrorMsg)
                         me.InitWorkerStatus()
                         me._MyApp.Io.emit("PlayerUpdate", this._Status)
                     } else {
-                        me._MyApp.LogAppliInfo("Setgpio done: " + JSON.stringify(res.data.Data))
+                        me._MyApp.LogAppliInfo("Setgpio done: " + JSON.stringify(res.data.Data), User, UserId)
                         me.InitWorkerStatus()
                         me._MyApp.Io.emit("PlayerStop", "")
                     }
                 }).catch(error => {
-                    me._MyApp.LogAppliError("CommandeStop setgpio error : " + error)
+                    me._MyApp.LogAppliError("CommandeStop setgpio error : " + error, User, UserId)
                     me._MyApp.Io.emit("PlayerError", "Setgpio error : " + error)
                     me.InitWorkerStatus()
                     me._MyApp.Io.emit("PlayerUpdate", this._Status)
                 })
             } else {
-                this._MyApp.LogAppliInfo("Setgpio done => 0 " + this._CurrentZoneName)
+                this._MyApp.LogAppliInfo("Setgpio done => 0 " + this._CurrentZoneName, User, UserId)
                 this.InitWorkerStatus()
                 this._MyApp.Io.emit("PlayerStop", "")
             }

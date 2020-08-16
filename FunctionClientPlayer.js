@@ -10,14 +10,14 @@ class FunctionClientPlayer{
      * socket API de la page Client Player
      * @param {Object} Data {Action, Value} Object de parametre de l'API
      */
-    ApiPlayer(Data, Socket){
-        this._MyApp.LogAppliInfo("Call SoketIO ApiPlayer + " + JSON.stringify(Data))
+    ApiPlayer(Data, Socket, User, UserId){
+        this._MyApp.LogAppliInfo("Call SoketIO ApiPlayer Data:" + JSON.stringify(Data), User, UserId)
         switch (Data.Action) {
             case "Action":
-                this.CommandeAction(Data.Value, Socket)
+                this.CommandeAction(Data.Value, Socket, User, UserId)
                 break
             default:
-                this._MyApp.LogAppliInfo(`ApiPlayer error, Action ${Data.Action} not found`)
+                this._MyApp.LogAppliError(`ApiPlayer error, Action ${Data.Action} not found`, User, UserId)
                 Socket.emit("PlayerError", `ApiPlayer error, Action ${Data.Action} not found`)
                 break
         }
@@ -28,19 +28,19 @@ class FunctionClientPlayer{
      * @param {String} Action Action recue du Player (play, pause, stop)
      * @param {Socket} Socket Socket qui a emit l'action
      */
-    CommandeAction(Action, Socket){
+    CommandeAction(Action, Socket, User, UserId){
         switch (Action) {
             case "Play":
-                this._Worker.CommandePlay()
+                this._Worker.CommandePlay(User, UserId)
                 break
             case "Pause":
-                this._Worker.CommandePause()
+                this._Worker.CommandePause(User, UserId)
                 break
             case "Stop":
-                this._Worker.CommandeStop()
+                this._Worker.CommandeStop(User, UserId)
                 break
             default:
-                this._MyApp.LogAppliInfo(`CommandeActionWorker error, Action ${Action} not found`)
+                this._MyApp.LogAppliError(`CommandeActionWorker error, Action ${Action} not found`, User, UserId)
                 Socket.emit("PlayerError", `CommandeActionWorker error, Action ${Action} not found`)
                 break
         }

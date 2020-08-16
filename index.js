@@ -99,24 +99,24 @@ class Aquagreen {
                             if (this._RpiGpioAdress != null){
                                 axios.post(this._RpiGpioAdress, {FctName:"setconfig", FctData:{config: GpioConfig}}).then(res => {
                                     if (res.data.Error){
-                                        me._MyApp.LogAppliInfo("InitAquagreeg UpdateRpiGpio res error : " + res.data.ErrorMsg)
+                                        me._MyApp.LogAppliError("InitAquagreeg UpdateRpiGpio res error : " + res.data.ErrorMsg, "Server", "Server")
                                     } else {
-                                        me._MyApp.LogAppliInfo("Config send to the worker")
+                                        me._MyApp.LogAppliInfo("Config send to the worker", "Server", "Server")
                                     }
                                 }).catch(error => {
-                                    me._MyApp.LogAppliInfo("InitAquagreeg UpdateRpiGpio error : " + error)
+                                    me._MyApp.LogAppliError("InitAquagreeg UpdateRpiGpio error : " + error, "Server", "Server")
                                 })
                             }
                         }
                     },(erreur)=>{
-                        me._MyApp.LogAppliInfo("InitAquagreeg GetConfig DB error : " + erreur)
+                        me._MyApp.LogAppliError("InitAquagreeg GetConfig DB error : " + erreur, "Server", "Server")
                     })
                 }
             }).catch(error => {
-                me._MyApp.LogAppliInfo("InitAquagreeg ping Worker error : " + error)
+                me._MyApp.LogAppliError("InitAquagreeg ping Worker error : " + error, "Server", "Server")
             })
         } else {
-            this._MyApp.LogAppliInfo("RpiGpio not used")
+            this._MyApp.LogAppliInfo("RpiGpio not used", "Server", "Server")
         }
     }
 }
