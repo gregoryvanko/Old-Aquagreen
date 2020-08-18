@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon —inspect exemple.js",
     "save": "git add -A && git commit -a -m 'auto save' && npm version minor && npm publish && git push",
-    "prod": "npm --prefix /var/www/NodeJs/Production/Aquagreen update"
+    "Prod": "npm --prefix /var/www/NodeJs/Production/Aquagreen update"
   },
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/gregoryvanko/Aquagreen#readme",
   "dependencies": {
-    "@gregvanko/corex": "^4.23.0",
+    "@gregvanko/corex": "^4.24.0",
     "axios": "^0.19.2"
   }
 }
