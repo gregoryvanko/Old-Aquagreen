@@ -72,13 +72,36 @@
 }
 /* Drop Down */
 .DorpDown{
+    text-align-last:center; 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
     background: transparent;
-    margin: 1%;
-    padding: 1vh;
+    margin: 2%;
+    padding: 1.4vh;
     border-radius: 15px;
+
+    background-image:
+      linear-gradient(45deg, transparent 50%, gray 50%),
+      linear-gradient(135deg, gray 50%, transparent 50%),
+      linear-gradient(to right, #ccc, #ccc);
+    background-position:
+      calc(100% - 20px) calc(1em + 2px),
+      calc(100% - 15px) calc(1em + 2px),
+      calc(100% - 2.5em) 0.5em;
+    background-size:
+      5px 5px,
+      5px 5px,
+      1px 1.5em;
+    background-repeat: no-repeat;
 }
 .DorpDown:focus {
     outline: 0;
+}
+.DorpDown:hover{
+    cursor: pointer;
+    border-color: var(--CoreX-color);
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.7);
 }
 /* Element d'une liste avec un clic */
 .ListElement{
@@ -90,6 +113,17 @@
 }
 .ListElement:hover{
     background-color: #F8F8F8;
+}
+
+/* PlayGpio view*/
+.ActionButton{
+    width: auto;
+}
+.ActionWidth {
+    width: 40%;
+}
+.ActionSmallWidth {
+    width: 20%;
 }
 
 @media only screen and (min-device-width: 375px) and (max-device-width: 667px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait),
@@ -107,9 +141,10 @@ screen and (max-width: 700px)
         font-size: var(--CoreX-Iphone-font-size);
         border-bottom: solid 1px #dcdcdc;
     }
-    .WidthSmall {
-        width: 50%;
-    }
+    .WidthSmall {width: 50%;}
+    .ActionWidth {width: 70%;}
+    .ActionSmallWidth {width: 35%;}
+    .ActionButton{width: 40%;}
 }
 
 @media screen and (min-width: 1200px)
