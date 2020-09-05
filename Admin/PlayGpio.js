@@ -1,8 +1,8 @@
 class PlayGpio{
     constructor(HtmlId=GlobalCoreXGetAppContentId()){
         this._DivApp = document.getElementById(HtmlId)
-
         this._GpioConfig = null
+        this._Player = null
     }
     /** Start de l'application */
     Start(){
@@ -19,19 +19,23 @@ class PlayGpio{
         this._DivApp.appendChild(CoreXBuild.DivTexte("","ErrorPlayGpio","Text","color:red; text-align: center;"))
         // On laisse un blanc avant la fin de la page
         this._DivApp.appendChild(CoreXBuild.Div("","","height:5vh;"))
-        // Call API Get Config
-        let ApiData = new Object()
-        ApiData.Fct = "GetConfig"
-        ApiData.Data = ""
-        GlobalCallApiPromise("PlayGpio", ApiData, "", "").then((reponse)=>{
-            document.getElementById("TxtPlayGpio").innerHTML = ""
-            document.getElementById("ErrorPlayGpio").innerHTML = ""
-            this._GpioConfig = reponse
-            this.BuildViewPlayGpio()
-        },(erreur)=>{
-            document.getElementById("TxtPlayGpio").innerHTML = ""
-            document.getElementById("ErrorPlayGpio").innerHTML = erreur
+
+        // SocketIo Listener
+        let SocketIo = GlobalGetSocketIo()
+        SocketIo.on('PlayGpioError', (Value) => {
+            this.Error(Value)
         })
+        SocketIo.on('BuildPlayGpioVue', (Value) => {
+            this._GpioConfig = Value
+            this.BuildViewPlayGpio()
+        })
+        SocketIo.on('BuildPlayerVue', (Value) => {
+            document.getElementById("TxtPlayGpio").innerHTML = ""
+            this._Player = new Player(Conteneur,this.Start.bind(this))
+            this._Player.Build(Value)
+        })
+        // Send status to serveur
+        GlobalSendSocketIo("PlayGpio", "Start", "")
     }
     /** Clear view */
     ClearView(){
@@ -40,6 +44,11 @@ class PlayGpio{
         GlobalAddActionInList("Refresh", this.Start.bind(this))
         // Clear view
         this._DivApp.innerHTML=""
+        // Clear socket
+        let SocketIo = GlobalGetSocketIo()
+        if(SocketIo.hasListeners('PlayGpioError')){SocketIo.off('PlayGpioError')}
+        if(SocketIo.hasListeners('BuildPlayGpioVue')){SocketIo.off('BuildPlayGpioVue')}
+        if(SocketIo.hasListeners('BuildPlayerVue')){SocketIo.off('BuildPlayerVue')}
     }
     /** Get Titre de l'application */
     GetTitre(){
@@ -51,12 +60,27 @@ class PlayGpio{
     }
 
     /**
+     * Affichage du message d'erreur venant du serveur
+     * @param {String} ErrorMsg Message d'erreur envoyé du serveur
+     */
+    Error(ErrorMsg){
+        document.getElementById("TxtPlayGpio").innerHTML = ""
+        document.getElementById("ErrorPlayGpio").innerHTML = ErrorMsg
+    }
+
+    /**
      * Build view Play a GPIO
      */
     BuildViewPlayGpio(){
-        let Conteneur = document.getElementById("Conteneur")
+        // delete du player
+        delete this._Player
+        this._Player = null
         // Vider le conteneur
+        let Conteneur = document.getElementById("Conteneur")
         Conteneur.innerHTML = ""
+        // Vider les txt
+        document.getElementById("TxtPlayGpio").innerHTML = ""
+        document.getElementById("ErrorPlayGpio").innerHTML = ""
         if (this._GpioConfig == null){
             Conteneur.appendChild(CoreXBuild.DivTexte("No Configuration saved","","Text",""))
         } else {
@@ -77,7 +101,6 @@ class PlayGpio{
             FlexActionBox.appendChild(CoreXBuild.Button("Start", this.StartGpio.bind(this),"Button ActionButton", "StartButton"))
         }
     }
-
     /**
      * Build DropDown Zone
      */
@@ -97,7 +120,6 @@ class PlayGpio{
         DropDown.onchange = this.UpdateDropDownDelay.bind(this)
         return DropDown
     }
-
     /**
      * Build DropDown Delay
      */
@@ -117,7 +139,6 @@ class PlayGpio{
         }
         return DropDown
     }
-
     /**
      * Update DropDown Delay Option
      */
@@ -139,7 +160,6 @@ class PlayGpio{
             }
         }
     }
-
     /**
      * Start Zone
      */
@@ -149,14 +169,13 @@ class PlayGpio{
         WorkerConfig.ZoneName = document.getElementById("Gpio").value
         WorkerConfig.Delay = document.getElementById("Delay").value
         WorkerConfigList.push(WorkerConfig)
-        let Conteneur = document.getElementById("Conteneur")
         // Vider le conteneur
+        let Conteneur = document.getElementById("Conteneur")
         Conteneur.innerHTML = ""
-        let Line = CoreXBuild.DivFlexRowStart("Line")
-        Conteneur.appendChild(Line)
-        Line.appendChild(CoreXBuild.DivTexte(this.GetTime() + " Command play Gpio sended to server...", "", "Text", ""))
-        // Send Start to serveur
-        //GlobalSendSocketIo("PlayZone", "PlayWorker", WorkerConfigList)
+        // Send status to serveur
+        GlobalSendSocketIo("PlayGpio", "PlayWorker", WorkerConfigList)
+        document.getElementById("TxtPlayGpio").innerHTML = "Command send to server..."
+        document.getElementById("ErrorPlayGpio").innerHTML = ""
     }
 
     GetTime(){

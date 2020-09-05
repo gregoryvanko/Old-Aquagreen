@@ -3,7 +3,6 @@ class FunctionClientPlayZone{
         this._MyApp = MyApp
         this._RpiGpioAdress = RpiGpioAdress
         this._Worker = Worker
-
         this._UseWorker = UseWorker // aide pour debugger si le worker n'est pas present
 
         // Varaible interne MongoDB
@@ -18,7 +17,7 @@ class FunctionClientPlayZone{
      * @param {Object} Data {Action, Value} Object de parametre de l'API
      */
     ApiPlayZone(Data, Socket, User, UserId){
-        this._MyApp.LogAppliInfo("Call SoketIO ApiPlayZone Data:" + JSON.stringify(Data), User, UserId)
+        this._MyApp.LogAppliInfo("SoketIO ApiPlayZone Data:" + JSON.stringify(Data), User, UserId)
         switch (Data.Action) {
             case "Start":
                 this.CommandeStartClientVue(Socket, User, UserId)

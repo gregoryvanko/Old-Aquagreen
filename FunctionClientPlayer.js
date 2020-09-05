@@ -11,7 +11,7 @@ class FunctionClientPlayer{
      * @param {Object} Data {Action, Value} Object de parametre de l'API
      */
     ApiPlayer(Data, Socket, User, UserId){
-        this._MyApp.LogAppliInfo("Call SoketIO ApiPlayer Data:" + JSON.stringify(Data), User, UserId)
+        this._MyApp.LogAppliInfo("SoketIO ApiPlayer Data:" + JSON.stringify(Data), User, UserId)
         switch (Data.Action) {
             case "Action":
                 this.CommandeAction(Data.Value, Socket, User, UserId)

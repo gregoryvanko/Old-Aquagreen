@@ -95,8 +95,8 @@ class Worker {
             ObjectActionClose.Step = TempStep
             ObjectActionClose.ZoneName = element.ZoneName
             ObjectActionClose.Type = "Close"
-            ObjectActionClose.Delay = 5
-            TempStep = TempStep + 5
+            ObjectActionClose.Delay = 2
+            TempStep = TempStep + 2
             this._ListOfActions.push(ObjectActionClose)
         })
 
@@ -114,7 +114,8 @@ class Worker {
         let Io = this._MyApp.Io
         Io.emit("BuildPlayerVue", this._Status)
 
-        this._WorkerInterval = setInterval(this.UpdateWorkerStatus.bind(this, User, UserId), 1000)
+        this._WorkerInterval = setInterval(this.UpdateWorkerStatus.bind(this, "Worker", "Worker"), 1000)
+        this._MyApp.LogAppliInfo("Sart Worker", User, UserId)
     }
 
     UpdateWorkerStatus(User, UserId){
@@ -208,7 +209,7 @@ class Worker {
 
     CommandePlay(User, UserId){
         if (this._Status.IsRunning){
-            this._WorkerInterval = setInterval(this.UpdateWorkerStatus.bind(this), 1000)
+            this._WorkerInterval = setInterval(this.UpdateWorkerStatus.bind(this, "Worker", "Worker"), 1000)
             this._Status.ZoneAction = this._CurrentZoneStatus 
             this._Status.ZoneName = this._CurrentZoneName
             if (this._CurrentZoneStatus == "Open"){
@@ -231,8 +232,8 @@ class Worker {
                     this._MyApp.LogAppliInfo("Setgpio done => 1 " + this._CurrentZoneName, User, UserId)
                 }
             }
+            this._MyApp.Io.emit("PlayerUpdate", this._Status)
         }
-        this._MyApp.Io.emit("PlayerUpdate", this._Status)
     }
 
     CommandePause(User, UserId){

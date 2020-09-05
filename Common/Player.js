@@ -65,13 +65,13 @@ class Player{
         FlexActionBox.appendChild(CoreXBuild.Div("","","height:5vh;"))
         let DivStepName = CoreXBuild.DivFlexRowStart("")
         FlexActionBox.appendChild(DivStepName)
-        DivStepName.appendChild(CoreXBuild.DivTexte("Step Name: ", "", "Text", "width: 49%; text-align: right;"))
+        DivStepName.appendChild(CoreXBuild.DivTexte("Name: ", "", "Text", "width: 30%; text-align: right;"))
         let StepNameTxt = WorkerValue.ZoneAction + " " + WorkerValue.ZoneName
-        DivStepName.appendChild(CoreXBuild.DivTexte(StepNameTxt, "StepName", "Text", "text-align: left;"))
+        DivStepName.appendChild(CoreXBuild.DivTexte(StepNameTxt, "StepName", "TextSmall", "width: 65%; text-align: left;"))
         
         let DivProgressLine = CoreXBuild.DivFlexRowStart("")
         FlexActionBox.appendChild(DivProgressLine)
-        DivProgressLine.appendChild(CoreXBuild.DivTexte("Step Progress: ", "", "Text", "width: 49%; text-align: right;"))
+        DivProgressLine.appendChild(CoreXBuild.DivTexte("Progress: ", "", "Text", "width: 30%; text-align: right;"))
 
         DivProgressLine.appendChild(CoreXBuild.Div("WorkerProgressLine", "WorkerProgressLine"))
         this._WorkerProgressLine = new ProgressBar.Line('#WorkerProgressLine', {
@@ -85,8 +85,8 @@ class Player{
 
         let DivStepprogress = CoreXBuild.DivFlexRowStart("")
         FlexActionBox.appendChild(DivStepprogress)
-        DivStepprogress.appendChild(CoreXBuild.DivTexte("Step progress: ", "", "Text", "width: 49%; text-align: right;"))
-        DivStepprogress.appendChild(CoreXBuild.DivTexte(WorkerValue.ZoneNumberCurrent + "/" + WorkerValue.ZoneNumberTotal, "Stepprogress", "Text", "text-align: left;"))
+        DivStepprogress.appendChild(CoreXBuild.DivTexte("Done: ", "", "Text", "width: 30%; text-align: right;"))
+        DivStepprogress.appendChild(CoreXBuild.DivTexte(WorkerValue.ZoneNumberCurrent + "/" + WorkerValue.ZoneNumberTotal, "Stepprogress", "TextSmall", "width: 65%; text-align: left;"))
         // Erreur
         FlexActionBox.appendChild(CoreXBuild.DivTexte("","ErrorPlayer","Text","color:red; text-align: center; height:5vh;"))
         // Action Button

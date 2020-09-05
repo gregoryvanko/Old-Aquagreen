@@ -27,7 +27,7 @@ class Aquagreen {
         this._FunctionAdminGpio = new FunctionAdminGpioR(this._MyApp, this._RpiGpioAdress, this._Worker)
 
         let FunctionAdminPlayGpioR = require('./FunctionAdminPlayGpio').FunctionAdminPlayGpio
-        this._FunctionAdminPlayGpio = new FunctionAdminPlayGpioR(this._MyApp, this._RpiGpioAdress, this._Worker)
+        this._FunctionAdminPlayGpio = new FunctionAdminPlayGpioR(this._MyApp, this._RpiGpioAdress, this._Worker, this._UseWorker)
 
         let FunctionAdminConfigR = require('./FunctionAdminConfig').FunctionAdminConfig
         this._FunctionAdminConfig = new FunctionAdminConfigR(this._MyApp, this._Worker)
@@ -62,21 +62,23 @@ class Aquagreen {
         this._MyApp.CSS = CSS
         // L'application utilise SocketIo
         this._MyApp.Usesocketio = true
-        // Chemin vers le dossier contenant les sources Js et CSS de l'app client
+        // Chemin vers le dossier contenant les sources Js et CSS de l'app Client
         this._MyApp.ClientAppFolder = __dirname + "/Client"
         // Chemin vers le dossier contenant les sources Js et CSS de l'app Admin
         this._MyApp.AdminAppFolder = __dirname + "/Admin"
+        // Chemin vers le dossier contenant les sources Js et CSS Commun
+        this._MyApp.CommonAppFolder = __dirname + "/Common"
         // Chemin relatif de l'icone
         this._MyApp.IconRelPath = __dirname + "/apple-icon-192x192.png"
         // Api Worker
-        this._MyApp.AddApiFct("Worker", this._Worker.ApiWork.bind(this._Worker))
+        this._MyApp.AddApiFct("Worker", this._Worker.ApiWork.bind(this._Worker), false)
         // Api Admin
-        this._MyApp.AddApiAdminFct("Gpio", this._FunctionAdminGpio.ApiGpio.bind(this._FunctionAdminGpio))
-        this._MyApp.AddApiAdminFct("PlayGpio", this._FunctionAdminPlayGpio.ApiPlayGpio.bind(this._FunctionAdminPlayGpio))
-        this._MyApp.AddApiAdminFct("Config", this._FunctionAdminConfig.ApiConfig.bind(this._FunctionAdminConfig))
+        this._MyApp.AddApiFct("Gpio", this._FunctionAdminGpio.ApiGpio.bind(this._FunctionAdminGpio), true)
+        this._MyApp.AddApiFct("Config", this._FunctionAdminConfig.ApiConfig.bind(this._FunctionAdminConfig), true)
         // SocketIo
         this._MyApp.AddSocketIoFct("PlayZone", this._FunctionClientPlayZone.ApiPlayZone.bind(this._FunctionClientPlayZone))
         this._MyApp.AddSocketIoFct("Player", this._FunctionClientPlayer.ApiPlayer.bind(this._FunctionClientPlayer))
+        this._MyApp.AddSocketIoFct("PlayGpio", this._FunctionAdminPlayGpio.ApiPlayGpio.bind(this._FunctionAdminPlayGpio), true)
         // Start App
         this._MyApp.Start()
         // Init de Aquagreen

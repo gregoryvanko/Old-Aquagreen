@@ -1,46 +1,3 @@
-/* Titre */
-.Titre{
-    margin: 1% 1% 1% 1%;
-    font-size: var(--CoreX-Titrefont-size);
-    color: var(--CoreX-color);
-    padding: 1%;
-    word-wrap: break-word;
-}
-/* Sous Titre */
-.SousTitre{
-    margin: 1%;
-    font-size: 3vw;
-    color: var(--CoreX-color);
-}
-/* Texte */
-.Text{
-    margin: 1%;
-    font-size: var(--CoreX-font-size);
-}
-/* Button */
-.Button{
-    margin: 4vh 0vh 1vh 0vh;
-    padding: 1vh 2vh 1vh 2vh;
-    border: 1px solid var(--CoreX-color);
-    border-radius: 20px;
-    text-align: center;
-    display: inline-block;
-    font-size: var(--CoreX-font-size);
-    box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.7);
-    color: rgb(44,1,21);
-    background: white;
-    outline: none;
-}
-.Button:hover:enabled{
-    cursor: pointer;
-    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.7);
-}
-.Button:disabled,
-.Button[disabled]{
-  border: 1px solid #999999;
-  background-color: #cccccc;
-  color: #666666;
-}
 /* Input */
 .Input {
     font-size: var(--CoreX-font-size);
@@ -64,41 +21,7 @@
     border-color: var(--CoreX-color);
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.7);
 }
-/* Drop Down */
-.DorpDown{
-    text-align-last:center; 
-    -webkit-appearance: none;
-    -moz-appearance: none;
 
-    background: transparent;
-    margin: 2%;
-    padding: 1.4vh;
-    border-radius: 15px;
-
-    background-image:
-      linear-gradient(45deg, transparent 50%, gray 50%),
-      linear-gradient(135deg, gray 50%, transparent 50%),
-      linear-gradient(to right, #ccc, #ccc);
-    background-position:
-      calc(100% - 20px) calc(1em + 2px),
-      calc(100% - 15px) calc(1em + 2px),
-      calc(100% - 2.5em) 0.5em;
-    background-size:
-      5px 5px,
-      5px 5px,
-      1px 1.5em;
-    background-repeat: no-repeat;
-}
-.DorpDown:focus {
-    outline: 0;
-}
-.DorpDown:hover{
-    cursor: pointer;
-    border-color: var(--CoreX-color);
-    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.7);
-}
-
-/* Action Box */
 .ActionBox{
     border: 1px solid var(--CoreX-color);
     border-radius: 20px;
@@ -112,52 +35,19 @@
     width: 30%;
 }
 
-.PlayerBox{
-    border: 1px solid var(--CoreX-color);
-    border-radius: 20px;
-    width: 30%;
-    padding: 2% 1%;
-}
-/* Progress */
-.WorkerProgressSemiCircle {
-    width: 60%;
-}
-.WorkerProgressSemiCircle__label{
-    color: blue;
-    position: absolute;
-    left: 50%;
-    padding: 0;
-    margin: 0;
-    transform: translate(-50%, -50%);
-    font-size: calc(var(--CoreX-font-size)*2);
-}
-.WorkerProgressLine{
-    width: 45%;
-}
+
 
 @media only screen and (min-device-width: 375px) and (max-device-width: 667px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait),
 only screen and (min-device-width: 414px) and (max-device-width: 736px) and (-webkit-min-device-pixel-ratio: 3) and (orientation: portrait),
 screen and (max-width: 700px)
 {
-    .Titre{font-size: var(--CoreX-TitreIphone-font-size);}
-    .SousTitre{font-size: 6vw;}
-    .Text{font-size: var(--CoreX-Iphone-font-size);}
-    .Button{font-size: var(--CoreX-Iphone-font-size); border-radius: 40px;}
     .Input {font-size: var(--CoreX-Iphone-font-size);}
-    .DorpDown{padding: 1.2vh;}
     .ActionBox{width: 90%;}
-    .PlayerBox{width: 80%;}
     .ActionWidth {width: 90%;}
     .ActionSmallWidth {width: 45%;}
-    .WorkerProgressSemiCircle__label{font-size: calc(var(--CoreX-Iphone-font-size)*2);}
 }
 
 @media screen and (min-width: 1200px)
 {
-    .Titre{font-size: var(--CoreX-TitreMax-font-size);}
-    .SousTitre{font-size: 35px;}
-    .Text{font-size: var(--CoreX-Max-font-size);}
-    .Button{font-size: var(--CoreX-Max-font-size); border-radius: 40px;}
     .Input {font-size: var(--CoreX-Max-font-size);}
-    .WorkerProgressSemiCircle__label{font-size: calc(var(--CoreX-Max-font-size)*2);}
 }
