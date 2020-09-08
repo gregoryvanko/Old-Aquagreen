@@ -93,7 +93,7 @@ class PlayGpio{
             Line1.appendChild(CoreXBuild.DivTexte("Gpio:", "", "Text", "width: 20%; text-align: right; margin-right: 2%;"))
             Line1.appendChild(this.BuildDropDownGpio())
             // Draw DropDown Delay
-            let Line2 = CoreXBuild.DivFlexRowStart("Line1")
+            let Line2 = CoreXBuild.DivFlexRowStart("Line2")
             FlexActionBox.appendChild(Line2)
             Line2.appendChild(CoreXBuild.DivTexte("Time:", "", "Text", "width: 20%; text-align: right; margin-right: 2%;"))
             Line2.appendChild(this.BuildDropDownDelay())

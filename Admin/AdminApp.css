@@ -65,6 +65,7 @@ screen and (max-width: 700px)
         border-bottom: solid 1px #dcdcdc;
     }
     .WidthSmall {width: 50%;}
+    .ListElement {margin-top: 2%; margin-bottom: 2%;}
     .ActionWidth {width: 70%;}
     .ActionSmallWidth {width: 35%;}
     .ActionButton{width: 40%;}

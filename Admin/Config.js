@@ -11,7 +11,7 @@ class Config{
         // Clear view
         this.ClearView()
         // Titre
-        this._DivApp.appendChild(CoreXBuild.DivTexte("Configuration", "", "Titre", ""))
+        this._DivApp.appendChild(CoreXBuild.DivTexte("Configuration", "TitreConfig", "Titre", ""))
         // Conteneur
         this._DivApp.appendChild(CoreXBuild.DivFlexColumn("Conteneur"))
         // Texte d'info
@@ -54,10 +54,10 @@ class Config{
         // Vider le conteneur
         Conteneur.innerHTML = ""
         // affichier le header du tableau Name - Type
-        let BoxTitre = CoreXBuild.DivFlexRowStart("")
+        let BoxTitre = CoreXBuild.DivFlexRowAr("")
         Conteneur.appendChild(BoxTitre)
-        BoxTitre.appendChild(CoreXBuild.DivTexte("Name","","TextBoxTitre", "width: 45%;color: var(--CoreX-color); margin-left:1%;"))
-        BoxTitre.appendChild(CoreXBuild.DivTexte("Type","","TextBoxTitre", "width: 45%;color: var(--CoreX-color);"))
+        BoxTitre.appendChild(CoreXBuild.DivTexte("Name","","TextBoxTitre", "width: 35%;color: var(--CoreX-color); margin-left:1%;"))
+        BoxTitre.appendChild(CoreXBuild.DivTexte("Type","","TextBoxTitre", "width: 55%;color: var(--CoreX-color);"))
         // Ajout d'une ligne
         Conteneur.appendChild(CoreXBuild.Line("100%", "Opacity:0.5; margin: 1% 0% 0% 0%;"))
         // Ajout de la configuration
@@ -80,6 +80,10 @@ class Config{
         }
     }
 
+    /**
+     * Construction d'un elemenet de la liste config
+     * @param {Object} Element Object Config
+     */
     BuildElementOfListConfig(Element){
         // Conteneur
         let conteneur = CoreXBuild.Div("","","width:100%")
@@ -89,12 +93,12 @@ class Config{
         let divFlex = CoreXBuild.DivFlexRowAr("")
         data.appendChild(divFlex)
         // Show Name
-        divFlex.appendChild(CoreXBuild.DivTexte(Element.name,"","TextSmall", "width: 45%; margin-left:1%;"))
+        divFlex.appendChild(CoreXBuild.DivTexte(Element.name,"","TextSmall", "width: 35%; margin-left:1%;"))
         // Show Custom
         if (Element.custom == null){
-            divFlex.appendChild(CoreXBuild.DivTexte("Empty","","TextSmall", "width: 45%"))
+            divFlex.appendChild(CoreXBuild.DivTexte("Empty","","TextSmall", "width: 55%"))
         } else {
-            divFlex.appendChild(CoreXBuild.DivTexte(Element.custom,"","TextSmall", "width: 45%"))
+            divFlex.appendChild(CoreXBuild.DivTexte(JSON.stringify(Element.custom).replace(',', ' , '),"","TextSmall", "width: 55%"))
         }
         // Ajout d'une ligne
         conteneur.appendChild(CoreXBuild.Line("100%", "Opacity:0.5;"))
@@ -102,7 +106,86 @@ class Config{
     }
 
     BuildViewAddCustomConfig(Element){
-        alert("ToDo")
+        // Changement du titre
+        document.getElementById("TitreConfig").innerHTML = "Configuration " + Element.name
+        // Get du Conteneur
+        let Conteneur = document.getElementById("Conteneur")
+        // Vider le conteneur
+        Conteneur.innerHTML = ""
+        // Liste de la custom Config
+        let DisplayName = (Element.custom == null) ? '' : Element.custom.displayname
+        let RelaisType = (Element.custom == null) ? '' : Element.custom.relaistype
+        // Dispaly Name
+        let DivDisplayName = CoreXBuild.DivFlexRowStart("")
+        Conteneur.appendChild(DivDisplayName)
+        DivDisplayName.appendChild(CoreXBuild.DivTexte("Display Name : ","","Text InputText",""))
+        let InputDisplayName = CoreXBuild.Input("DisplayName",DisplayName,"Input WidthSmall TextSmall","","text","DisplayName","Set Display Name")
+        InputDisplayName.onfocus = function(){InputDisplayName.placeholder = ""}
+        DivDisplayName.appendChild(InputDisplayName)
+        // Relais type
+        let DivRelaisType = CoreXBuild.DivFlexRowStart("")
+        Conteneur.appendChild(DivRelaisType)
+        DivRelaisType.appendChild(CoreXBuild.DivTexte("Type of relay : ","","Text InputText",""))
+        let DropDown = document.createElement("select")
+        DropDown.setAttribute("id", "RelaisType")
+        DropDown.setAttribute("class", "TextSmall DorpDown WidthSmall")
+        // Relais type Turbine
+        let option1 = document.createElement("option")
+        option1.setAttribute("value", "Turbine")
+        option1.innerHTML = "Turbine"
+        if(RelaisType == "Turbine"){option1.setAttribute("selected", "selected")}
+        DropDown.appendChild(option1)
+        // Relais type Goutte a goutte
+        let option2 = document.createElement("option")
+        option2.setAttribute("value", "GoutteAGoutte")
+        option2.innerHTML = "Goutte a goutte"
+        if(RelaisType == "GoutteAGoutte"){option2.setAttribute("selected", "selected")}
+        DropDown.appendChild(option2)
+        DivRelaisType.appendChild(DropDown)
+        // On laisse un blanc
+        Conteneur.appendChild(CoreXBuild.Div("","","height:2vh;"))
+        // Ajouter les boutton Save et Cancel
+        let DivContentButton = CoreXBuild.DivFlexRowAr("DivContentButton")
+        Conteneur.appendChild(DivContentButton)
+        DivContentButton.appendChild(CoreXBuild.Button("Save", this.SaveCustomConfig.bind(this, Element),"Button"))
+        DivContentButton.appendChild(CoreXBuild.Button("Cancel", this.Start.bind(this),"Button"))
+    }
+
+    SaveCustomConfig(Element){
+        // Clear des message
+        document.getElementById("TxtConfig").innerHTML = ""
+        document.getElementById("ErrorConfig").innerHTML = ""
+        let ErrorMsg = ""
+        // Copier toutes les valeurs
+        let DisplayName = document.getElementById("DisplayName").value
+        let RelaisType = document.getElementById("RelaisType").value
+        // vérifier si le DisplayName a une valeur
+        if (DisplayName == ""){ErrorMsg += "Display Name must be fill. "}
+        // Si il y a des erreur => afficher les erreur
+        if(ErrorMsg != ""){
+            document.getElementById("ErrorConfig").innerHTML = ErrorMsg
+        } else { 
+            document.getElementById("Conteneur").innerHTML = ""
+            document.getElementById("TxtConfig").innerHTML = "Save Custom Configuration..."
+            document.getElementById("ErrorConfig").innerHTML = ""
+            // Creation de l'objet config relay
+            let CustomConfig = new Object()
+            CustomConfig.displayname = DisplayName
+            CustomConfig.relaistype = RelaisType
+            Element.custom = CustomConfig
+            // Call API Set Config
+            let ApiData = new Object()
+            ApiData.Fct = "SetConfig"
+            ApiData.Data = this._ConfigGpio
+            GlobalCallApiPromise("Config", ApiData, "", "").then((reponse)=>{
+                document.getElementById("TxtConfig").innerHTML = ""
+                document.getElementById("ErrorConfig").innerHTML = ""
+                this.Start()
+            },(erreur)=>{
+                document.getElementById("TxtConfig").innerHTML = ""
+                document.getElementById("ErrorConfig").innerHTML = erreur
+            })
+        }
     }
 
     /** Get Titre de l'application */
