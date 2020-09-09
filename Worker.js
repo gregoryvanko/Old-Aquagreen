@@ -10,14 +10,16 @@ class Worker {
         this._Status.StepTotal = 0
         this._Status.StepCurrent = 0
         this._Status.TotalSecond = 0
-        this._Status.ZoneName = ""
+        this._Status.RelaisName = ""
+        this._Status.DisplayName = ""
         this._Status.ZoneAction = ""
         this._Status.ZoneStepTotal = 0
         this._Status.ZoneStepCurrent = 0
         this._Status.ZoneNumberTotal = 0
         this._Status.ZoneNumberCurrent = 0
 
-        this._CurrentZoneName = ""
+        this._CurrentRelaisName = ""
+        this._CurrentDisplayName = ""
         this._CurrentZoneAction = ""
         this._CurrentZoneStatus = ""
         this._ListOfActions = new Array()
@@ -85,7 +87,8 @@ class Worker {
             // Open
             let ObjectActionOpen = new Object()
             ObjectActionOpen.Step = TempStep
-            ObjectActionOpen.ZoneName = element.ZoneName
+            ObjectActionOpen.RelaisName = element.RelaisName
+            ObjectActionOpen.DisplayName = element.DisplayName
             ObjectActionOpen.Type = "Open"
             ObjectActionOpen.Delay = element.Delay * 60
             TempStep = TempStep + (element.Delay * 60)
@@ -93,7 +96,8 @@ class Worker {
             // Close
             let ObjectActionClose = new Object()
             ObjectActionClose.Step = TempStep
-            ObjectActionClose.ZoneName = element.ZoneName
+            ObjectActionClose.RelaisName = element.RelaisName
+            ObjectActionClose.DisplayName = element.DisplayName
             ObjectActionClose.Type = "Close"
             ObjectActionClose.Delay = 2
             TempStep = TempStep + 2
@@ -105,7 +109,8 @@ class Worker {
         this._Status.StepCurrent = 0
         this._Status.TotalSecond = this._Status.StepTotal - this._Status.StepCurrent
         this._Status.ZoneAction = "Start"
-        this._Status.ZoneName = "Worker"
+        this._Status.RelaisName = "Worker"
+        this._Status.DisplayName = "Worker"
         this._Status.ZoneStepTotal = 1
         this._Status.ZoneStepCurrent = 0
         this._Status.ZoneNumberTotal = lengthOfWorkerConfigList
@@ -129,7 +134,7 @@ class Worker {
                     // Set GPIO => 1
                     if (this._UseWorker){
                         const axios = require('axios')
-                        axios.post(this._RpiGpioAdress, {FctName:"setgpio", FctData:{name: this._ListOfActions[0].ZoneName, value: 1}}).then(res => {
+                        axios.post(this._RpiGpioAdress, {FctName:"setgpio", FctData:{name: this._ListOfActions[0].RelaisName, value: 1}}).then(res => {
                             if (res.data.Error){
                                 me._MyApp.LogAppliError("UpdateWorkerStatus setgpio res error : " + res.data.ErrorMsg, User, UserId)
                                 me._MyApp.Io.emit("PlayerError", "Setgpio error : " + res.data.ErrorMsg)
@@ -141,16 +146,17 @@ class Worker {
                             me._MyApp.Io.emit("PlayerError", "Setgpio error : " + error)
                         })
                     } else {
-                        this._MyApp.LogAppliInfo("Setgpio done => 1 " + this._ListOfActions[0].ZoneName, User, UserId)
+                        this._MyApp.LogAppliInfo("Setgpio done => 1 " + this._ListOfActions[0].RelaisName, User, UserId)
                     }
                     this._Status.ZoneAction = "Open"
-                    this._Status.ZoneName = this._ListOfActions[0].ZoneName
+                    this._Status.RelaisName = this._ListOfActions[0].RelaisName
+                    this._Status.DisplayName = this._ListOfActions[0].DisplayName
                     this._Status.ZoneNumberCurrent++
                 } else {
                     // Set GPIO => 0
                     if (this._UseWorker){
                         const axios = require('axios')
-                        axios.post(this._RpiGpioAdress, {FctName:"setgpio", FctData:{name: this._ListOfActions[0].ZoneName, value: 0}}).then(res => {
+                        axios.post(this._RpiGpioAdress, {FctName:"setgpio", FctData:{name: this._ListOfActions[0].RelaisName, value: 0}}).then(res => {
                             if (res.data.Error){
                                 me._MyApp.LogAppliError("UpdateWorkerStatus setgpio res error : " + res.data.ErrorMsg, User, UserId)
                                 me._MyApp.Io.emit("PlayerError", "Setgpio error : " + res.data.ErrorMsg)
@@ -162,12 +168,14 @@ class Worker {
                             me._MyApp.Io.emit("PlayerError", "Setgpio error : " + error)
                         })
                     } else {
-                        this._MyApp.LogAppliInfo("Setgpio done => 0 " + this._ListOfActions[0].ZoneName, User, UserId)
+                        this._MyApp.LogAppliInfo("Setgpio done => 0 " + this._ListOfActions[0].RelaisName, User, UserId)
                     }
                     this._Status.ZoneAction = "Close"
-                    this._Status.ZoneName = this._ListOfActions[0].ZoneName
+                    this._Status.RelaisName = this._ListOfActions[0].RelaisName
+                    this._Status.DisplayName = this._ListOfActions[0].DisplayName
                 }
-                this._CurrentZoneName = this._ListOfActions[0].ZoneName
+                this._CurrentRelaisName = this._ListOfActions[0].RelaisName
+                this._CurrentDisplayName = this._ListOfActions[0].DisplayName
                 this._CurrentZoneAction = this._Status.ZoneAction
                 this._CurrentZoneStatus = this._ListOfActions[0].Type
                 this._Status.ZoneStepTotal = this._ListOfActions[0].Delay
@@ -194,7 +202,8 @@ class Worker {
         this._Status.StepTotal = 0
         this._Status.StepCurrent = 0
         this._Status.TotalSecond = 0
-        this._Status.ZoneName = ""
+        this._Status.RelaisName = ""
+        this._Status.DisplayName = ""
         this._Status.ZoneAction = ""
         this._Status.ZoneStepTotal = 0
         this._Status.ZoneStepCurrent = 0
@@ -202,7 +211,7 @@ class Worker {
         this._Status.ZoneNumberCurrent = 0
         this._ListOfActions = new Array()
 
-        this._CurrentZoneName = ""
+        this._CurrentRelaisName = ""
         this._CurrentZoneAction = ""
         this._CurrentZoneStatus = ""
     }
@@ -211,13 +220,14 @@ class Worker {
         if (this._Status.IsRunning){
             this._WorkerInterval = setInterval(this.UpdateWorkerStatus.bind(this, "Worker", "Worker"), 1000)
             this._Status.ZoneAction = this._CurrentZoneStatus 
-            this._Status.ZoneName = this._CurrentZoneName
+            this._Status.RelaisName = this._CurrentRelaisName
+            this._Status.DisplayName = this._CurrentDisplayName
             if (this._CurrentZoneStatus == "Open"){
-                // Set GPIO => 1 de this._CurrentZoneName
+                // Set GPIO => 1 de this._CurrentRelaisName
                 if (this._UseWorker){
                     let me = this
                     const axios = require('axios')
-                    axios.post(this._RpiGpioAdress, {FctName:"setgpio", FctData:{name: this._CurrentZoneName, value: "1"}}).then(res => {
+                    axios.post(this._RpiGpioAdress, {FctName:"setgpio", FctData:{name: this._CurrentRelaisName, value: "1"}}).then(res => {
                         if (res.data.Error){
                             me._MyApp.LogAppliError("CommandePlay setgpio res error : " + res.data.ErrorMsg, User, UserId)
                             me._MyApp.Io.emit("PlayerError", "Setgpio error : " + res.data.ErrorMsg)
@@ -229,7 +239,7 @@ class Worker {
                         me._MyApp.Io.emit("PlayerError", "Setgpio error : " + error)
                     })
                 } else {
-                    this._MyApp.LogAppliInfo("Setgpio done => 1 " + this._CurrentZoneName, User, UserId)
+                    this._MyApp.LogAppliInfo("Setgpio done => 1 " + this._CurrentRelaisName, User, UserId)
                 }
             }
             this._MyApp.Io.emit("PlayerUpdate", this._Status)
@@ -241,13 +251,14 @@ class Worker {
             clearInterval(this._WorkerInterval)
             this._WorkerInterval = null
             this._Status.ZoneAction = "Pause"
-            this._Status.ZoneName = this._CurrentZoneName
+            this._Status.RelaisName = this._CurrentRelaisName
+            this._Status.DisplayName = this._CurrentDisplayName
             if (this._CurrentZoneStatus == "Open"){
-                // Set GPIO => 0 de this._CurrentZoneName
+                // Set GPIO => 0 de this._CurrentRelaisName
                 if (this._UseWorker){
                     let me = this
                     const axios = require('axios')
-                    axios.post(this._RpiGpioAdress, {FctName:"setgpio", FctData:{name: this._CurrentZoneName, value: "0"}}).then(res => {
+                    axios.post(this._RpiGpioAdress, {FctName:"setgpio", FctData:{name: this._CurrentRelaisName, value: "0"}}).then(res => {
                         if (res.data.Error){
                             me._MyApp.LogAppliError("CommandePause setgpio res error : " + res.data.ErrorMsg, User, UserId)
                             me._MyApp.Io.emit("PlayerError", "Setgpio error : " + res.data.ErrorMsg)
@@ -259,7 +270,7 @@ class Worker {
                         me._MyApp.Io.emit("PlayerError", "Setgpio error : " + error)
                     })
                 } else {
-                    this._MyApp.LogAppliInfo("Setgpio done => 0 " + this._CurrentZoneName, User, UserId)
+                    this._MyApp.LogAppliInfo("Setgpio done => 0 " + this._CurrentRelaisName, User, UserId)
                 }
             }
             this._MyApp.Io.emit("PlayerUpdate", this._Status)
@@ -268,11 +279,11 @@ class Worker {
 
     CommandeStop(User, UserId){
         if (this._CurrentZoneStatus == "Open"){
-            // Set GPIO => 0 de this._CurrentZoneName
+            // Set GPIO => 0 de this._CurrentRelaisName
             if (this._UseWorker){
                 let me = this
                 const axios = require('axios')
-                axios.post(this._RpiGpioAdress, {FctName:"setgpio", FctData:{name: this._CurrentZoneName, value: "0"}}).then(res => {
+                axios.post(this._RpiGpioAdress, {FctName:"setgpio", FctData:{name: this._CurrentRelaisName, value: "0"}}).then(res => {
                     if (res.data.Error){
                         me._MyApp.LogAppliError("CommandeStop setgpio res error : " + res.data.ErrorMsg, User, UserId)
                         me._MyApp.Io.emit("PlayerError", "Setgpio error : " + res.data.ErrorMsg)
@@ -290,7 +301,7 @@ class Worker {
                     me._MyApp.Io.emit("PlayerUpdate", this._Status)
                 })
             } else {
-                this._MyApp.LogAppliInfo("Setgpio done => 0 " + this._CurrentZoneName, User, UserId)
+                this._MyApp.LogAppliInfo("Setgpio done => 0 " + this._CurrentRelaisName, User, UserId)
                 this.InitWorkerStatus()
                 this._MyApp.Io.emit("PlayerStop", "")
             }

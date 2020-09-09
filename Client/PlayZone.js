@@ -2,6 +2,7 @@ class PlayZone{
     constructor(HtmlId){
         this._DivApp = document.getElementById(HtmlId)
         this._GpioConfig = null
+        this._RelaisConfig = []
         this._Player = null
     }
 
@@ -9,6 +10,8 @@ class PlayZone{
     Start(){
         // Clear view
         this.ClearView()
+        //clear this_RelaisConfig
+        this._RelaisConfig = []
         // espace vide au dessus du conteneur
         this._DivApp.appendChild(CoreXBuild.Div("","","height:10vh;"))
         // Conteneur de la page
@@ -76,12 +79,46 @@ class PlayZone{
         ActionBox.appendChild(FlexActionBox)
         FlexActionBox.appendChild(CoreXBuild.DivTexte("Play a zone", "", "SousTitre", "margin-top:2%"))
         if (this._GpioConfig != null){
-            FlexActionBox.appendChild(this.BuildDropDownZone())
-            FlexActionBox.appendChild(this.BuildDropDownDelay())
-            FlexActionBox.appendChild(CoreXBuild.Button("Start", this.StartZone.bind(this),"Button ActionSmallWidth", "StartButton"))
+            // filtrer GpioConfig pour ne prendre que les relais ayant des custom data non null
+            this._GpioConfig.forEach(element => {
+                if(element.type == "Relais"){
+                    if(element.custom != null){
+                        this._RelaisConfig.push(element)
+                    }
+                }
+            });
+            // Si on a des RelaisConfig
+            if(this._RelaisConfig.length > 0){
+                this._RelaisConfig.sort((a,b) =>  a.custom.displayname.localeCompare(b.custom.displayname))
+                FlexActionBox.appendChild(this.BuildDropDownRelaisType())
+                FlexActionBox.appendChild(this.BuildDropDownZone())
+                FlexActionBox.appendChild(this.BuildDropDownDelay())
+                FlexActionBox.appendChild(CoreXBuild.Button("Start", this.StartZone.bind(this),"Button ActionSmallWidth", "StartButton"))
+            } else {
+                FlexActionBox.appendChild(CoreXBuild.DivTexte("Custom Configuration not defined in DB...", "", "Text", ""))
+            }
         } else {
             FlexActionBox.appendChild(CoreXBuild.DivTexte("Configuration not defined in DB...", "", "Text", ""))
         }
+    }
+
+    /**
+     * Build DropDown Type de relais
+     */
+    BuildDropDownRelaisType(){
+        let DropDown = document.createElement("select")
+        DropDown.setAttribute("id", "Type")
+        DropDown.setAttribute("class", "Text DorpDown ActionWidth")
+        // liste des differents type
+        let ListOfType = [...new Set(this._RelaisConfig.map(item => item.custom.relaistype))]
+        ListOfType.forEach(element => {
+            let option = document.createElement("option")
+            option.setAttribute("value", element)
+            option.innerHTML = element
+            DropDown.appendChild(option)
+        });
+        DropDown.onchange = this.UpdateDropDownZone.bind(this)
+        return DropDown
     }
 
     /**
@@ -91,12 +128,14 @@ class PlayZone{
         let DropDown = document.createElement("select")
         DropDown.setAttribute("id", "Zone")
         DropDown.setAttribute("class", "Text DorpDown ActionWidth")
-        this._GpioConfig.sort((a,b) =>  a.name.localeCompare(b.name))
-        this._GpioConfig.forEach(element => {
-            if(element.type == "Relais"){
+        // liste des differents type
+        let ListOfType = [...new Set(this._RelaisConfig.map(item => item.custom.relaistype))]
+        let TheRelaisType = ListOfType[0]
+        this._RelaisConfig.forEach(element => {
+            if(element.custom.relaistype == TheRelaisType){
                 let option = document.createElement("option")
                 option.setAttribute("value", element.name)
-                option.innerHTML = element.name
+                option.innerHTML = element.custom.displayname
                 DropDown.appendChild(option)
             }
         });
@@ -111,17 +150,73 @@ class PlayZone{
         let DropDown = document.createElement("select")
         DropDown.setAttribute("id", "Delay")
         DropDown.setAttribute("class", "Text DorpDown ActionSmallWidth")
-        let relay = this._GpioConfig.filter((value, index, array) => (value.type == "Relais"))
-        if (relay.length > 0){
-            let MaxDelay = relay[0].timeout
-            for (let index = 1; index <= MaxDelay; index++){
-                let option = document.createElement("option")
-                option.setAttribute("value", index)
-                option.innerHTML = index
-                DropDown.appendChild(option)
+
+        // liste des differents type
+        let ListOfType = [...new Set(this._RelaisConfig.map(item => item.custom.relaistype))]
+        let TheRelaisType = ListOfType[0]
+        let found = false
+        let MaxDelay = null
+        this._RelaisConfig.forEach(element => {
+            if(element.custom.relaistype == TheRelaisType){
+                if (found == false){
+                    found = true
+                    MaxDelay = element.timeout
+                }
             }
+        });
+        for (let index = 1; index <= MaxDelay; index++){
+            let option = document.createElement("option")
+            option.setAttribute("value", index)
+            option.innerHTML = index
+            DropDown.appendChild(option)
         }
         return DropDown
+    }
+
+    /**
+     * Update DropDown Zone
+     */
+    UpdateDropDownZone(){
+        // get du nom du type
+        let DropDownType = document.getElementById("Type").value
+        // delete du contneu drop down Zone
+        let DropDownZone = document.getElementById("Zone")
+        let length =  DropDownZone.options.length
+        for (let i = length-1; i >= 0; i--) {
+            DropDownZone.options[i] = null;
+        }
+        // delete du contneu dropdown Delay
+        let DropDownDelay = document.getElementById("Delay")
+        let length2 =  DropDownDelay.options.length
+        for (let i = length2-1; i >= 0; i--) {
+            DropDownDelay.options[i] = null;
+        }
+        // Nouveau contenu du dropdown Zone
+        this._RelaisConfig.forEach(element => {
+            if(element.custom.relaistype == DropDownType){
+                let option = document.createElement("option")
+                option.setAttribute("value", element.name)
+                option.innerHTML = element.custom.displayname
+                DropDownZone.appendChild(option)
+            }
+        });
+        // Nouveau contenu du dropdown Zone
+        let found = false
+        let MaxDelay = null
+        this._RelaisConfig.forEach(element => {
+            if(element.custom.relaistype == DropDownType){
+                if (found == false){
+                    found = true
+                    MaxDelay = element.timeout
+                }
+            }
+        });
+        for (let index = 1; index <= MaxDelay; index++){
+            let option = document.createElement("option")
+            option.setAttribute("value", index)
+            option.innerHTML = index
+            DropDownDelay.appendChild(option)
+        }
     }
 
     /**
@@ -152,7 +247,8 @@ class PlayZone{
     StartZone(){
         let WorkerConfigList = new Array()
         let WorkerConfig = new Object()
-        WorkerConfig.ZoneName = document.getElementById("Zone").value
+        WorkerConfig.RelaisName = document.getElementById("Zone").value
+        WorkerConfig.DisplayName = document.getElementById("Zone").options[document.getElementById("Zone").selectedIndex].text
         WorkerConfig.Delay = document.getElementById("Delay").value
         WorkerConfigList.push(WorkerConfig)
         // Send status to serveur

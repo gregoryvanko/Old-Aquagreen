@@ -137,7 +137,7 @@ class Config{
         DropDown.appendChild(option1)
         // Relais type Goutte a goutte
         let option2 = document.createElement("option")
-        option2.setAttribute("value", "GoutteAGoutte")
+        option2.setAttribute("value", "Goutte a goutte")
         option2.innerHTML = "Goutte a goutte"
         if(RelaisType == "GoutteAGoutte"){option2.setAttribute("selected", "selected")}
         DropDown.appendChild(option2)

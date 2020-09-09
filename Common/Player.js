@@ -66,7 +66,7 @@ class Player{
         let DivStepName = CoreXBuild.DivFlexRowStart("")
         FlexActionBox.appendChild(DivStepName)
         DivStepName.appendChild(CoreXBuild.DivTexte("Name: ", "", "Text", "width: 30%; text-align: right;"))
-        let StepNameTxt = WorkerValue.ZoneAction + " " + WorkerValue.ZoneName
+        let StepNameTxt = WorkerValue.ZoneAction + " " + WorkerValue.DisplayName
         DivStepName.appendChild(CoreXBuild.DivTexte(StepNameTxt, "StepName", "TextSmall", "width: 65%; text-align: left;"))
         
         let DivProgressLine = CoreXBuild.DivFlexRowStart("")
@@ -118,7 +118,7 @@ class Player{
             this._WorkerProgressLine.animate(PourcentZone/100)
         }
         document.getElementById("Timer").innerHTML= Minute + "min " + Seconde + "sec"
-        document.getElementById("StepName").innerHTML= WorkerValue.ZoneAction + " " + WorkerValue.ZoneName
+        document.getElementById("StepName").innerHTML= WorkerValue.ZoneAction + " " + WorkerValue.DisplayName
         document.getElementById("Stepprogress").innerHTML= WorkerValue.ZoneNumberCurrent + "/" + WorkerValue.ZoneNumberTotal
         if (WorkerValue.ZoneAction == "Pause"){
             document.getElementById("PlayPause").innerHTML = "&#9658"

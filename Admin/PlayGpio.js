@@ -166,7 +166,8 @@ class PlayGpio{
     StartGpio(){
         let WorkerConfigList = new Array()
         let WorkerConfig = new Object()
-        WorkerConfig.ZoneName = document.getElementById("Gpio").value
+        WorkerConfig.RelaisName = document.getElementById("Gpio").value
+        WorkerConfig.DisplayName = document.getElementById("Gpio").options[document.getElementById("Gpio").selectedIndex].text
         WorkerConfig.Delay = document.getElementById("Delay").value
         WorkerConfigList.push(WorkerConfig)
         // Vider le conteneur
@@ -176,11 +177,6 @@ class PlayGpio{
         GlobalSendSocketIo("PlayGpio", "PlayWorker", WorkerConfigList)
         document.getElementById("TxtPlayGpio").innerHTML = "Command send to server..."
         document.getElementById("ErrorPlayGpio").innerHTML = ""
-    }
-
-    GetTime(){
-        let today = new Date();
-        return today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
     }
 }
  
