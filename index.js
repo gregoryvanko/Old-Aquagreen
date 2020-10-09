@@ -23,6 +23,9 @@ class Aquagreen {
         let FunctionClientPlayerR = require('./FunctionClientPlayer').FunctionClientPlayer
         this._FunctionClientPlayer = new FunctionClientPlayerR(this._MyApp, this._RpiGpioAdress, this._Worker, this._UseWorker )
 
+        let FunctionClientPlayProgramR = require('./FunctionClientPlayProgram').FunctionClientPlayProgram
+        this._FunctionClientPlayProgram = new FunctionClientPlayProgramR(this._MyApp)
+
         let FunctionAdminGpioR = require('./FunctionAdminGpio').FunctionAdminGpio
         this._FunctionAdminGpio = new FunctionAdminGpioR(this._MyApp, this._RpiGpioAdress, this._Worker)
 
@@ -77,6 +80,7 @@ class Aquagreen {
         this._MyApp.AddApiFct("Config", this._FunctionAdminConfig.ApiConfig.bind(this._FunctionAdminConfig), true)
         // SocketIo
         this._MyApp.AddSocketIoFct("PlayZone", this._FunctionClientPlayZone.ApiPlayZone.bind(this._FunctionClientPlayZone))
+        this._MyApp.AddSocketIoFct("PlayProgram", this._FunctionClientPlayProgram.ApiPlayProgram.bind(this._FunctionClientPlayProgram))
         this._MyApp.AddSocketIoFct("Player", this._FunctionClientPlayer.ApiPlayer.bind(this._FunctionClientPlayer))
         this._MyApp.AddSocketIoFct("PlayGpio", this._FunctionAdminPlayGpio.ApiPlayGpio.bind(this._FunctionAdminPlayGpio), true)
         // Start App

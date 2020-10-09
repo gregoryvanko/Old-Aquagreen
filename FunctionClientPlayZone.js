@@ -46,7 +46,7 @@ class FunctionClientPlayZone{
                     me._MyApp.LogAppliError("CommandeStartClientVue ping res error : " + res.data.ErrorMsg, User, UserId)
                     Socket.emit("PlayZoneError", "Worker ping error: " + res.data.ErrorMsg)
                 } else {
-                    this.StartClientVue(Socket)
+                    this.StartClientVue(Socket, User, UserId)
                 }
             }).catch(error => {
                 me._MyApp.LogAppliError("CommandeStartClientVue ping Worker error : " + error, User, UserId)

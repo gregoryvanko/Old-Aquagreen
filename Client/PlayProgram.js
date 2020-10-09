@@ -7,7 +7,7 @@ class PlayProgram{
         // Clear view
         this.ClearView()
         // Titre
-        this._DivApp.appendChild(CoreXBuild.DivTexte("Programs", "", "Titre", "margin-top:4%"))
+        this._DivApp.appendChild(CoreXBuild.DivTexte("Programs", "PlayProgramTitre", "Titre", "margin-top:2%"))
         // Conteneur de la page
         this._DivApp.appendChild(CoreXBuild.DivFlexColumn("Conteneur"))
         // Texte d'info
@@ -16,14 +16,72 @@ class PlayProgram{
         this._DivApp.appendChild(CoreXBuild.DivTexte("","TxtError","Text","color:red; text-align: center;"))
         // On laisse un blanc avant la fin de la page
         this._DivApp.appendChild(CoreXBuild.Div("","","height:5vh;"))
+        // SocketIo Listener
+        let SocketIo = GlobalGetSocketIo()
+        SocketIo.on('PlayProgramError', (Value) => {
+            this.Error(Value)
+        })
+        SocketIo.on('PlayProgramGetConfig', (Value) => {
+            this.ShowProgramConfig(Value)
+        })
+        // Send status to serveur
+        GlobalSendSocketIo("PlayProgram", "GetConfig", "")
     }
-    /** Clear view */
+    /**
+     * Clear view
+     */
     ClearView(){
         // Global action
         GlobalClearActionList()
         GlobalAddActionInList("Refresh", this.Start.bind(this))
         // Clear view
         this._DivApp.innerHTML=""
+        // Clear socket
+        let SocketIo = GlobalGetSocketIo()
+        if(SocketIo.hasListeners('PlayProgramError')){SocketIo.off('PlayProgramError')}
+        if(SocketIo.hasListeners('PlayProgramGetConfig')){SocketIo.off('PlayProgramGetConfig')}
+    }
+    /**
+     * Affichage du message d'erreur venant du serveur
+     * @param {String} ErrorMsg Message d'erreur envoyé du serveur
+     */
+    Error(ErrorMsg){
+        document.getElementById("Conteneur").innerHTML = ""
+        document.getElementById("TxtInfo").innerHTML = ""
+        document.getElementById("TxtError").innerHTML = ErrorMsg
+    }
+
+    /**
+     * Show view: Program Config 
+     * @param {Array} Config Liste de configuration de programme
+     */
+    ShowProgramConfig(Config){
+        // Clear message
+        document.getElementById("TxtInfo").innerHTML = ""
+        document.getElementById("TxtError").innerHTML = ""
+        // Selection du conteneur
+        let conteneur = document.getElementById("Conteneur")
+        if (Config == null) {
+            // Affichag du message : pas de config
+            conteneur.appendChild(CoreXBuild.DivTexte("No Configuration defined...","","Text","text-align: center;"))
+        } else {
+            // Affichager la config des programme
+            conteneur.appendChild(CoreXBuild.DivTexte("Config OK","","Text","text-align: center;")) //ToDo
+        }
+        // Ajout du bouton Add Program
+        conteneur.appendChild(CoreXBuild.Button("Add Config", this.ShowAddConfig.bind(this),"Button", "AddConfig"))
+    }
+
+    /**
+     * Show view: Add Config 
+     */
+    ShowAddConfig(){
+        // Selection du conteneur
+        let conteneur = document.getElementById("Conteneur") 
+        conteneur.innerHTML = ""
+        // Changement du titre: new program
+        document.getElementById("PlayProgramTitre").innerHTML = "New Program"
+        
     }
 
     /** Get Titre de l'application */

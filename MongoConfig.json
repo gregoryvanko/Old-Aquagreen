@@ -3,6 +3,7 @@
         "Collection": "Config",
         "Key": "Key",
         "Value": "Value",
-        "GpioConfigKey" : "GpioConfig"
+        "GpioConfigKey" : "GpioConfig",
+        "ProgramConfigKey" : "ProgramConfig"
     } 
 }
