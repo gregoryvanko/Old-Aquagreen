@@ -16,8 +16,8 @@ class FunctionClientPlayProgram{
     ApiPlayProgram(Data, Socket, User, UserId){
         this._MyApp.LogAppliInfo("SoketIO ApiPlayProgram Data:" + JSON.stringify(Data), User, UserId)
         switch (Data.Action) {
-            case "GetConfig":
-                this.GetConfig(Socket, User, UserId)
+            case "GetListOfProgram":
+                this.GetListOfProgram(Socket, User, UserId)
                 break
             default:
                 this._MyApp.LogAppliError(`ApiPlayProgram error, Action ${Data.Action} not found`, User, UserId)
@@ -26,16 +26,16 @@ class FunctionClientPlayProgram{
         }
     }
 
-    GetConfig(Socket, User, UserId){
+    GetListOfProgram(Socket, User, UserId){
         // Send ProgramConfig from DB
         let me = this
         const Querry = {[this._MongoConfigCollection.Key]: this._MongoConfigCollection.ProgramConfigKey}
         const Projection = { projection:{_id: 0, [this._MongoConfigCollection.Value]: 1}}
         this._Mongo.FindPromise(Querry, Projection, this._MongoConfigCollection.Collection).then((reponse)=>{
             if(reponse.length == 0){
-                Socket.emit("PlayProgramGetConfig", null)
+                Socket.emit("PlayProgramListOfProgram", null)
             } else {
-                Socket.emit("PlayProgramGetConfig", reponse[0][this._MongoConfigCollection.Value])
+                Socket.emit("PlayProgramListOfProgram", reponse[0][this._MongoConfigCollection.Value])
             }
         },(erreur)=>{
             me._MyApp.LogAppliError("ApiPlayProgram GetConfig DB error : " + erreur, User, UserId)

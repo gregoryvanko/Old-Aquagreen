@@ -1,27 +1,3 @@
-/* Input */
-.Input {
-    font-size: var(--CoreX-font-size);
-    padding: 1vh;
-    border: solid 1px black;
-    border-radius: 15px;
-    margin: 1%;
-    text-align: center;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -o-box-sizing: border-box;
-    -ms-box-sizing: border-box;
-    box-sizing: border-box;
-}
-.Input:focus,
-.Input.focus {
-    border-color: var(--CoreX-color);
-    outline: none;
-}
-.Input:hover{
-    border-color: var(--CoreX-color);
-    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.7);
-}
-
 .ActionBox{
     border: 1px solid var(--CoreX-color);
     border-radius: 20px;
@@ -39,7 +15,6 @@
 only screen and (min-device-width: 414px) and (max-device-width: 736px) and (-webkit-min-device-pixel-ratio: 3) and (orientation: portrait),
 screen and (max-width: 700px)
 {
-    .Input {font-size: var(--CoreX-Iphone-font-size);}
     .ActionBox{width: 90%;}
     .ActionWidth {width: 90%;}
     .ActionSmallWidth {width: 45%;}
@@ -47,5 +22,5 @@ screen and (max-width: 700px)
 
 @media screen and (min-width: 1200px)
 {
-    .Input {font-size: var(--CoreX-Max-font-size);}
+    
 }

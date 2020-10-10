@@ -1,6 +1,7 @@
 class PlayProgram{
     constructor(){
         this._DivApp = document.getElementById(GlobalCoreXGetAppContentId())
+        this._ListOfProgram = null
     }
     /** Start de l'application */
     Start(){
@@ -21,11 +22,12 @@ class PlayProgram{
         SocketIo.on('PlayProgramError', (Value) => {
             this.Error(Value)
         })
-        SocketIo.on('PlayProgramGetConfig', (Value) => {
-            this.ShowProgramConfig(Value)
+        SocketIo.on('PlayProgramListOfProgram', (Value) => {
+            this._ListOfProgram = Value
+            this.ShowListOfProgram()
         })
         // Send status to serveur
-        GlobalSendSocketIo("PlayProgram", "GetConfig", "")
+        GlobalSendSocketIo("PlayProgram", "GetListOfProgram", "")
     }
     /**
      * Clear view
@@ -39,7 +41,7 @@ class PlayProgram{
         // Clear socket
         let SocketIo = GlobalGetSocketIo()
         if(SocketIo.hasListeners('PlayProgramError')){SocketIo.off('PlayProgramError')}
-        if(SocketIo.hasListeners('PlayProgramGetConfig')){SocketIo.off('PlayProgramGetConfig')}
+        if(SocketIo.hasListeners('PlayProgramListOfProgram')){SocketIo.off('PlayProgramListOfProgram')}
     }
     /**
      * Affichage du message d'erreur venant du serveur
@@ -55,33 +57,42 @@ class PlayProgram{
      * Show view: Program Config 
      * @param {Array} Config Liste de configuration de programme
      */
-    ShowProgramConfig(Config){
+    ShowListOfProgram(){
         // Clear message
         document.getElementById("TxtInfo").innerHTML = ""
         document.getElementById("TxtError").innerHTML = ""
         // Selection du conteneur
         let conteneur = document.getElementById("Conteneur")
-        if (Config == null) {
-            // Affichag du message : pas de config
-            conteneur.appendChild(CoreXBuild.DivTexte("No Configuration defined...","","Text","text-align: center;"))
+        // Liste des prgramme est null
+        if (this._ListOfProgram == null) {
+            // Affichag du message : pas de ListOfProgram
+            conteneur.appendChild(CoreXBuild.DivTexte("No List Of Program defined...","","Text","text-align: center;"))
         } else {
             // Affichager la config des programme
-            conteneur.appendChild(CoreXBuild.DivTexte("Config OK","","Text","text-align: center;")) //ToDo
+            conteneur.appendChild(CoreXBuild.DivTexte("ListOfProgram OK","","Text","text-align: center;")) //ToDo
         }
         // Ajout du bouton Add Program
-        conteneur.appendChild(CoreXBuild.Button("Add Config", this.ShowAddConfig.bind(this),"Button", "AddConfig"))
+        conteneur.appendChild(CoreXBuild.Button("Add Program", this.ShowProgram.bind(this),"Button", "AddConfig"))
     }
 
     /**
      * Show view: Add Config 
      */
-    ShowAddConfig(){
+    ShowProgram(ProgramId = null){
         // Selection du conteneur
         let conteneur = document.getElementById("Conteneur") 
         conteneur.innerHTML = ""
         // Changement du titre: new program
         document.getElementById("PlayProgramTitre").innerHTML = "New Program"
-        
+        // Nom du programme
+        let DivDisplayProgramName = CoreXBuild.DivFlexRowStart("")
+        DivDisplayProgramName.style.width='90%'
+        Conteneur.appendChild(DivDisplayProgramName)
+        let ProgramName = "New Program"
+        let InputProgramName = CoreXBuild.Input("ProgramName",ProgramName,"Input WidthSmall","","text","ProgramName","Set Program Name")
+        InputProgramName.onfocus = function(){InputProgramName.placeholder = ""}
+        InputProgramName.onblur = function(){if(InputProgramName.value==""){InputProgramName.value = "New Program"}}
+        DivDisplayProgramName.appendChild(InputProgramName)
     }
 
     /** Get Titre de l'application */

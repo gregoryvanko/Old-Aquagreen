@@ -9,28 +9,7 @@
     width: 20%;
     text-align: right;
 }
-/* Input */
-.Input {
-    font-size: var(--CoreX-font-size);
-    padding: 1vh;
-    border: solid 0px #dcdcdc;
-    border-bottom: solid 1px transparent;
-    margin: 1%;
-}
-.Input:focus,
-.Input.focus {
-    outline: none;
-    border: solid 0px #707070;
-    border-bottom-width: 1px;
-    border-color: var(--CoreX-color);
-}
-.Input:hover{
-    border-bottom-width: 1px;
-    border-color: var(--CoreX-color);
-}
-.WidthSmall {
-    width: 30%;
-}
+
 /* Element d'une liste avec un clic */
 .ListElement{
     width:100%;
@@ -60,11 +39,6 @@ screen and (max-width: 700px)
 {
     .TextBoxTitre{font-size: calc(var(--CoreX-Iphone-font-size)*1.1);}
     .InputText{width: 40%;}
-    .Input {
-        font-size: var(--CoreX-Iphone-font-size);
-        border-bottom: solid 1px #dcdcdc;
-    }
-    .WidthSmall {width: 50%;}
     .ListElement {margin-top: 2%; margin-bottom: 2%;}
     .ActionWidth {width: 70%;}
     .ActionSmallWidth {width: 35%;}
@@ -74,5 +48,4 @@ screen and (max-width: 700px)
 @media screen and (min-width: 1200px)
 {
     .TextBoxTitre{font-size: calc(var(--CoreX-Max-font-size)*1.1);}
-    .Input {font-size: var(--CoreX-Max-font-size);}
 }
