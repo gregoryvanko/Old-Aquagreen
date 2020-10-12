@@ -75,6 +75,7 @@ class PlayProgram{
         } else {
             // Affichager la config des programme
             conteneur.appendChild(CoreXBuild.DivTexte("ToDo","","Text","text-align: center;"))
+            
         }
         // Ajout du bouton Add Program
         conteneur.appendChild(CoreXBuild.Button("Add Program", this.ShowProgram.bind(this, null),"Button", "AddConfig"))
