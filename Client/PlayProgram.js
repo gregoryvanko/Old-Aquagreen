@@ -93,6 +93,7 @@ class PlayProgram{
         InputProgramName.onfocus = function(){InputProgramName.placeholder = ""}
         InputProgramName.onblur = function(){if(InputProgramName.value==""){InputProgramName.value = "New Program"}}
         DivDisplayProgramName.appendChild(InputProgramName)
+        //ToDo
     }
 
     /** Get Titre de l'application */
