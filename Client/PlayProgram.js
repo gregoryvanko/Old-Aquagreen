@@ -1,7 +1,9 @@
 class PlayProgram{
     constructor(){
         this._DivApp = document.getElementById(GlobalCoreXGetAppContentId())
+        this._GpioConfig = null
         this._ListOfProgram = null
+        this._CurrentProgramId = null
     }
     /** Start de l'application */
     Start(){
@@ -22,12 +24,13 @@ class PlayProgram{
         SocketIo.on('PlayProgramError', (Value) => {
             this.Error(Value)
         })
-        SocketIo.on('PlayProgramListOfProgram', (Value) => {
-            this._ListOfProgram = Value
+        SocketIo.on('PlayProgramAllConfig', (Value) => {
+            this._GpioConfig = Value.GpioConfig
+            this._ListOfProgram = Value.ProgramList
             this.ShowListOfProgram()
         })
         // Send status to serveur
-        GlobalSendSocketIo("PlayProgram", "GetListOfProgram", "")
+        GlobalSendSocketIo("PlayProgram", "GetAllConfig", "")
     }
     /**
      * Clear view
@@ -41,7 +44,7 @@ class PlayProgram{
         // Clear socket
         let SocketIo = GlobalGetSocketIo()
         if(SocketIo.hasListeners('PlayProgramError')){SocketIo.off('PlayProgramError')}
-        if(SocketIo.hasListeners('PlayProgramListOfProgram')){SocketIo.off('PlayProgramListOfProgram')}
+        if(SocketIo.hasListeners('PlayProgramAllConfig')){SocketIo.off('PlayProgramAllConfig')}
     }
     /**
      * Affichage du message d'erreur venant du serveur
@@ -58,27 +61,46 @@ class PlayProgram{
      * @param {Array} Config Liste de configuration de programme
      */
     ShowListOfProgram(){
+        debugger
         // Clear message
         document.getElementById("TxtInfo").innerHTML = ""
         document.getElementById("TxtError").innerHTML = ""
         // Selection du conteneur
         let conteneur = document.getElementById("Conteneur")
+        conteneur.innerHTML = ""
         // Liste des prgramme est null
         if (this._ListOfProgram == null) {
             // Affichag du message : pas de ListOfProgram
             conteneur.appendChild(CoreXBuild.DivTexte("No List Of Program defined...","","Text","text-align: center;"))
         } else {
             // Affichager la config des programme
-            conteneur.appendChild(CoreXBuild.DivTexte("ListOfProgram OK","","Text","text-align: center;")) //ToDo
+            conteneur.appendChild(CoreXBuild.DivTexte("ToDo","","Text","text-align: center;"))
         }
         // Ajout du bouton Add Program
-        conteneur.appendChild(CoreXBuild.Button("Add Program", this.ShowProgram.bind(this),"Button", "AddConfig"))
+        conteneur.appendChild(CoreXBuild.Button("Add Program", this.ShowProgram.bind(this, null),"Button", "AddConfig"))
     }
 
     /**
      * Show view: Add Config 
      */
     ShowProgram(ProgramId = null){
+        // Si ProgramId = null alors nouveau programme a creer
+        if (ProgramId == null){
+            let newprogram = new Object()
+            newprogram.Name = "New Program"
+            newprogram.ListOfSteps = []
+            // si this._ListOfProgram = null alors creation du premier program
+            if (this._ListOfProgram == null){
+                let newliste = []
+                newliste.push(newprogram)
+                this._ListOfProgram = newliste
+            } else {
+                this._ListOfProgram.push(newprogram)
+            }
+            this._CurrentProgramId = this._ListOfProgram.length -1
+        } else {
+            this._CurrentProgramId = ProgramId
+        }
         // Selection du conteneur
         let conteneur = document.getElementById("Conteneur") 
         conteneur.innerHTML = ""
@@ -88,12 +110,201 @@ class PlayProgram{
         let DivDisplayProgramName = CoreXBuild.DivFlexRowStart("")
         DivDisplayProgramName.style.width='90%'
         Conteneur.appendChild(DivDisplayProgramName)
-        let ProgramName = "New Program"
+        DivDisplayProgramName.appendChild(CoreXBuild.DivTexte("Program Name : ","","Text",""))
+        let ProgramName = this._ListOfProgram[this._CurrentProgramId].Name
         let InputProgramName = CoreXBuild.Input("ProgramName",ProgramName,"Input WidthSmall","","text","ProgramName","Set Program Name")
         InputProgramName.onfocus = function(){InputProgramName.placeholder = ""}
-        InputProgramName.onblur = function(){if(InputProgramName.value==""){InputProgramName.value = "New Program"}}
+        //InputProgramName.onblur = function(){if(InputProgramName.value==""){InputProgramName.value = "New Program"}}
+        InputProgramName.onblur = this.ChangProgramName.bind(this)
         DivDisplayProgramName.appendChild(InputProgramName)
-        //ToDo
+        // liste des steps
+        let DivDisplayProgramList = CoreXBuild.DivFlexRowAr("")
+        DivDisplayProgramList.style.width='90%'
+        Conteneur.appendChild(DivDisplayProgramList)
+        let ListOfSteps = this._ListOfProgram[this._CurrentProgramId].ListOfSteps
+        if (ListOfSteps.length == 0){
+            // Affichag du message : pas de List Of Step
+            DivDisplayProgramList.appendChild(CoreXBuild.DivTexte("No List of steps defined...","","Text","text-align: center;"))
+        } else {
+            DivDisplayProgramList.appendChild(CoreXBuild.DivTexte("ToDo","","Text","text-align: center;"))
+        }
+        // Bouttons
+        let DivBouttons = CoreXBuild.DivFlexRowAr("")
+        Conteneur.appendChild(DivBouttons)
+        DivBouttons.appendChild(CoreXBuild.Button("Back", this.ShowListOfProgram.bind(this),"Button", "Back"))
+        DivBouttons.appendChild(CoreXBuild.Button("Add Step", this.ShowAddStep.bind(this),"Button", "AddStep"))
+    }
+
+    /**
+     * Update du nom du programme lorsque l on quitte le input texte
+     */
+    ChangProgramName(){
+        let InputProgramName = document.getElementById("ProgramName") 
+        if(InputProgramName.value==""){InputProgramName.value = "New Program"}
+        this._ListOfProgram[this._CurrentProgramId].Name = InputProgramName.value
+    }
+
+    /**
+     * Show view : Add step
+     */
+    ShowAddStep(){
+        // Sort par displayname
+        this._GpioConfig.sort((a,b) =>  a.custom.displayname.localeCompare(b.custom.displayname))
+        // Selection du conteneur
+        let conteneur = document.getElementById("Conteneur") 
+        conteneur.innerHTML = ""
+        let ActionBox = CoreXBuild.Div("","ActionBox")
+        Conteneur.appendChild(ActionBox)
+        let FlexActionBox = CoreXBuild.DivFlexColumn("")
+        ActionBox.appendChild(FlexActionBox)
+        FlexActionBox.appendChild(this.BuildDropDownRelaisType())
+        FlexActionBox.appendChild(this.BuildDropDownZone())
+        FlexActionBox.appendChild(this.BuildDropDownDelay())
+        let DivBouttons = CoreXBuild.DivFlexRowAr("")
+        Conteneur.appendChild(DivBouttons)
+        DivBouttons.appendChild(CoreXBuild.Button("Cancel", this.ShowProgram.bind(this, this._CurrentProgramId),"Button", ""))
+        DivBouttons.appendChild(CoreXBuild.Button("Add", this.ClickAddStep.bind(this),"Button", ""))
+    }
+    /**
+     * Build DropDown Type de relais
+     */
+    BuildDropDownRelaisType(){
+        let DropDown = document.createElement("select")
+        DropDown.setAttribute("id", "Type")
+        DropDown.setAttribute("class", "Text DorpDown ActionWidth")
+        // liste des differents type
+        let ListOfType = [...new Set(this._GpioConfig.map(item => item.custom.relaistype))]
+        ListOfType.forEach(element => {
+            let option = document.createElement("option")
+            option.setAttribute("value", element)
+            option.innerHTML = element
+            DropDown.appendChild(option)
+        });
+        DropDown.onchange = this.UpdateDropDownZone.bind(this)
+        return DropDown
+    }
+    /**
+     * Build DropDown Zone
+     */
+    BuildDropDownZone(){
+        let DropDown = document.createElement("select")
+        DropDown.setAttribute("id", "Zone")
+        DropDown.setAttribute("class", "Text DorpDown ActionWidth")
+        // liste des differents type
+        let ListOfType = [...new Set(this._GpioConfig.map(item => item.custom.relaistype))]
+        let TheRelaisType = ListOfType[0]
+        this._GpioConfig.forEach(element => {
+            if(element.custom.relaistype == TheRelaisType){
+                let option = document.createElement("option")
+                option.setAttribute("value", element.name)
+                option.innerHTML = element.custom.displayname
+                DropDown.appendChild(option)
+            }
+        });
+        DropDown.onchange = this.UpdateDropDownDelay.bind(this)
+        return DropDown
+    }
+    /**
+     * Build DropDown Delay
+     */
+    BuildDropDownDelay(){
+        let DropDown = document.createElement("select")
+        DropDown.setAttribute("id", "Delay")
+        DropDown.setAttribute("class", "Text DorpDown ActionSmallWidth")
+
+        // liste des differents type
+        let ListOfType = [...new Set(this._GpioConfig.map(item => item.custom.relaistype))]
+        let TheRelaisType = ListOfType[0]
+        let found = false
+        let MaxDelay = null
+        this._GpioConfig.forEach(element => {
+            if(element.custom.relaistype == TheRelaisType){
+                if (found == false){
+                    found = true
+                    MaxDelay = element.timeout
+                }
+            }
+        });
+        for (let index = 1; index <= MaxDelay; index++){
+            let option = document.createElement("option")
+            option.setAttribute("value", index)
+            option.innerHTML = index
+            DropDown.appendChild(option)
+        }
+        return DropDown
+    }
+    /**
+     * Update DropDown Zone
+     */
+    UpdateDropDownZone(){
+        // get du nom du type
+        let DropDownType = document.getElementById("Type").value
+        // delete du contneu drop down Zone
+        let DropDownZone = document.getElementById("Zone")
+        let length =  DropDownZone.options.length
+        for (let i = length-1; i >= 0; i--) {
+            DropDownZone.options[i] = null;
+        }
+        // delete du contneu dropdown Delay
+        let DropDownDelay = document.getElementById("Delay")
+        let length2 =  DropDownDelay.options.length
+        for (let i = length2-1; i >= 0; i--) {
+            DropDownDelay.options[i] = null;
+        }
+        // Nouveau contenu du dropdown Zone
+        this._GpioConfig.forEach(element => {
+            if(element.custom.relaistype == DropDownType){
+                let option = document.createElement("option")
+                option.setAttribute("value", element.name)
+                option.innerHTML = element.custom.displayname
+                DropDownZone.appendChild(option)
+            }
+        });
+        // Nouveau contenu du dropdown Zone
+        let found = false
+        let MaxDelay = null
+        this._GpioConfig.forEach(element => {
+            if(element.custom.relaistype == DropDownType){
+                if (found == false){
+                    found = true
+                    MaxDelay = element.timeout
+                }
+            }
+        });
+        for (let index = 1; index <= MaxDelay; index++){
+            let option = document.createElement("option")
+            option.setAttribute("value", index)
+            option.innerHTML = index
+            DropDownDelay.appendChild(option)
+        }
+    }
+    /**
+     * Update DropDown Delay Option
+     */
+    UpdateDropDownDelay(){
+        let DropDownZoneValue = document.getElementById("Zone").value
+        let DropDownDelay = document.getElementById("Delay")
+        let length =  DropDownDelay.options.length
+        for (let i = length-1; i >= 0; i--) {
+            DropDownDelay.options[i] = null;
+        }
+        var found = this._GpioConfig.find((element) => { return element.name == DropDownZoneValue })
+        if (found){
+            let MaxDelay = found.timeout
+            for (let index = 1; index <= MaxDelay; index++){
+                let option = document.createElement("option")
+                option.setAttribute("value", index)
+                option.innerHTML = index
+                DropDownDelay.appendChild(option)
+            }
+        }
+    }
+
+    /**
+     * Click sur le bouton add step
+     */
+    ClickAddStep(){
+        alert("ToDo")
     }
 
     /** Get Titre de l'application */

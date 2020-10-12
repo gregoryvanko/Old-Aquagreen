@@ -4,11 +4,6 @@
     font-family: "nyt-cheltenham", georgia, "times new roman", times, serif;
     color: black;
 }
-/* Input Text */
-.InputText{
-    width: 20%;
-    text-align: right;
-}
 
 /* Element d'une liste avec un clic */
 .ListElement{
@@ -38,7 +33,6 @@ only screen and (min-device-width: 414px) and (max-device-width: 736px) and (-we
 screen and (max-width: 700px)
 {
     .TextBoxTitre{font-size: calc(var(--CoreX-Iphone-font-size)*1.1);}
-    .InputText{width: 40%;}
     .ListElement {margin-top: 2%; margin-bottom: 2%;}
     .ActionWidth {width: 70%;}
     .ActionSmallWidth {width: 35%;}

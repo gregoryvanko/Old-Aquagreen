@@ -21,6 +21,11 @@
     font-size: calc(var(--CoreX-font-size)*0.7);
     word-wrap: break-word;
 }
+/* Input Text */
+.InputText{
+    width: 20%;
+    text-align: right;
+}
 /* Button */
 .Button{
     margin: 4vh 0vh 1vh 0vh;
@@ -146,6 +151,7 @@ screen and (max-width: 700px)
     .SousTitre{font-size: 35px;}
     .Text{font-size: var(--CoreX-Max-font-size);}
     .TextSmall{font-size: calc(var(--CoreX-Max-font-size)*0.7);}
+    .InputText{width: 40%;}
     .Button{font-size: var(--CoreX-Max-font-size); border-radius: 40px;}
     .Input {font-size: var(--CoreX-Max-font-size);}
     .WorkerProgressSemiCircle__label{font-size: calc(var(--CoreX-Max-font-size)*2);}
