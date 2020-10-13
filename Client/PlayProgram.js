@@ -61,7 +61,6 @@ class PlayProgram{
      * @param {Array} Config Liste de configuration de programme
      */
     ShowListOfProgram(){
-        debugger
         // Clear message
         document.getElementById("TxtInfo").innerHTML = ""
         document.getElementById("TxtError").innerHTML = ""
@@ -69,16 +68,32 @@ class PlayProgram{
         let conteneur = document.getElementById("Conteneur")
         conteneur.innerHTML = ""
         // Liste des prgramme est null
-        if (this._ListOfProgram == null) {
+        if ((this._ListOfProgram == null)||(this._ListOfProgram.length == 0)) {
             // Affichag du message : pas de ListOfProgram
-            conteneur.appendChild(CoreXBuild.DivTexte("No List Of Program defined...","","Text","text-align: center;"))
+            conteneur.appendChild(CoreXBuild.DivTexte("No List of Program defined...","","Text","text-align: center;"))
         } else {
             // Affichager la config des programme
-            conteneur.appendChild(CoreXBuild.DivTexte("ToDo","","Text","text-align: center;"))
-            
+            this._ListOfProgram.forEach((element,index) => {
+                conteneur.appendChild(this.BuildUiProgram(element.Name, index))
+            });
         }
         // Ajout du bouton Add Program
         conteneur.appendChild(CoreXBuild.Button("Add Program", this.ShowProgram.bind(this, null),"Button", "AddConfig"))
+    }
+
+    BuildUiProgram(Name, Index){
+        let output = CoreXBuild.Div("", "ProgramBox", "")
+        output.addEventListener("click", this.ClickOnProgram.bind(this,Index))
+        let DivData = CoreXBuild.DivFlexRowAr("")
+        DivData.appendChild(CoreXBuild.DivTexte(Name, "","Text",""))
+        output.appendChild(DivData)
+        return output
+    }
+
+    ClickOnProgram(Index){
+        // Si on est en mode edit
+        // ToDo
+        this.ShowProgram(Index)
     }
 
     /**
@@ -119,7 +134,7 @@ class PlayProgram{
         InputProgramName.onblur = this.ChangProgramName.bind(this)
         DivDisplayProgramName.appendChild(InputProgramName)
         // liste des steps
-        let DivDisplayProgramList = CoreXBuild.DivFlexRowAr("")
+        let DivDisplayProgramList = CoreXBuild.DivFlexColumn("")
         DivDisplayProgramList.style.width='90%'
         Conteneur.appendChild(DivDisplayProgramList)
         let ListOfSteps = this._ListOfProgram[this._CurrentProgramId].ListOfSteps
@@ -127,13 +142,41 @@ class PlayProgram{
             // Affichag du message : pas de List Of Step
             DivDisplayProgramList.appendChild(CoreXBuild.DivTexte("No List of steps defined...","","Text","text-align: center;"))
         } else {
-            DivDisplayProgramList.appendChild(CoreXBuild.DivTexte("ToDo","","Text","text-align: center;"))
+            ListOfSteps.forEach((element,index) => {
+                DivDisplayProgramList.appendChild(this.BuildUiStep(element.DisplayName, element.Delay, index))
+            });
         }
         // Bouttons
         let DivBouttons = CoreXBuild.DivFlexRowAr("")
         Conteneur.appendChild(DivBouttons)
         DivBouttons.appendChild(CoreXBuild.Button("Back", this.ShowListOfProgram.bind(this),"Button", "Back"))
-        DivBouttons.appendChild(CoreXBuild.Button("Add Step", this.ShowAddStep.bind(this),"Button", "AddStep"))
+        DivBouttons.appendChild(CoreXBuild.Button("Add Step", this.ShowAddStep.bind(this, false, null),"Button", "AddStep"))
+        DivBouttons.appendChild(CoreXBuild.Button("Delete", this.ClickDeleteProgram.bind(this),"Button", "AddStep"))
+    }
+
+    /**
+     * Supprime un Program de la liste des program
+     * @param {number} index index du program a supprimer de la liste des program
+     */
+    ClickDeleteProgram(){
+        this._ListOfProgram.splice(this._CurrentProgramId, 1)
+        this._CurrentProgramId = null
+        this.ShowListOfProgram()
+        // ToDo Save to server
+    }
+
+    BuildUiStep(Name, Delay, index){
+        let output = CoreXBuild.Div("", "ProgramBox", "")
+        output.addEventListener("click", this.ClickOnStep.bind(this,index))
+        let DivData = CoreXBuild.DivFlexRowStart("")
+        DivData.appendChild(CoreXBuild.DivTexte(Name, "","Text","text-align: left; width:55%;"))
+        DivData.appendChild(CoreXBuild.DivTexte("Timing: " + Delay + "min","","Text","text-align: left; width:40%; color: grey;"))
+        output.appendChild(DivData)
+        return output
+    }
+
+    ClickOnStep(index){
+        this.ShowAddStep(true, index)
     }
 
     /**
@@ -143,28 +186,37 @@ class PlayProgram{
         let InputProgramName = document.getElementById("ProgramName") 
         if(InputProgramName.value==""){InputProgramName.value = "New Program"}
         this._ListOfProgram[this._CurrentProgramId].Name = InputProgramName.value
+        // ToDo Save to server
     }
 
     /**
      * Show view : Add step
      */
-    ShowAddStep(){
+    ShowAddStep(IsUpdate, index){
         // Sort par displayname
         this._GpioConfig.sort((a,b) =>  a.custom.displayname.localeCompare(b.custom.displayname))
         // Selection du conteneur
         let conteneur = document.getElementById("Conteneur") 
         conteneur.innerHTML = ""
+        // Box
         let ActionBox = CoreXBuild.Div("","ActionBox")
         Conteneur.appendChild(ActionBox)
         let FlexActionBox = CoreXBuild.DivFlexColumn("")
         ActionBox.appendChild(FlexActionBox)
+        // DropDown
         FlexActionBox.appendChild(this.BuildDropDownRelaisType())
         FlexActionBox.appendChild(this.BuildDropDownZone())
         FlexActionBox.appendChild(this.BuildDropDownDelay())
+        // Buttons
         let DivBouttons = CoreXBuild.DivFlexRowAr("")
         Conteneur.appendChild(DivBouttons)
         DivBouttons.appendChild(CoreXBuild.Button("Cancel", this.ShowProgram.bind(this, this._CurrentProgramId),"Button", ""))
-        DivBouttons.appendChild(CoreXBuild.Button("Add", this.ClickAddStep.bind(this),"Button", ""))
+        if (IsUpdate){
+            DivBouttons.appendChild(CoreXBuild.Button("Update", this.ClickAddModStep.bind(this, index),"Button", ""))
+            DivBouttons.appendChild(CoreXBuild.Button("Delete", this.ClickDeleteStep.bind(this, index),"Button", ""))
+        } else {
+            DivBouttons.appendChild(CoreXBuild.Button("Add", this.ClickAddModStep.bind(this, null),"Button", ""))
+        }
     }
     /**
      * Build DropDown Type de relais
@@ -302,10 +354,32 @@ class PlayProgram{
     }
 
     /**
-     * Click sur le bouton add step
+     * Ajoute ou modifie un step de la liste des steps
+     * @param {number} index index du step a modifier de la liste des step
      */
-    ClickAddStep(){
-        alert("ToDo")
+    ClickAddModStep(index){
+        let WorkerConfig = new Object()
+        WorkerConfig.RelaisType = document.getElementById("Type").value
+        WorkerConfig.RelaisName = document.getElementById("Zone").value
+        WorkerConfig.DisplayName = document.getElementById("Zone").options[document.getElementById("Zone").selectedIndex].text
+        WorkerConfig.Delay = document.getElementById("Delay").value
+        if (index == null){
+            this._ListOfProgram[this._CurrentProgramId].ListOfSteps.push(WorkerConfig)
+        } else {
+            this._ListOfProgram[this._CurrentProgramId].ListOfSteps[index]=WorkerConfig
+        }
+        this.ShowProgram(this._CurrentProgramId)
+        // ToDo Save to server
+    }
+    
+    /**
+     * Supprime un step de la liste des steps
+     * @param {number} index index du step a supprimer de la liste des step
+     */
+    ClickDeleteStep(index){
+        this._ListOfProgram[this._CurrentProgramId].ListOfSteps.splice(index, 1)
+        this.ShowProgram(this._CurrentProgramId)
+        // ToDo Save to server
     }
 
     /** Get Titre de l'application */
