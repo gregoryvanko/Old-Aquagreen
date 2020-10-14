@@ -44,22 +44,22 @@ class FunctionClientPlayProgram{
                     me._MyApp.LogAppliError("CommandeStartClientVue ping res error : " + res.data.ErrorMsg, User, UserId)
                     Socket.emit("PlayProgramError", "Worker ping error: " + res.data.ErrorMsg)
                 } else {
-                    this.StartClientVue(Socket, User, UserId)
+                    this.Start(Socket, User, UserId)
                 }
             }).catch(error => {
                 me._MyApp.LogAppliError("CommandeStartClientVue ping Worker error : " + error, User, UserId)
                 Socket.emit("PlayProgramError", "Worker not connected")
             })
         } else {
-            this.StartClientVue(Socket, User, UserId)
+            this.Start(Socket, User, UserId)
         }
     }
 
     /**
-     * Start du choix de la vue client
+     * Start du client
      * @param {SocketIo} Socket Client socket
      */
-    StartClientVue(Socket, User, UserId){
+    Start(Socket, User, UserId){
         if(this._Worker.Status.IsRunning){
             Socket.emit("PlayProgramBuildPlayerVue", this._Worker.Status)
         } else {
