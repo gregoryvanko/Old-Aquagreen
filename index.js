@@ -24,7 +24,7 @@ class Aquagreen {
         this._FunctionClientPlayer = new FunctionClientPlayerR(this._MyApp, this._RpiGpioAdress, this._Worker, this._UseWorker )
 
         let FunctionClientPlayProgramR = require('./FunctionClientPlayProgram').FunctionClientPlayProgram
-        this._FunctionClientPlayProgram = new FunctionClientPlayProgramR(this._MyApp)
+        this._FunctionClientPlayProgram = new FunctionClientPlayProgramR(this._MyApp, this._RpiGpioAdress, this._Worker, this._UseWorker)
 
         let FunctionAdminGpioR = require('./FunctionAdminGpio').FunctionAdminGpio
         this._FunctionAdminGpio = new FunctionAdminGpioR(this._MyApp, this._RpiGpioAdress, this._Worker)

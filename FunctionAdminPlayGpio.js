@@ -26,6 +26,7 @@ class FunctionAdminPlayGpio{
                 break
             case "PlayWorker":
                 this._Worker.StartWorking(Data.Value, User, UserId)
+                Socket.emit("BuildPlayerVue", this._Worker.Status)
                 break
             default:
                 this._MyApp.LogAppliError(`ApiPlayGpio error, Action ${Data.Action} not found`, User, UserId)

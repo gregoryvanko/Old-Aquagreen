@@ -116,9 +116,6 @@ class Worker {
         this._Status.ZoneNumberTotal = lengthOfWorkerConfigList
         this._Status.ZoneNumberCurrent = 0
 
-        let Io = this._MyApp.Io
-        Io.emit("BuildPlayerVue", this._Status)
-
         this._WorkerInterval = setInterval(this.UpdateWorkerStatus.bind(this, "Worker", "Worker"), 1000)
         this._MyApp.LogAppliInfo("Sart Worker", User, UserId)
     }

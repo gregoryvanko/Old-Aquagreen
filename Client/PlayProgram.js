@@ -4,6 +4,7 @@ class PlayProgram{
         this._GpioConfig = null
         this._ListOfProgram = null
         this._CurrentProgramId = null
+        this._ShowUpdateView = false
     }
     /** Start de l'application */
     Start(){
@@ -12,7 +13,8 @@ class PlayProgram{
         // Titre
         this._DivApp.appendChild(CoreXBuild.DivTexte("Programs", "PlayProgramTitre", "Titre", "margin-top:2%"))
         // Conteneur de la page
-        this._DivApp.appendChild(CoreXBuild.DivFlexColumn("Conteneur"))
+        let Conteneur = CoreXBuild.DivFlexColumn("Conteneur")
+        this._DivApp.appendChild(Conteneur)
         // Texte d'info
         this._DivApp.appendChild(CoreXBuild.DivTexte("Get Configuration...","TxtInfo","Text","text-align: center;"))
         // Texte du message d'erreur
@@ -29,8 +31,15 @@ class PlayProgram{
             this._ListOfProgram = Value.ProgramList
             this.ShowListOfProgram()
         })
+        SocketIo.on('PlayProgramBuildPlayerVue', (Value) => {
+            // Changement du titre: Play program
+            document.getElementById("PlayProgramTitre").innerHTML = "Play Program"
+            document.getElementById("TxtInfo").innerHTML = ""
+            this._Player = new Player(Conteneur,this.Start.bind(this))
+            this._Player.Build(Value)
+        })
         // Send status to serveur
-        GlobalSendSocketIo("PlayProgram", "GetAllConfig", "")
+        GlobalSendSocketIo("PlayProgram", "StartClientVue", "")
     }
     /**
      * Clear view
@@ -45,6 +54,7 @@ class PlayProgram{
         let SocketIo = GlobalGetSocketIo()
         if(SocketIo.hasListeners('PlayProgramError')){SocketIo.off('PlayProgramError')}
         if(SocketIo.hasListeners('PlayProgramAllConfig')){SocketIo.off('PlayProgramAllConfig')}
+        if(SocketIo.hasListeners('PlayProgramBuildPlayerVue')){SocketIo.off('PlayProgramBuildPlayerVue')}
     }
     /**
      * Affichage du message d'erreur venant du serveur
@@ -78,11 +88,30 @@ class PlayProgram{
             });
         }
         // Ajout du bouton Add Program
-        conteneur.appendChild(CoreXBuild.Button("Add Program", this.ShowProgram.bind(this, null),"Button", "AddConfig"))
+        let DivBouttons = CoreXBuild.DivFlexRowAr("")
+        Conteneur.appendChild(DivBouttons)
+        if(this._ShowUpdateView){
+            // Changement du titre: new program
+            document.getElementById("PlayProgramTitre").innerHTML = "Update Program"
+            DivBouttons.appendChild(CoreXBuild.Button("Add Program", this.ShowProgram.bind(this, null),"Button", "AddConfig"))
+            DivBouttons.appendChild(CoreXBuild.Button("Cancel", this.ClickOnCancelUpdate.bind(this),"Button", "AddConfig"))
+        } else {
+            // Changement du titre: program
+            document.getElementById("PlayProgramTitre").innerHTML = "Programs"
+            DivBouttons.appendChild(CoreXBuild.Button("Update Program", this.ClickOnUpdateProgram.bind(this),"Button", "AddConfig"))
+        }
     }
 
+    /**
+     * Construit la représentation visuel d'un programme
+     * @param {String} Name Nom du programme
+     * @param {interger} Index numero de l'indexe de ce program dans le array
+     */
     BuildUiProgram(Name, Index){
         let output = CoreXBuild.Div("", "ProgramBox", "")
+        if (this._ShowUpdateView){
+            output.style.borderColor = "green"
+        }
         output.addEventListener("click", this.ClickOnProgram.bind(this,Index))
         let DivData = CoreXBuild.DivFlexRowAr("")
         DivData.appendChild(CoreXBuild.DivTexte(Name, "","Text",""))
@@ -90,10 +119,47 @@ class PlayProgram{
         return output
     }
 
+    /**
+     * Click on Upate Program boutton
+     */
+    ClickOnUpdateProgram(){
+        this._ShowUpdateView = true
+        this.ShowListOfProgram()
+    }
+
+    /**
+     * Click on Cancle update program boutton
+     */
+    ClickOnCancelUpdate(){
+        this._ShowUpdateView = false
+        this.ShowListOfProgram()
+    }
+
+    /**
+     * Click on program
+     * @param {interger} Index indexe du program dans la liste des programmes
+     */
     ClickOnProgram(Index){
         // Si on est en mode edit
-        // ToDo
-        this.ShowProgram(Index)
+        if(this._ShowUpdateView){
+            this.ShowProgram(Index)
+        } else {
+            // on joue le progrmame si il y a plus que un step a faire
+            if(this._ListOfProgram[Index].ListOfSteps.length > 0){
+                // Send status to serveur
+                GlobalSendSocketIo("PlayProgram", "PlayWorker", this._ListOfProgram[Index].ListOfSteps)
+                document.getElementById("Conteneur").innerHTML = ""
+                document.getElementById("TxtInfo").innerHTML = "Command send to server..."
+                document.getElementById("TxtError").innerHTML = ""
+            } else {
+                // Selection du conteneur
+                let conteneur = document.getElementById("Conteneur")
+                conteneur.innerHTML = ""
+                conteneur.appendChild(CoreXBuild.DivTexte("No step defined in this program...","","Text","text-align: center;"))
+                conteneur.appendChild(CoreXBuild.Button("Back", this.ShowListOfProgram.bind(this),"Button", "AddConfig"))
+            }
+        }
+        
     }
 
     /**
@@ -359,7 +425,6 @@ class PlayProgram{
      */
     ClickAddModStep(index){
         let WorkerConfig = new Object()
-        WorkerConfig.RelaisType = document.getElementById("Type").value
         WorkerConfig.RelaisName = document.getElementById("Zone").value
         WorkerConfig.DisplayName = document.getElementById("Zone").options[document.getElementById("Zone").selectedIndex].text
         WorkerConfig.Delay = document.getElementById("Delay").value

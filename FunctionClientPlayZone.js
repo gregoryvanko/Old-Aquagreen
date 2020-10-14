@@ -24,6 +24,7 @@ class FunctionClientPlayZone{
                 break
             case "PlayWorker":
                 this._Worker.StartWorking(Data.Value, User, UserId)
+                Socket.emit("BuildPlayerVue", this._Worker.Status)
                 break
             default:
                 this._MyApp.LogAppliError(`ApiPlayZone error, Action ${Data.Action} not found`, User, UserId)
