@@ -78,13 +78,15 @@ class PlayProgram{
         let conteneur = document.getElementById("Conteneur")
         conteneur.innerHTML = ""
         // Liste des prgramme est null
+        let DivListe = CoreXBuild.Div("", "InputBox", "")
+        Conteneur.appendChild(DivListe)
         if ((this._ListOfProgram == null)||(this._ListOfProgram.length == 0)) {
             // Affichag du message : pas de ListOfProgram
-            conteneur.appendChild(CoreXBuild.DivTexte("No List of Program defined...","","Text","text-align: center;"))
+            DivListe.appendChild(CoreXBuild.DivTexte("No List of Program defined...","","Text","text-align: center;"))
         } else {
             // Affichager la config des programme
             this._ListOfProgram.forEach((element,index) => {
-                conteneur.appendChild(this.BuildUiProgram(element.Name, index))
+                DivListe.appendChild(this.BuildUiProgram(element.Name, index))
             });
         }
         // Ajout du bouton Add Program
@@ -193,27 +195,27 @@ class PlayProgram{
             document.getElementById("PlayProgramTitre").innerHTML = "Update Program"
         }
         // Nom du programme
-        let DivDisplayProgramName = CoreXBuild.DivFlexRowStart("")
-        DivDisplayProgramName.style.width='90%'
-        Conteneur.appendChild(DivDisplayProgramName)
-        DivDisplayProgramName.appendChild(CoreXBuild.DivTexte("Program Name : ","","Text",""))
+        let DivInput = CoreXBuild.Div("", "InputBox", "")
+        Conteneur.appendChild(DivInput)
+        DivInput.appendChild(CoreXBuild.DivTexte("Name of the program","","Text","width: 100%;"))
         let ProgramName = this._ListOfProgram[this._CurrentProgramId].Name
-        let InputProgramName = CoreXBuild.Input("ProgramName",ProgramName,"Input WidthSmall","","text","ProgramName","Set Program Name")
+        let InputProgramName = CoreXBuild.Input("ProgramName",ProgramName,"Input","","text","ProgramName","Set Program Name")
         InputProgramName.onfocus = function(){InputProgramName.placeholder = ""}
-        //InputProgramName.onblur = function(){if(InputProgramName.value==""){InputProgramName.value = "New Program"}}
         InputProgramName.onblur = this.ChangProgramName.bind(this)
-        DivDisplayProgramName.appendChild(InputProgramName)
+        DivInput.appendChild(InputProgramName)
+        // Espace blanc
+        Conteneur.appendChild(CoreXBuild.Div("","","height:4vh;"))
         // liste des steps
-        let DivDisplayProgramList = CoreXBuild.DivFlexColumn("")
-        DivDisplayProgramList.style.width='90%'
-        Conteneur.appendChild(DivDisplayProgramList)
+        let DivStep = CoreXBuild.Div("", "InputBox", "")
+        Conteneur.appendChild(DivStep)
+        DivStep.appendChild(CoreXBuild.DivTexte("Liste of steps","","Text","width: 100%;"))
         let ListOfSteps = this._ListOfProgram[this._CurrentProgramId].ListOfSteps
         if (ListOfSteps.length == 0){
             // Affichag du message : pas de List Of Step
-            DivDisplayProgramList.appendChild(CoreXBuild.DivTexte("No List of steps defined...","","Text","text-align: center;"))
+            DivStep.appendChild(CoreXBuild.DivTexte("No List of steps defined...","","Text","text-align: center;"))
         } else {
             ListOfSteps.forEach((element,index) => {
-                DivDisplayProgramList.appendChild(this.BuildUiStep(element.DisplayName, element.Delay, index))
+                DivStep.appendChild(this.BuildUiStep(element.DisplayName, element.Delay, index))
             });
         }
         // Bouttons
@@ -300,9 +302,10 @@ class PlayProgram{
      * Build DropDown Type de relais
      */
     BuildDropDownRelaisType(){
+        let Box = CoreXBuild.Div("", "ActionWidth", "")
         let DropDown = document.createElement("select")
         DropDown.setAttribute("id", "Type")
-        DropDown.setAttribute("class", "Text DorpDown ActionWidth")
+        DropDown.setAttribute("class", "Text DorpDown")
         // liste des differents type
         let ListOfType = [...new Set(this._GpioConfig.map(item => item.custom.relaistype))]
         ListOfType.forEach(element => {
@@ -312,15 +315,17 @@ class PlayProgram{
             DropDown.appendChild(option)
         });
         DropDown.onchange = this.UpdateDropDownZone.bind(this)
-        return DropDown
+        Box.appendChild(DropDown)
+        return Box
     }
     /**
      * Build DropDown Zone
      */
     BuildDropDownZone(){
+        let Box = CoreXBuild.Div("", "ActionWidth", "")
         let DropDown = document.createElement("select")
         DropDown.setAttribute("id", "Zone")
-        DropDown.setAttribute("class", "Text DorpDown ActionWidth")
+        DropDown.setAttribute("class", "Text DorpDown")
         // liste des differents type
         let ListOfType = [...new Set(this._GpioConfig.map(item => item.custom.relaistype))]
         let TheRelaisType = ListOfType[0]
@@ -333,15 +338,17 @@ class PlayProgram{
             }
         });
         DropDown.onchange = this.UpdateDropDownDelay.bind(this)
-        return DropDown
+        Box.appendChild(DropDown)
+        return Box
     }
     /**
      * Build DropDown Delay
      */
     BuildDropDownDelay(){
+        let Box = CoreXBuild.Div("", "ActionSmallWidth", "")
         let DropDown = document.createElement("select")
         DropDown.setAttribute("id", "Delay")
-        DropDown.setAttribute("class", "Text DorpDown ActionSmallWidth")
+        DropDown.setAttribute("class", "Text DorpDown")
 
         // liste des differents type
         let ListOfType = [...new Set(this._GpioConfig.map(item => item.custom.relaistype))]
@@ -362,7 +369,8 @@ class PlayProgram{
             option.innerHTML = index
             DropDown.appendChild(option)
         }
-        return DropDown
+        Box.appendChild(DropDown)
+        return Box
     }
     /**
      * Update DropDown Zone

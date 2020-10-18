@@ -116,19 +116,21 @@ class Config{
         let DisplayName = (Element.custom == null) ? '' : Element.custom.displayname
         let RelaisType = (Element.custom == null) ? '' : Element.custom.relaistype
         // Dispaly Name
-        let DivDisplayName = CoreXBuild.DivFlexRowStart("")
-        Conteneur.appendChild(DivDisplayName)
-        DivDisplayName.appendChild(CoreXBuild.DivTexte("Display Name : ","","Text InputText",""))
-        let InputDisplayName = CoreXBuild.Input("DisplayName",DisplayName,"Input WidthSmall TextSmall","","text","DisplayName","Set Display Name")
+        let DivInputName = CoreXBuild.Div("", "InputBox", "")
+        DivInputName.style.marginBottom= "2%";
+        Conteneur.appendChild(DivInputName)
+        DivInputName.appendChild(CoreXBuild.DivTexte("Display Name","","Text",""))
+        let InputDisplayName = CoreXBuild.Input("DisplayName",DisplayName,"Input","","text","DisplayName","Set Display Name")
         InputDisplayName.onfocus = function(){InputDisplayName.placeholder = ""}
-        DivDisplayName.appendChild(InputDisplayName)
+        DivInputName.appendChild(InputDisplayName)
         // Relais type
-        let DivRelaisType = CoreXBuild.DivFlexRowStart("")
-        Conteneur.appendChild(DivRelaisType)
-        DivRelaisType.appendChild(CoreXBuild.DivTexte("Type of relay : ","","Text InputText",""))
+        let DivRelais = CoreXBuild.Div("", "InputBox", "")
+        DivRelais.style.marginBottom= "2%";
+        Conteneur.appendChild(DivRelais)
+        DivRelais.appendChild(CoreXBuild.DivTexte("Type of relay","","Text",""))
         let DropDown = document.createElement("select")
         DropDown.setAttribute("id", "RelaisType")
-        DropDown.setAttribute("class", "TextSmall DorpDown WidthSmall")
+        DropDown.setAttribute("class", "Text DorpDown")
         // Relais type Turbine
         let option1 = document.createElement("option")
         option1.setAttribute("value", "Turbine")
@@ -141,7 +143,7 @@ class Config{
         option2.innerHTML = "Goutte a goutte"
         if(RelaisType == "GoutteAGoutte"){option2.setAttribute("selected", "selected")}
         DropDown.appendChild(option2)
-        DivRelaisType.appendChild(DropDown)
+        DivRelais.appendChild(DropDown)
         // On laisse un blanc
         Conteneur.appendChild(CoreXBuild.Div("","","height:2vh;"))
         // Ajouter les boutton Save et Cancel

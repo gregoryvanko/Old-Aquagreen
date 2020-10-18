@@ -157,24 +157,28 @@ class Gpio{
         let RelayActiveLow = (config == null) ? '' : config.activelow
         let RelayTimeOut = (config == null) ? '' : config.timeout
         // Gpio Number
-        let DivSelectNumber = CoreXBuild.DivFlexRowStart("")
-        Conteneur.appendChild(DivSelectNumber)
-        DivSelectNumber.appendChild(CoreXBuild.DivTexte("Number : ","","Text InputText",""))
-        let InputNumber = CoreXBuild.Input("GpioNumber",GpioNumer,"Input WidthSmall","","text","GpioNumber","Set GPIO Number")
-        DivSelectNumber.appendChild(InputNumber)
+        let DivNumber = CoreXBuild.Div("", "InputBox", "")
+        DivNumber.style.marginBottom= "2%";
+        Conteneur.appendChild(DivNumber)
+        DivNumber.appendChild(CoreXBuild.DivTexte("Number","","Text",""))
+        let InputNumber = CoreXBuild.Input("GpioNumber",GpioNumer,"Input","","text","GpioNumber","Set GPIO Number")
+        InputNumber.style.width= "50%";
+        DivNumber.appendChild(InputNumber)
         // Relay name
-        let DivSelectName = CoreXBuild.DivFlexRowStart("")
+        let DivSelectName = CoreXBuild.Div("", "InputBox", "")
+        DivSelectName.style.marginBottom= "2%";
         Conteneur.appendChild(DivSelectName)
-        DivSelectName.appendChild(CoreXBuild.DivTexte("Name : ","","Text InputText",""))
-        let InputName = CoreXBuild.Input("Name",RelayName,"Input WidthSmall","","text","Name","Set Relay Name")
+        DivSelectName.appendChild(CoreXBuild.DivTexte("Name","","Text",""))
+        let InputName = CoreXBuild.Input("Name",RelayName,"Input","","text","Name","Set Relay Name")
         DivSelectName.appendChild(InputName)
         // Relay Status
-        let DivSelectStatus = CoreXBuild.DivFlexRowStart("")
+        let DivSelectStatus = CoreXBuild.Div("", "InputBox", "")
+        DivSelectStatus.style.marginBottom= "2%";
         Conteneur.appendChild(DivSelectStatus)
-        DivSelectStatus.appendChild(CoreXBuild.DivTexte("Status : ","","Text InputText",""))
+        DivSelectStatus.appendChild(CoreXBuild.DivTexte("Status","","Text",""))
         let DropDownStatus = document.createElement("select")
         DropDownStatus.setAttribute("id", "Status")
-        DropDownStatus.setAttribute("class", "Text DorpDown WidthSmall")
+        DropDownStatus.setAttribute("class", "Text DorpDown")
         let optionStatus1 = document.createElement("option")
         optionStatus1.setAttribute("value", "in")
         if(RelayStatus == "in"){optionStatus1.setAttribute("selected", "selected")}
@@ -192,12 +196,13 @@ class Gpio{
         DropDownStatus.appendChild(optionStatus3)
         DivSelectStatus.appendChild(DropDownStatus)
         // Relay ActiveLow
-        let DivSelectActiveLow = CoreXBuild.DivFlexRowStart("")
+        let DivSelectActiveLow = CoreXBuild.Div("", "InputBox", "")
+        DivSelectActiveLow.style.marginBottom= "2%";
         Conteneur.appendChild(DivSelectActiveLow)
-        DivSelectActiveLow.appendChild(CoreXBuild.DivTexte("ActiveLow : ","","Text InputText",""))
+        DivSelectActiveLow.appendChild(CoreXBuild.DivTexte("ActiveLow","","Text",""))
         let DropDownActiveLow = document.createElement("select")
         DropDownActiveLow.setAttribute("id", "ActiveLow")
-        DropDownActiveLow.setAttribute("class", "Text DorpDown WidthSmall")
+        DropDownActiveLow.setAttribute("class", "Text DorpDown")
         let optionActiveLow1 = document.createElement("option")
         optionActiveLow1.setAttribute("value", "true")
         if(RelayActiveLow == "true"){optionActiveLow1.setAttribute("selected", "selected")}
@@ -210,10 +215,12 @@ class Gpio{
         DropDownActiveLow.appendChild(optionActiveLow2)
         DivSelectActiveLow.appendChild(DropDownActiveLow)
         // Relay TimeOut
-        let DivSelectTimeOut = CoreXBuild.DivFlexRowStart("")
+        let DivSelectTimeOut = CoreXBuild.Div("", "InputBox", "")
+        DivSelectTimeOut.style.marginBottom= "2%";
         Conteneur.appendChild(DivSelectTimeOut)
-        DivSelectTimeOut.appendChild(CoreXBuild.DivTexte("TimeOut : ","","Text InputText",""))
-        let InputTimeOut = CoreXBuild.Input("TimeOut",RelayTimeOut,"Input WidthSmall","","text","TimeOut","Set Relay TimeOut")
+        DivSelectTimeOut.appendChild(CoreXBuild.DivTexte("TimeOut","","Text",""))
+        let InputTimeOut = CoreXBuild.Input("TimeOut",RelayTimeOut,"Input","","text","TimeOut","Set Relay TimeOut")
+        InputTimeOut.style.width= "50%";
         DivSelectTimeOut.appendChild(InputTimeOut)
     }
 
@@ -376,24 +383,28 @@ class Gpio{
         let ButtonStatus = (config == null) ? '' : config.status
         let ButtonDebounceTimeout = (config == null) ? '' : config.debouncetimeout
         // Gpio Number
-        let DivSelectNumber = CoreXBuild.DivFlexRowStart("")
+        let DivSelectNumber = CoreXBuild.Div("", "InputBox", "")
+        DivSelectNumber.style.marginBottom= "2%";
         Conteneur.appendChild(DivSelectNumber)
-        DivSelectNumber.appendChild(CoreXBuild.DivTexte("Number : ","","Text InputText",""))
-        let InputNumber = CoreXBuild.Input("GpioNumber",GpioNumer,"Input WidthSmall","","text","GpioNumber","Set GPIO Number")
+        DivSelectNumber.appendChild(CoreXBuild.DivTexte("Number","","Text",""))
+        let InputNumber = CoreXBuild.Input("GpioNumber",GpioNumer,"Input","","text","GpioNumber","Set GPIO Number")
+        InputNumber.style.width= "50%"
         DivSelectNumber.appendChild(InputNumber)
         // Button name
-        let DivSelectName = CoreXBuild.DivFlexRowStart("")
+        let DivSelectName = CoreXBuild.Div("", "InputBox", "")
+        DivSelectName.style.marginBottom= "2%";
         Conteneur.appendChild(DivSelectName)
-        DivSelectName.appendChild(CoreXBuild.DivTexte("Name : ","","Text InputText",""))
-        let InputName = CoreXBuild.Input("Name",ButtonName,"Input WidthSmall","","text","Name","Set Button Name")
+        DivSelectName.appendChild(CoreXBuild.DivTexte("Name","","Text",""))
+        let InputName = CoreXBuild.Input("Name",ButtonName,"Input","","text","Name","Set Button Name")
         DivSelectName.appendChild(InputName)
         // Button Status
-        let DivSelectStatus = CoreXBuild.DivFlexRowStart("")
+        let DivSelectStatus = CoreXBuild.Div("", "InputBox", "")
+        DivSelectStatus.style.marginBottom= "2%";
         Conteneur.appendChild(DivSelectStatus)
-        DivSelectStatus.appendChild(CoreXBuild.DivTexte("Status : ","","Text InputText",""))
+        DivSelectStatus.appendChild(CoreXBuild.DivTexte("Status","","Text",""))
         let DropDownStatus = document.createElement("select")
         DropDownStatus.setAttribute("id", "Status")
-        DropDownStatus.setAttribute("class", "Text DorpDown WidthSmall")
+        DropDownStatus.setAttribute("class", "Text DorpDown")
         let optionStatus1 = document.createElement("option")
         optionStatus1.setAttribute("value", "rising")
         if(ButtonStatus == "rising"){optionStatus1.setAttribute("selected", "selected")}
@@ -411,10 +422,12 @@ class Gpio{
         DropDownStatus.appendChild(optionStatus3)
         DivSelectStatus.appendChild(DropDownStatus)
         // Button debounceTimeout
-        let DivSelectTimeOut = CoreXBuild.DivFlexRowStart("")
+        let DivSelectTimeOut = CoreXBuild.Div("", "InputBox", "")
+        DivSelectTimeOut.style.marginBottom= "2%";
         Conteneur.appendChild(DivSelectTimeOut)
-        DivSelectTimeOut.appendChild(CoreXBuild.DivTexte("Debounce Timeout : ","","Text InputText",""))
-        let InputTimeOut = CoreXBuild.Input("DebounceTimeout",ButtonDebounceTimeout,"Input WidthSmall","","text","TimeOut","Set Button Debounce TimeOut")
+        DivSelectTimeOut.appendChild(CoreXBuild.DivTexte("Debounce Timeout","","Text",""))
+        let InputTimeOut = CoreXBuild.Input("DebounceTimeout",ButtonDebounceTimeout,"Input","","text","TimeOut","Set Button Debounce TimeOut")
+        InputTimeOut.style.width= "50%"
         DivSelectTimeOut.appendChild(InputTimeOut)
     }
 

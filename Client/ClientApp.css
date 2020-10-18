@@ -6,11 +6,12 @@
 }
 
 .ProgramBox{
+    box-sizing: border-box;
     border: 1px solid black;
     border-radius: 20px;
-    width: 40%;
-    padding: 2%;
-    margin: 1%;
+    width: 100%;
+    padding: 2vh;
+    margin-bottom: 4%;
     cursor: pointer;
 }
 .ProgramBox:hover{
@@ -29,7 +30,6 @@ only screen and (min-device-width: 414px) and (max-device-width: 736px) and (-we
 screen and (max-width: 700px)
 {
     .ActionBox{width: 90%;}
-    .ProgramBox{width: 90%;}
     .ActionWidth {width: 90%;}
     .ActionSmallWidth {width: 45%;}
 }
