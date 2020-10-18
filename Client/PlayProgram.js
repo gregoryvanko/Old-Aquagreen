@@ -93,8 +93,8 @@ class PlayProgram{
         if(this._ShowUpdateView){
             // Changement du titre: new program
             document.getElementById("PlayProgramTitre").innerHTML = "Update Program"
+            DivBouttons.appendChild(CoreXBuild.Button("Back", this.ClickOnCancelUpdate.bind(this),"Button", "AddConfig"))
             DivBouttons.appendChild(CoreXBuild.Button("Add Program", this.ShowProgram.bind(this, null),"Button", "AddConfig"))
-            DivBouttons.appendChild(CoreXBuild.Button("Cancel", this.ClickOnCancelUpdate.bind(this),"Button", "AddConfig"))
         } else {
             // Changement du titre: program
             document.getElementById("PlayProgramTitre").innerHTML = "Programs"
@@ -187,7 +187,11 @@ class PlayProgram{
         let conteneur = document.getElementById("Conteneur") 
         conteneur.innerHTML = ""
         // Changement du titre: new program
-        document.getElementById("PlayProgramTitre").innerHTML = "New Program"
+        if(ProgramId == null){
+            document.getElementById("PlayProgramTitre").innerHTML = "New Program"
+        } else {
+            document.getElementById("PlayProgramTitre").innerHTML = "Update Program"
+        }
         // Nom du programme
         let DivDisplayProgramName = CoreXBuild.DivFlexRowStart("")
         DivDisplayProgramName.style.width='90%'
@@ -225,10 +229,12 @@ class PlayProgram{
      * @param {number} index index du program a supprimer de la liste des program
      */
     ClickDeleteProgram(){
-        this._ListOfProgram.splice(this._CurrentProgramId, 1)
-        this._CurrentProgramId = null
-        this.ShowListOfProgram()
-        // ToDo Save to server
+        if(confirm("Do you want to delete this Program?")){
+            this._ListOfProgram.splice(this._CurrentProgramId, 1)
+            this._CurrentProgramId = null
+            this.ShowListOfProgram()
+            this.SaveListOfProgram()
+        }
     }
 
     BuildUiStep(Name, Delay, index){
@@ -252,13 +258,19 @@ class PlayProgram{
         let InputProgramName = document.getElementById("ProgramName") 
         if(InputProgramName.value==""){InputProgramName.value = "New Program"}
         this._ListOfProgram[this._CurrentProgramId].Name = InputProgramName.value
-        // ToDo Save to server
+        this.SaveListOfProgram()
     }
 
     /**
      * Show view : Add step
      */
     ShowAddStep(IsUpdate, index){
+        // Changement du titre
+        if(IsUpdate){
+            document.getElementById("PlayProgramTitre").innerHTML = "Update Step"
+        } else {
+            document.getElementById("PlayProgramTitre").innerHTML = "New Step"
+        }
         // Sort par displayname
         this._GpioConfig.sort((a,b) =>  a.custom.displayname.localeCompare(b.custom.displayname))
         // Selection du conteneur
@@ -434,7 +446,7 @@ class PlayProgram{
             this._ListOfProgram[this._CurrentProgramId].ListOfSteps[index]=WorkerConfig
         }
         this.ShowProgram(this._CurrentProgramId)
-        // ToDo Save to server
+        this.SaveListOfProgram()
     }
     
     /**
@@ -442,9 +454,16 @@ class PlayProgram{
      * @param {number} index index du step a supprimer de la liste des step
      */
     ClickDeleteStep(index){
-        this._ListOfProgram[this._CurrentProgramId].ListOfSteps.splice(index, 1)
-        this.ShowProgram(this._CurrentProgramId)
-        // ToDo Save to server
+        if(confirm("Do you want to delete this step?")){
+            this._ListOfProgram[this._CurrentProgramId].ListOfSteps.splice(index, 1)
+            this.ShowProgram(this._CurrentProgramId)
+            this.SaveListOfProgram()
+        }
+    }
+
+    SaveListOfProgram(){
+        // Send save liste to serveur
+        GlobalSendSocketIo("PlayProgram", "SaveListOfProgram", this._ListOfProgram)
     }
 
     /** Get Titre de l'application */

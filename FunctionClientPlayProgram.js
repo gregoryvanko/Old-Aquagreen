@@ -3,7 +3,7 @@ class FunctionClientPlayProgram{
         this._MyApp = MyApp
         this._RpiGpioAdress = RpiGpioAdress
         this._Worker = Worker
-        this._UseWorker = UseWorker // aide pour debugger si le worker n'est pas present
+        this._UseWorker = UseWorker // aide pour debug si le worker n'est pas present
 
         // Varaible interne MongoDB
         let MongoR = require('@gregvanko/corex').Mongo
@@ -22,6 +22,9 @@ class FunctionClientPlayProgram{
             case "StartClientVue":
                 this.StartClientVue(Socket, User, UserId)
                 break
+            case "SaveListOfProgram":
+                this.SaveListOfProgram(Socket, Data.Value, User, UserId)
+                break
             case "PlayWorker":
                 this.StartWorker(Socket, Data.Value, User, UserId)
                 break
@@ -34,7 +37,6 @@ class FunctionClientPlayProgram{
 
     // Send ProgramConfig and GPIO config from DB
     StartClientVue(Socket, User, UserId){
-
         if (this._UseWorker){
             // On ping le worker pour vérifier sa présence
             let me = this
@@ -114,6 +116,45 @@ class FunctionClientPlayProgram{
     StartWorker(Socket, Data, User, UserId){
         this._Worker.StartWorking(Data, User, UserId)
         Socket.emit("PlayProgramBuildPlayerVue", this._Worker.Status)
+    }
+
+    // Save List of program
+    SaveListOfProgram(Socket, Data, User, UserId){
+        let me = this
+        // on vérifie si la configuration existe en DB
+        const Querry = {[this._MongoConfigCollection.Key]: this._MongoConfigCollection.ProgramConfigKey}
+        const Projection = { projection:{_id: 1, [this._MongoConfigCollection.Value]: 1}}
+        this._Mongo.FindPromise(Querry, Projection, this._MongoConfigCollection.Collection).then((reponse)=>{
+            if(reponse.length == 0){
+                // Creation de la config en DB
+                let DataToMongo = { [this._MongoConfigCollection.Key]: this._MongoConfigCollection.ProgramConfigKey, [this._MongoConfigCollection.Value]: Data}
+                this._Mongo.InsertOnePromise(DataToMongo, this._MongoConfigCollection.Collection).then((reponseCreation)=>{
+                    // Rien a faire si on a fait un creation de la config
+                },(erreur)=>{
+                    me._MyApp.LogAppliError("ApiPlayProgram SaveListOfProgram SetConfig DB error : " + erreur, User, UserId)
+                    Socket.emit("PlayProgramError", "ApiPlayProgram SaveListOfProgram SetConfig DB Error")
+                })
+            } else {
+                // Update de la config en DB
+                let DataToDb = new Object()
+                DataToDb[this._MongoConfigCollection.Value]= Data
+                let ConfigId = reponse[0]._id
+                this._Mongo.UpdateByIdPromise(ConfigId, DataToDb, this._MongoConfigCollection.Collection).then((reponse)=>{
+                    if (reponse.matchedCount == 0){
+                        me._MyApp.LogAppliError("ApiPlayProgram Update config error: Id config not found", User, UserId)
+                        Socket.emit("PlayProgramError", "ApiPlayProgram Update config error: Id config not found")
+                    } else {
+                        // Rien a faire si on a fait l'update
+                    }
+                },(erreur)=>{
+                    me._MyApp.LogAppliError("ApiPlayProgram SaveListOfProgram DB error : " + erreur, User, UserId)
+                    Socket.emit("PlayProgramError", "ApiPlayProgram SaveListOfProgram DB Error")
+                })
+            }
+        },(erreur)=>{
+            me._MyApp.LogAppliError("ApiPlayProgram SaveListOfProgram DB error : " + erreur, User, UserId)
+            Socket.emit("PlayProgramError", "ApiPlayProgram SaveListOfProgram DB Error")
+        })
     }
 }
 module.exports.FunctionClientPlayProgram = FunctionClientPlayProgram

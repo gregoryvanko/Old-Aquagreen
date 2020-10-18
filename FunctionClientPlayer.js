@@ -3,7 +3,7 @@ class FunctionClientPlayer{
         this._MyApp = MyApp
         this._RpiGpioAdress = RpiGpioAdress
         this._Worker = Worker
-        this._UseWorker = UseWorker // aide pour debugger si le worker n'est pas present
+        this._UseWorker = UseWorker // aide pour debug si le worker n'est pas present
     }
 
     /**
