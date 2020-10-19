@@ -110,6 +110,18 @@
     border-color: var(--CoreX-color);
 }
 
+/* Drag and drop*/
+.Container{
+    margin-top: 1vh;
+    margin-bottom: 1vh;
+}
+.Draggable {
+    cursor: pointer;
+}
+.Draggable.Dragging {
+    opacity: .5;
+}
+
 /* Player */
 .PlayerBox{
     border: 1px solid var(--CoreX-color);

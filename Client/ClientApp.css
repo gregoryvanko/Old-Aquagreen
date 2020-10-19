@@ -7,15 +7,12 @@
 
 .ProgramBox{
     box-sizing: border-box;
-    border: 1px solid black;
+    border: 1px solid #dcdcdc;
     border-radius: 20px;
     width: 100%;
     padding: 2vh;
     margin-bottom: 4%;
     cursor: pointer;
-}
-.ProgramBox:hover{
-    border-color: var(--CoreX-color);
 }
 
 .ActionWidth {

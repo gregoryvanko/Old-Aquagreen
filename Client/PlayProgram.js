@@ -28,7 +28,7 @@ class PlayProgram{
         })
         SocketIo.on('PlayProgramAllConfig', (Value) => {
             this._GpioConfig = Value.GpioConfig
-            this._ListOfProgram = Value.ProgramList
+            this._ListOfProgram = this.AddDisplayNameOfSteps(Value.ProgramList)
             this.ShowListOfProgram()
         })
         SocketIo.on('PlayProgramBuildPlayerVue', (Value) => {
@@ -55,6 +55,11 @@ class PlayProgram{
         if(SocketIo.hasListeners('PlayProgramError')){SocketIo.off('PlayProgramError')}
         if(SocketIo.hasListeners('PlayProgramAllConfig')){SocketIo.off('PlayProgramAllConfig')}
         if(SocketIo.hasListeners('PlayProgramBuildPlayerVue')){SocketIo.off('PlayProgramBuildPlayerVue')}
+        // Clear variable
+        this._GpioConfig = null
+        this._ListOfProgram = null
+        this._CurrentProgramId = null
+        this._ShowUpdateView = false
     }
     /**
      * Affichage du message d'erreur venant du serveur
@@ -64,6 +69,33 @@ class PlayProgram{
         document.getElementById("Conteneur").innerHTML = ""
         document.getElementById("TxtInfo").innerHTML = ""
         document.getElementById("TxtError").innerHTML = ErrorMsg
+    }
+
+    /**
+     * ajoute un displayname aux steps de la liste des configuration
+     * @param {Array} List Liste des configuration sauvée en DB
+     */
+    AddDisplayNameOfSteps(List){
+        let NewList = []
+        List.forEach(element => {
+            let NewObject = new Object()
+            NewObject.Name = element.Name
+            NewObject.ListOfSteps = []
+            element.ListOfSteps.forEach(elementListOfStep => {
+                let setp = new Object()
+                setp.RelaisName = elementListOfStep.RelaisName
+                let Element = this._GpioConfig.find(element => element.name == setp.RelaisName)
+                if (Element == undefined){
+                    setp.DisplayName = "Not Found"
+                } else {
+                    setp.DisplayName = Element.custom.displayname
+                }
+                setp.Delay = elementListOfStep.Delay
+                NewObject.ListOfSteps.push(setp)
+            });
+            NewList.push(NewObject)
+        });
+        return NewList
     }
 
     /**
@@ -214,9 +246,21 @@ class PlayProgram{
             // Affichag du message : pas de List Of Step
             DivStep.appendChild(CoreXBuild.DivTexte("No List of steps defined...","","Text","text-align: center;"))
         } else {
+            let Container = CoreXBuild.Div("", "Container", "")
+            Container.addEventListener("dragover", e =>{
+                e.preventDefault()
+                const afterElement = this.GetDragAfterElement(Container, e.clientY)
+                const draggeable = document.querySelector(".Dragging")
+                if(afterElement == null){
+                    Container.appendChild(draggeable)
+                } else {
+                    Container.insertBefore(draggeable, afterElement)
+                }
+            })
             ListOfSteps.forEach((element,index) => {
-                DivStep.appendChild(this.BuildUiStep(element.DisplayName, element.Delay, index))
+                Container.appendChild(this.BuildUiStep(element.RelaisName, element.DisplayName, element.Delay, index))
             });
+            DivStep.appendChild(Container)
         }
         // Bouttons
         let DivBouttons = CoreXBuild.DivFlexRowAr("")
@@ -224,6 +268,20 @@ class PlayProgram{
         DivBouttons.appendChild(CoreXBuild.Button("Back", this.ShowListOfProgram.bind(this),"Button", "Back"))
         DivBouttons.appendChild(CoreXBuild.Button("Add Step", this.ShowAddStep.bind(this, false, null),"Button", "AddStep"))
         DivBouttons.appendChild(CoreXBuild.Button("Delete", this.ClickDeleteProgram.bind(this),"Button", "AddStep"))
+    }
+
+    // User for drag and drop
+    GetDragAfterElement(container, y){
+        const draggableElements = [...container.querySelectorAll('.Draggable:not(.Dragging)')]
+        return draggableElements.reduce((closest, child)=>{
+            const box = child.getBoundingClientRect()
+            const offset = y - box.top - box.height / 2
+            if (offset < 0 && offset > closest.offset){
+                return {offset: offset, element: child}
+            } else {
+                return closest
+            }
+        },{offset: Number.NEGATIVE_INFINITY}).element
     }
 
     /**
@@ -239,9 +297,22 @@ class PlayProgram{
         }
     }
 
-    BuildUiStep(Name, Delay, index){
-        let output = CoreXBuild.Div("", "ProgramBox", "")
-        output.addEventListener("click", this.ClickOnStep.bind(this,index))
+    BuildUiStep(RelaisName, Name, Delay, index){
+        let output = CoreXBuild.Div("", "ProgramBox Draggable", "")
+        output.setAttribute("data-relaisName",RelaisName)
+        output.setAttribute("data-displayName",Name)
+        output.setAttribute("data-delay",Delay)
+        output.setAttribute("data-index",index)
+
+        output.setAttribute("draggable","true")
+        output.addEventListener("click", this.ClickOnStep.bind(this,output))
+        output.addEventListener("dragstart", ()=>{
+            output.classList.add("Dragging")
+        })
+        output.addEventListener("dragend", ()=>{
+            output.classList.remove("Dragging")
+            this.UpdateOrderListOfStep()
+        })
         let DivData = CoreXBuild.DivFlexRowStart("")
         DivData.appendChild(CoreXBuild.DivTexte(Name, "","Text","text-align: left; width:55%;"))
         DivData.appendChild(CoreXBuild.DivTexte("Timing: " + Delay + "min","","Text","text-align: left; width:40%; color: grey;"))
@@ -249,7 +320,26 @@ class PlayProgram{
         return output
     }
 
-    ClickOnStep(index){
+    /**
+     * Update l'order de la liste des step dans le arry this._ListOfProgram apres un drag and drop
+     */
+    UpdateOrderListOfStep(){
+        const Elements = [...document.querySelectorAll('.Draggable')]
+        let NewListOfStep = []
+        Elements.forEach((element,index) => {
+            let NewStep = new Object()
+            NewStep.RelaisName = element.dataset.relaisname
+            NewStep.DisplayName = element.dataset.displayname
+            NewStep.Delay = element.dataset.delay
+            NewListOfStep.push(NewStep)
+            element.dataset.index = index
+        });
+        this._ListOfProgram[this._CurrentProgramId].ListOfSteps = NewListOfStep
+        this.SaveListOfProgram()
+    }
+
+    ClickOnStep(element){
+        let index =  element.dataset.index
         this.ShowAddStep(true, index)
     }
 
@@ -470,8 +560,22 @@ class PlayProgram{
     }
 
     SaveListOfProgram(){
+        // Delete DisplayName of list of steps befor saving
+        let ListToSave = []
+        this._ListOfProgram.forEach(element => {
+            let NewObject = new Object()
+            NewObject.Name = element.Name
+            NewObject.ListOfSteps = []
+            element.ListOfSteps.forEach(elementListOfStep => {
+                let setp = new Object()
+                setp.RelaisName = elementListOfStep.RelaisName
+                setp.Delay = elementListOfStep.Delay
+                NewObject.ListOfSteps.push(setp)
+            });
+            ListToSave.push(NewObject)
+        });
         // Send save liste to serveur
-        GlobalSendSocketIo("PlayProgram", "SaveListOfProgram", this._ListOfProgram)
+        GlobalSendSocketIo("PlayProgram", "SaveListOfProgram", ListToSave)
     }
 
     /** Get Titre de l'application */
