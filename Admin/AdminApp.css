@@ -13,9 +13,12 @@
     box-sizing: border-box;
     border-radius: 15px;
 }
-.ListElement:hover{
-    background-color: #F8F8F8;
+@media (hover: hover) {
+    .ListElement:hover{
+        background-color: #F8F8F8;
+    }
 }
+
 
 /* PlayGpio view*/
 .ActionButton{

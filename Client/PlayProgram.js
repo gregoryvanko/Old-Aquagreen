@@ -142,7 +142,7 @@ class PlayProgram{
      * @param {interger} Index numero de l'indexe de ce program dans le array
      */
     BuildUiProgram(Name, Index){
-        let output = CoreXBuild.Div("", "ProgramBox", "")
+        let output = CoreXBuild.Div("", "ProgramBox Hover", "")
         if (this._ShowUpdateView){
             output.style.borderColor = "green"
         }
@@ -303,9 +303,9 @@ class PlayProgram{
         output.setAttribute("data-displayName",Name)
         output.setAttribute("data-delay",Delay)
         output.setAttribute("data-index",index)
-
         output.setAttribute("draggable","true")
         output.addEventListener("click", this.ClickOnStep.bind(this,output))
+
         output.addEventListener("dragstart", ()=>{
             output.classList.add("Dragging")
         })
@@ -313,6 +313,7 @@ class PlayProgram{
             output.classList.remove("Dragging")
             this.UpdateOrderListOfStep()
         })
+
         let DivData = CoreXBuild.DivFlexRowStart("")
         DivData.appendChild(CoreXBuild.DivTexte(Name, "","Text","text-align: left; width:55%;"))
         DivData.appendChild(CoreXBuild.DivTexte("Timing: " + Delay + "min","","Text","text-align: left; width:40%; color: grey;"))
