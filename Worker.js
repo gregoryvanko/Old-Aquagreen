@@ -44,7 +44,7 @@ class Worker {
         this._MyApp.LogAppliInfo("Call ApiWorker Data:" + JSON.stringify(Data), User, UserId)
         if (Data.Fct == "ButtonPressed"){
             Res.json({Error: false, ErrorMsg: "Worker", Data: "Worker Started by: " + Data.Name})
-            //  ToDo Start Button Fct
+            this.ButtonPressed(Data.Name)
         } else if(Data.Fct == "Ping"){
             Res.json({Error: false, ErrorMsg: "Worker", Data: "Pong"})
         } else if(Data.Fct == "GetConfig"){
@@ -74,6 +74,10 @@ class Worker {
             me._MyApp.LogAppliError("ApiWork GetConfig DB error : " + erreur, User, UserId)
             Res.json({Error: true, ErrorMsg: "ApiWork GetConfig DB Error", Data: null})
         })
+    }
+
+    ButtonPressed(ButtonName){
+        //  ToDo Start Button Fct
     }
 
     StartWorking(WorkerConfigList, User, UserId){

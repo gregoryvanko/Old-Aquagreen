@@ -111,7 +111,7 @@ class PlayProgram{
         // Selection du conteneur
         let conteneur = document.getElementById("Conteneur")
         conteneur.innerHTML = ""
-        // Liste des prgramme est null
+        // Liste des prgramme
         let DivListe = CoreXBuild.Div("", "InputBox", "")
         Conteneur.appendChild(DivListe)
         if ((this._ListOfProgram == null)||(this._ListOfProgram.length == 0)) {

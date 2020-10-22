@@ -3,6 +3,7 @@ class Config{
         this._DivApp = document.getElementById(GlobalCoreXGetAppContentId())
 
         this._ConfigGpio = null
+        this._ConfigProgram = null
     }
     /**
      * Start de l'application
@@ -72,10 +73,7 @@ class Config{
             })
             // Pour tous les elements de this._ConfigGpio
             this._ConfigGpio.forEach(element => {
-                // Si c'est un relais
-                if (element.type == "Relais"){
-                    Conteneur.appendChild(this.BuildElementOfListConfig(element))
-                }
+                Conteneur.appendChild(this.BuildElementOfListConfig(element))
             })
         }
     }
@@ -88,7 +86,7 @@ class Config{
         // Conteneur
         let conteneur = CoreXBuild.Div("","","width:100%")
         let data = CoreXBuild.Div("","ListElement","")
-        data.addEventListener("click", this.BuildViewAddCustomConfig.bind(this, Element))
+        data.addEventListener("click", this.SelectCustomConfigView.bind(this, Element))
         conteneur.appendChild(data)
         let divFlex = CoreXBuild.DivFlexRowAr("")
         data.appendChild(divFlex)
@@ -105,9 +103,117 @@ class Config{
         return conteneur
     }
 
-    BuildViewAddCustomConfig(Element){
+    /**
+     * Choisi la vue a custom config a afficher en fonction du type (relais ou boutton)
+     * @param {Object} Element Element a modifier
+     */
+    SelectCustomConfigView(Element){
         // Changement du titre
         document.getElementById("TitreConfig").innerHTML = "Configuration " + Element.name
+        // Save view en fonction du type
+        if(Element.type=="Relais"){
+            this.BuildViewAddCustomConfigRelais(Element)
+        } else if(Element.type=="Button") {
+            this.BuildViewAddCustomConfigButton(Element)
+        } else {
+            alert(`Type of element not know: ${Element.type}`)
+        }
+    }
+
+    /**
+     * Construit la vue qui ajoute une config custome pour un type Boutton
+     * @param {Object} Element Element a modifier
+     */
+    BuildViewAddCustomConfigButton(Element){
+        // Get du Conteneur
+        let Conteneur = document.getElementById("Conteneur")
+        // Vider le conteneur
+        Conteneur.innerHTML = ""
+        // Get configuration of programs
+        Conteneur.appendChild(CoreXBuild.DivTexte("Get Program Configuration...","","Text","text-align: center;"))
+        // On laisse un blanc
+        Conteneur.appendChild(CoreXBuild.Div("","","height:2vh;"))
+        // Ajouter les boutton Save et Cancel
+        let DivContentButton = CoreXBuild.DivFlexRowAr("DivContentButton")
+        Conteneur.appendChild(DivContentButton)
+        DivContentButton.appendChild(CoreXBuild.Button("Cancel", this.Start.bind(this),"Button"))
+        // Call API Get Config
+        let ApiData = new Object()
+        ApiData.Fct = "GetConfProgram"
+        ApiData.Data = ""
+        GlobalCallApiPromise("Config", ApiData, "", "").then((reponse)=>{
+            document.getElementById("TxtConfig").innerHTML = ""
+            document.getElementById("ErrorConfig").innerHTML = ""
+            this._ConfigProgram = reponse
+            this.BuildViewAllPrograms(Element)
+        },(erreur)=>{
+            // Vider le conteneur
+            Conteneur.innerHTML = ""
+            document.getElementById("TxtConfig").innerHTML = ""
+            document.getElementById("ErrorConfig").innerHTML = erreur
+        })
+    }
+
+    BuildViewAllPrograms(Element){
+        // Get du Conteneur
+        let Conteneur = document.getElementById("Conteneur")
+        // Vider le conteneur
+        Conteneur.innerHTML = ""
+        // Liste des prgramme
+        let DivListe = CoreXBuild.Div("", "InputBox", "")
+        Conteneur.appendChild(DivListe)
+        if ((this._ConfigProgram == null)||(this._ConfigProgram.length == 0)) {
+            // Affichag du message : pas de ListOfProgram
+            DivListe.appendChild(CoreXBuild.DivTexte("No List of Program defined...","","Text","text-align: center;"))
+        } else {
+            // Affichager les programmes
+            this._ConfigProgram.forEach((Prog,index) => {
+                DivListe.appendChild(this.BuildUiProgram(Prog.Name, Element))
+            });
+        }
+        // Ajouter les boutton Cancel
+        let DivContentButton = CoreXBuild.DivFlexRowAr("DivContentButton")
+        Conteneur.appendChild(DivContentButton)
+        DivContentButton.appendChild(CoreXBuild.Button("Cancel", this.Start.bind(this),"Button"))
+    }
+
+    BuildUiProgram(Name, Element){
+        let output = CoreXBuild.Div("", "ProgramBox", "")
+        output.style.borderColor = "green"
+        output.addEventListener("click", this.ClickOnProgram.bind(this, Name, Element))
+        let DivData = CoreXBuild.DivFlexRowAr("")
+        DivData.appendChild(CoreXBuild.DivTexte(Name, "","Text",""))
+        output.appendChild(DivData)
+        return output
+    }
+
+    ClickOnProgram(Name, Element){
+        document.getElementById("Conteneur").innerHTML = ""
+        document.getElementById("TxtConfig").innerHTML = "Save Custom Configuration..."
+        document.getElementById("ErrorConfig").innerHTML = ""
+        // Creation de l'objet config relay
+        let CustomConfig = new Object()
+        CustomConfig.programname = Name
+        Element.custom = CustomConfig
+        // Call API Set Config
+        let ApiData = new Object()
+        ApiData.Fct = "SetConfig"
+        ApiData.Data = this._ConfigGpio
+        GlobalCallApiPromise("Config", ApiData, "", "").then((reponse)=>{
+            document.getElementById("TxtConfig").innerHTML = ""
+            document.getElementById("ErrorConfig").innerHTML = ""
+            this.Start()
+        },(erreur)=>{
+            document.getElementById("TxtConfig").innerHTML = ""
+            document.getElementById("ErrorConfig").innerHTML = erreur
+        })
+    }
+
+    /**
+     * Construit la vue qui ajoute une config custome pour un type Relais
+     * @param {Object} Element Element a modifier
+     */
+    BuildViewAddCustomConfigRelais(Element){
         // Get du Conteneur
         let Conteneur = document.getElementById("Conteneur")
         // Vider le conteneur
@@ -141,7 +247,7 @@ class Config{
         let option2 = document.createElement("option")
         option2.setAttribute("value", "Goutte a goutte")
         option2.innerHTML = "Goutte a goutte"
-        if(RelaisType == "GoutteAGoutte"){option2.setAttribute("selected", "selected")}
+        if(RelaisType == "Goutte a goutte"){option2.setAttribute("selected", "selected")}
         DropDown.appendChild(option2)
         DivRelais.appendChild(DropDown)
         // On laisse un blanc
@@ -149,8 +255,8 @@ class Config{
         // Ajouter les boutton Save et Cancel
         let DivContentButton = CoreXBuild.DivFlexRowAr("DivContentButton")
         Conteneur.appendChild(DivContentButton)
-        DivContentButton.appendChild(CoreXBuild.Button("Save", this.SaveCustomConfig.bind(this, Element),"Button"))
         DivContentButton.appendChild(CoreXBuild.Button("Cancel", this.Start.bind(this),"Button"))
+        DivContentButton.appendChild(CoreXBuild.Button("Save", this.SaveCustomConfig.bind(this, Element),"Button"))
     }
 
     SaveCustomConfig(Element){

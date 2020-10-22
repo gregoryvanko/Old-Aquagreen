@@ -5,33 +5,6 @@
     padding: 2%;
 }
 
-.ProgramBox{
-    box-sizing: border-box;
-    border: 1px solid #dcdcdc;
-    border-radius: 20px;
-    width: 100%;
-    padding: 2vh;
-    margin-bottom: 4%;
-    cursor: pointer;
-    background: white;
-}
-/*.ProgramBox:not(:focus):hover {
-    border-color: var(--CoreX-color);
-  }
-.ProgramBox:focus {
-    outline: none;
-  }
-.ProgramBox:hover {
-    border-color: var(--CoreX-color);
-}*/
-
-@media (hover: hover) {
-    .Hover:hover {
-        border-color: var(--CoreX-color);
-    }
-}
-
-
 .ActionWidth {
     width: 60%;
 }

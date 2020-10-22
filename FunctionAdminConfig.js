@@ -26,6 +26,9 @@ class FunctionAdminConfig{
             case "SetConfig":
                 this.SetConfig(Data.Data, Res, User, UserId)
                 break
+            case "GetConfProgram":
+                this.GetConfProgram(Res, User, UserId)
+                break
             default:
                 Res.json({Error: true, ErrorMsg: `ApiConfig error, Fct ${Data.Fct} not found`, Data: null})
                 this._MyApp.LogAppliError(`ApiConfig error, Fct ${Data.Fct} not found`, User, UserId)
@@ -67,6 +70,22 @@ class FunctionAdminConfig{
         },(erreur)=>{
             me._MyApp.LogAppliError("ApiConfig SetConfig DB error : " + erreur, User, UserId)
             if (Res != null){Res.json({Error: true, ErrorMsg: "ApiConfig SetConfig DB Error", Data: null})}
+        })
+    }
+
+    GetConfProgram(Res){
+        let me = this
+        const Querry1 = {[this._MongoConfigCollection.Key]: this._MongoConfigCollection.ProgramConfigKey}
+        const Projection1 = { projection:{_id: 0, [this._MongoConfigCollection.Value]: 1}}
+        this._Mongo.FindPromise(Querry1, Projection1, this._MongoConfigCollection.Collection).then((reponse1)=>{
+            if(reponse1.length == 0){
+                if (Res != null){Res.json({Error: false, ErrorMsg: "", Data: null})}
+            } else {
+                if (Res != null){Res.json({Error: false, ErrorMsg: "", Data: reponse1[0][this._MongoConfigCollection.Value]})}
+            }
+        },(erreur)=>{
+            me._MyApp.LogAppliError("ApiConfig GetConfProgram DB error : " + erreur, User, UserId)
+            if (Res != null){Res.json({Error: true, ErrorMsg: "ApiConfig GetConfProgram DB error", Data: null})}
         })
     }
 }
