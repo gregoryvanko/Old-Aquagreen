@@ -77,24 +77,26 @@ class PlayProgram{
      */
     AddDisplayNameOfSteps(List){
         let NewList = []
-        List.forEach(element => {
-            let NewObject = new Object()
-            NewObject.Name = element.Name
-            NewObject.ListOfSteps = []
-            element.ListOfSteps.forEach(elementListOfStep => {
-                let setp = new Object()
-                setp.RelaisName = elementListOfStep.RelaisName
-                let Element = this._GpioConfig.find(element => element.name == setp.RelaisName)
-                if (Element == undefined){
-                    setp.DisplayName = "Not Found"
-                } else {
-                    setp.DisplayName = Element.custom.displayname
-                }
-                setp.Delay = elementListOfStep.Delay
-                NewObject.ListOfSteps.push(setp)
+        if(List != null){
+            List.forEach(element => {
+                let NewObject = new Object()
+                NewObject.Name = element.Name
+                NewObject.ListOfSteps = []
+                element.ListOfSteps.forEach(elementListOfStep => {
+                    let setp = new Object()
+                    setp.RelaisName = elementListOfStep.RelaisName
+                    let Element = this._GpioConfig.find(element => element.name == setp.RelaisName)
+                    if (Element == undefined){
+                        setp.DisplayName = "Not Found"
+                    } else {
+                        setp.DisplayName = Element.custom.displayname
+                    }
+                    setp.Delay = elementListOfStep.Delay
+                    NewObject.ListOfSteps.push(setp)
+                });
+                NewList.push(NewObject)
             });
-            NewList.push(NewObject)
-        });
+        }
         return NewList
     }
 
