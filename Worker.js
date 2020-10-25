@@ -6,7 +6,6 @@ class Worker {
 
         this._Status = new Object()
         this._Status.IsRunning = false
-        this._Status.WorkerConfigList = null
         this._Status.StepTotal = 0
         this._Status.StepCurrent = 0
         this._Status.TotalSecond = 0
@@ -140,9 +139,22 @@ class Worker {
                                     let ListOfStep = FoundProgram.ListOfSteps
                                     // si le nombre de step est >0
                                     if(ListOfStep.length > 0){
+                                        // Add display name
+                                        let NewList = []
+                                        ListOfStep.forEach(elementListOfStep => {
+                                            let setp = new Object()
+                                            setp.RelaisName = elementListOfStep.RelaisName
+                                            let Element = ReponseGetGpioConfig.Data.find(element => element.name == setp.RelaisName)
+                                            if (Element == undefined){
+                                                setp.DisplayName = "Not Found"
+                                            } else {
+                                                setp.DisplayName = Element.custom.displayname
+                                            }
+                                            setp.Delay = elementListOfStep.Delay
+                                            NewList.push(setp)
+                                        });
                                         // Start du worker
-                                        // ToDo
-                                        //GlobalSendSocketIo("PlayProgram", "PlayWorker", this._ListOfProgram[Index].ListOfSteps)
+                                        this.StartWorking(NewList, User, UserId)
                                     } else {this._MyApp.LogAppliError("ButtonPressed: no list of step defined!", User, UserId)}
                                 } else {this._MyApp.LogAppliError("ButtonPressed: ProgramForThisButton not found in Program Config!", User, UserId)}
                             }else {this._MyApp.LogAppliError("ButtonPressed: No Program config defined!", User, UserId)}
@@ -154,11 +166,11 @@ class Worker {
     }
 
     StartWorking(WorkerConfigList, User, UserId){
-        this._WorkerConfigList = WorkerConfigList
-        let lengthOfWorkerConfigList = this._WorkerConfigList.length
+        let lengthOfWorkerConfigList = WorkerConfigList.length
 
         let TempStep = 0
 
+        // Define list of action
         WorkerConfigList.forEach(element => {
             TempStep++
             // Open
@@ -272,7 +284,6 @@ class Worker {
             this._WorkerInterval = null
         }
         this._Status.IsRunning = false
-        this._Status.WorkerConfigList = null
         this._Status.StepTotal = 0
         this._Status.StepCurrent = 0
         this._Status.TotalSecond = 0
