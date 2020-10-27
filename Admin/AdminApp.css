@@ -1,4 +1,4 @@
-/* Texte dans un titre box */
+/* Texte nom colonne */
 .TextBoxTitre{
     font-size: calc(var(--CoreX-font-size)*1.1);
     font-family: "nyt-cheltenham", georgia, "times new roman", times, serif;
@@ -19,16 +19,9 @@
     }
 }
 
-
 /* PlayGpio view*/
 .ActionButton{
     width: auto;
-}
-.ActionWidth {
-    width: 40%;
-}
-.ActionSmallWidth {
-    width: 20%;
 }
 
 @media only screen and (min-device-width: 375px) and (max-device-width: 667px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait),
@@ -37,8 +30,6 @@ screen and (max-width: 700px)
 {
     .TextBoxTitre{font-size: calc(var(--CoreX-Iphone-font-size)*1.1);}
     .ListElement {margin-top: 2%; margin-bottom: 2%;}
-    .ActionWidth {width: 70%;}
-    .ActionSmallWidth {width: 35%;}
     .ActionButton{width: 40%;}
 }
 

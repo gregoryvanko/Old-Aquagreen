@@ -1,3 +1,5 @@
+const { corex } = require('@gregvanko/corex')
+
 class Worker {
     constructor(MyApp, RpiGpioAdress, UseWorker){
         this._MyApp = MyApp
@@ -11,6 +13,7 @@ class Worker {
         this._Status.TotalSecond = 0
         this._Status.RelaisName = ""
         this._Status.DisplayName = ""
+        this._Status.DisplayProgram = ""
         this._Status.ZoneAction = ""
         this._Status.ZoneStepTotal = 0
         this._Status.ZoneStepCurrent = 0
@@ -154,7 +157,10 @@ class Worker {
                                             NewList.push(setp)
                                         });
                                         // Start du worker
-                                        this.StartWorking(NewList, User, UserId)
+                                        let Worker = new Object()
+                                        Worker.ProgramName = FoundProgram.Name
+                                        Worker.ConfigList= NewList
+                                        this.StartWorking(Worker, User, UserId)
                                     } else {this._MyApp.LogAppliError("ButtonPressed: no list of step defined!", User, UserId)}
                                 } else {this._MyApp.LogAppliError("ButtonPressed: ProgramForThisButton not found in Program Config!", User, UserId)}
                             }else {this._MyApp.LogAppliError("ButtonPressed: No Program config defined!", User, UserId)}
@@ -165,13 +171,13 @@ class Worker {
         } else {this._MyApp.LogAppliError("Button pressed but worker is running", User, UserId)}
     }
 
-    StartWorking(WorkerConfigList, User, UserId){
-        let lengthOfWorkerConfigList = WorkerConfigList.length
+    StartWorking(Worker, User, UserId){
+        let lengthOfWorkerConfigList = Worker.ConfigList.length
 
         let TempStep = 0
 
         // Define list of action
-        WorkerConfigList.forEach(element => {
+        Worker.ConfigList.forEach(element => {
             TempStep++
             // Open
             let ObjectActionOpen = new Object()
@@ -200,6 +206,7 @@ class Worker {
         this._Status.ZoneAction = "Start"
         this._Status.RelaisName = "Worker"
         this._Status.DisplayName = "Worker"
+        this._Status.DisplayProgram = Worker.ProgramName
         this._Status.ZoneStepTotal = 1
         this._Status.ZoneStepCurrent = 0
         this._Status.ZoneNumberTotal = lengthOfWorkerConfigList
@@ -289,6 +296,7 @@ class Worker {
         this._Status.TotalSecond = 0
         this._Status.RelaisName = ""
         this._Status.DisplayName = ""
+        this._Status.DisplayProgram = ""
         this._Status.ZoneAction = ""
         this._Status.ZoneStepTotal = 0
         this._Status.ZoneStepCurrent = 0

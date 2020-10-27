@@ -183,7 +183,10 @@ class PlayProgram{
             // on joue le progrmame si il y a plus que un step a faire
             if(this._ListOfProgram[Index].ListOfSteps.length > 0){
                 // Send status to serveur
-                GlobalSendSocketIo("PlayProgram", "PlayWorker", this._ListOfProgram[Index].ListOfSteps)
+                let Worker = new Object()
+                Worker.ProgramName = this._ListOfProgram[Index].Name
+                Worker.ConfigList= this._ListOfProgram[Index].ListOfSteps
+                GlobalSendSocketIo("PlayProgram", "PlayWorker", Worker)
                 document.getElementById("Conteneur").innerHTML = ""
                 document.getElementById("TxtInfo").innerHTML = "Command send to server..."
                 document.getElementById("TxtError").innerHTML = ""
@@ -372,7 +375,7 @@ class PlayProgram{
         let conteneur = document.getElementById("Conteneur") 
         conteneur.innerHTML = ""
         // Box
-        let ActionBox = CoreXBuild.Div("","ActionBox")
+        let ActionBox = CoreXBuild.Div("","PlayerBox")
         Conteneur.appendChild(ActionBox)
         let FlexActionBox = CoreXBuild.DivFlexColumn("")
         ActionBox.appendChild(FlexActionBox)

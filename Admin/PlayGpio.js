@@ -84,19 +84,15 @@ class PlayGpio{
         if (this._GpioConfig == null){
             Conteneur.appendChild(CoreXBuild.DivTexte("No Configuration saved","","Text",""))
         } else {
+            let ActionBox = CoreXBuild.Div("","PlayerBox")
+            Conteneur.appendChild(ActionBox)
             // Draw Conteneur
             let FlexActionBox = CoreXBuild.DivFlexColumn("")
-            Conteneur.appendChild(FlexActionBox)
+            ActionBox.appendChild(FlexActionBox)
             // Draw DropDow Gpio
-            let Line1 = CoreXBuild.DivFlexRowStart("Line1")
-            FlexActionBox.appendChild(Line1)
-            Line1.appendChild(CoreXBuild.DivTexte("Gpio:", "", "Text", "width: 20%; text-align: right; margin-right: 2%;"))
-            Line1.appendChild(this.BuildDropDownGpio())
+            FlexActionBox.appendChild(this.BuildDropDownGpio())
             // Draw DropDown Delay
-            let Line2 = CoreXBuild.DivFlexRowStart("Line2")
-            FlexActionBox.appendChild(Line2)
-            Line2.appendChild(CoreXBuild.DivTexte("Time:", "", "Text", "width: 20%; text-align: right; margin-right: 2%;"))
-            Line2.appendChild(this.BuildDropDownDelay())
+            FlexActionBox.appendChild(this.BuildDropDownDelay())
             // Draw button Start
             FlexActionBox.appendChild(CoreXBuild.Button("Start", this.StartGpio.bind(this),"Button ActionButton", "StartButton"))
         }
@@ -105,9 +101,10 @@ class PlayGpio{
      * Build DropDown Zone
      */
     BuildDropDownGpio(){
+        let Box = CoreXBuild.Div("", "ActionWidth", "")
         let DropDown = document.createElement("select")
         DropDown.setAttribute("id", "Gpio")
-        DropDown.setAttribute("class", "Text DorpDown ActionWidth")
+        DropDown.setAttribute("class", "Text DorpDown")
         this._GpioConfig.sort((a,b) =>  a.name.localeCompare(b.name))
         this._GpioConfig.forEach(element => {
             if(element.type == "Relais"){
@@ -118,15 +115,17 @@ class PlayGpio{
             }
         });
         DropDown.onchange = this.UpdateDropDownDelay.bind(this)
-        return DropDown
+        Box.appendChild(DropDown)
+        return Box
     }
     /**
      * Build DropDown Delay
      */
     BuildDropDownDelay(){
+        let Box = CoreXBuild.Div("", "ActionSmallWidth", "")
         let DropDown = document.createElement("select")
         DropDown.setAttribute("id", "Delay")
-        DropDown.setAttribute("class", "Text DorpDown ActionSmallWidth")
+        DropDown.setAttribute("class", "Text DorpDown")
         let relay = this._GpioConfig.filter((value, index, array) => (value.type == "Relais"))
         if (relay.length > 0){
             let MaxDelay = relay[0].timeout
@@ -137,7 +136,8 @@ class PlayGpio{
                 DropDown.appendChild(option)
             }
         }
-        return DropDown
+        Box.appendChild(DropDown)
+        return Box
     }
     /**
      * Update DropDown Delay Option
@@ -170,11 +170,14 @@ class PlayGpio{
         WorkerConfig.DisplayName = document.getElementById("Gpio").options[document.getElementById("Gpio").selectedIndex].text
         WorkerConfig.Delay = document.getElementById("Delay").value
         WorkerConfigList.push(WorkerConfig)
+        let Worker = new Object()
+        Worker.ProgramName = "Play-Gpio"
+        Worker.ConfigList= WorkerConfigList
         // Vider le conteneur
         let Conteneur = document.getElementById("Conteneur")
         Conteneur.innerHTML = ""
         // Send status to serveur
-        GlobalSendSocketIo("PlayGpio", "PlayWorker", WorkerConfigList)
+        GlobalSendSocketIo("PlayGpio", "PlayWorker", Worker)
         document.getElementById("TxtPlayGpio").innerHTML = "Command send to server..."
         document.getElementById("ErrorPlayGpio").innerHTML = ""
     }

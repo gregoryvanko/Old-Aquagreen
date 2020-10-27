@@ -59,10 +59,15 @@ class Player{
         this._WorkerProgressSemiCircle.setText(Pourcent + "%")
         this._WorkerProgressSemiCircle.set(Pourcent/100)
 
-        FlexActionBox.appendChild(CoreXBuild.Div("","","height:5vh;"))
-        FlexActionBox.appendChild(CoreXBuild.Div("","","height:5vh;"))
+        FlexActionBox.appendChild(CoreXBuild.Div("","","height:2vh;"))
         FlexActionBox.appendChild(CoreXBuild.DivTexte(Minute + "min " + Seconde + "sec", "Timer", "Text", ""))
-        FlexActionBox.appendChild(CoreXBuild.Div("","","height:5vh;"))
+        FlexActionBox.appendChild(CoreXBuild.Div("","","height:2vh;"))
+
+        let DivProgramName = CoreXBuild.DivFlexRowStart("")
+        FlexActionBox.appendChild(DivProgramName)
+        DivProgramName.appendChild(CoreXBuild.DivTexte("Program: ", "", "Text", "width: 30%; text-align: right;"))
+        DivProgramName.appendChild(CoreXBuild.DivTexte(WorkerValue.DisplayProgram, "ProgramName", "TextSmall", "width: 65%; text-align: left;"))
+
         let DivStepName = CoreXBuild.DivFlexRowStart("")
         FlexActionBox.appendChild(DivStepName)
         DivStepName.appendChild(CoreXBuild.DivTexte("Name: ", "", "Text", "width: 30%; text-align: right;"))
@@ -88,7 +93,7 @@ class Player{
         DivStepprogress.appendChild(CoreXBuild.DivTexte("Done: ", "", "Text", "width: 30%; text-align: right;"))
         DivStepprogress.appendChild(CoreXBuild.DivTexte(WorkerValue.ZoneNumberCurrent + "/" + WorkerValue.ZoneNumberTotal, "Stepprogress", "TextSmall", "width: 65%; text-align: left;"))
         // Erreur
-        FlexActionBox.appendChild(CoreXBuild.DivTexte("","ErrorPlayer","Text","color:red; text-align: center; height:5vh;"))
+        FlexActionBox.appendChild(CoreXBuild.DivTexte("","ErrorPlayer","Text","color:red; text-align: center; height:2vh;"))
         // Action Button
         let DivContentButton = CoreXBuild.DivFlexRowAr("DivContentButton")
         FlexActionBox.appendChild(DivContentButton)

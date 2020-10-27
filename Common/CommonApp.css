@@ -20,6 +20,7 @@
     font-size: calc(var(--CoreX-font-size)*0.7);
     word-wrap: break-word;
 }
+
 /* Button */
 .Button{
     margin: 4vh 0vh 1vh 0vh;
@@ -40,13 +41,13 @@
         box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.7);
     }
 }
-
 .Button:disabled,
 .Button[disabled]{
   border: 1px solid #999999;
   background-color: #cccccc;
   color: #666666;
 }
+
 /* Drop Down */
 .DorpDown{
     box-sizing: border-box;
@@ -84,7 +85,6 @@
     }
 }
 
-
 /* Input */
 .InputBox{
     width: 40%;
@@ -121,7 +121,6 @@
     margin-top: 1vh;
     margin-bottom: 1vh;
 }
-
 .Draggable.Dragging {
     /*border-color: var(--CoreX-color);*/
     border-color: red !important;
@@ -131,7 +130,7 @@
 .PlayerBox{
     border: 1px solid var(--CoreX-color);
     border-radius: 20px;
-    width: 30%;
+    width: 45%;
     padding: 2% 1%;
 }
 .WorkerProgressSemiCircle {
@@ -167,6 +166,14 @@
     }
 }
 
+/* Width */
+.ActionWidth {
+    width: 60%;
+}
+.ActionSmallWidth {
+    width: 30%;
+}
+
 @media only screen and (min-device-width: 375px) and (max-device-width: 667px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait),
 only screen and (min-device-width: 414px) and (max-device-width: 736px) and (-webkit-min-device-pixel-ratio: 3) and (orientation: portrait),
 screen and (max-width: 700px)
@@ -178,8 +185,10 @@ screen and (max-width: 700px)
     .Button{font-size: var(--CoreX-Iphone-font-size); border-radius: 40px;}
     .InputBox{width: 90%;}
     .Input {font-size: var(--CoreX-Iphone-font-size); padding: 3%;}
-    .PlayerBox{width: 80%;}
+    .PlayerBox{width: 90%;}
     .WorkerProgressSemiCircle__label{font-size: calc(var(--CoreX-Iphone-font-size)*2);}
+    .ActionWidth {width: 90%;}
+    .ActionSmallWidth {width: 45%;}
 }
 
 @media screen and (min-width: 1200px)

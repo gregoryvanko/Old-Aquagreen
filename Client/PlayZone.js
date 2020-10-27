@@ -73,7 +73,7 @@ class PlayZone{
         Conteneur.innerHTML =""
         document.getElementById("TxtPlayZone").innerHTML = ""
         document.getElementById("ErrorPlayZone").innerHTML = ""
-        let ActionBox = CoreXBuild.Div("","ActionBox")
+        let ActionBox = CoreXBuild.Div("","PlayerBox")
         Conteneur.appendChild(ActionBox)
         let FlexActionBox = CoreXBuild.DivFlexColumn("")
         ActionBox.appendChild(FlexActionBox)
@@ -251,8 +251,11 @@ class PlayZone{
         WorkerConfig.DisplayName = document.getElementById("Zone").options[document.getElementById("Zone").selectedIndex].text
         WorkerConfig.Delay = document.getElementById("Delay").value
         WorkerConfigList.push(WorkerConfig)
+        let Worker = new Object()
+        Worker.ProgramName = "Play-Zone"
+        Worker.ConfigList= WorkerConfigList
         // Send status to serveur
-        GlobalSendSocketIo("PlayZone", "PlayWorker", WorkerConfigList)
+        GlobalSendSocketIo("PlayZone", "PlayWorker", Worker)
         document.getElementById("Conteneur").innerHTML = ""
         document.getElementById("TxtPlayZone").innerHTML = "Command send to server..."
         document.getElementById("ErrorPlayZone").innerHTML = ""
