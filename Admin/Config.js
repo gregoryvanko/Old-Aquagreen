@@ -225,7 +225,7 @@ class Config{
         let DivInputName = CoreXBuild.Div("", "InputBox", "")
         DivInputName.style.marginBottom= "2%";
         Conteneur.appendChild(DivInputName)
-        DivInputName.appendChild(CoreXBuild.DivTexte("Display Name","","Text",""))
+        DivInputName.appendChild(CoreXBuild.DivTexte("Display Name","","Text","margin: 1%;"))
         let InputDisplayName = CoreXBuild.Input("DisplayName",DisplayName,"Input","","text","DisplayName","Set Display Name")
         InputDisplayName.onfocus = function(){InputDisplayName.placeholder = ""}
         DivInputName.appendChild(InputDisplayName)

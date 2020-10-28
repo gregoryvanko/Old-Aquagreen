@@ -13,7 +13,6 @@
 }
 /* Texte */
 .Text{
-    margin: 1%;
     font-size: var(--TexteNomrale);
 }
 .TextSmall{

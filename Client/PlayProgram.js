@@ -234,7 +234,7 @@ class PlayProgram{
         // Nom du programme
         let DivInput = CoreXBuild.Div("", "InputBox", "")
         Conteneur.appendChild(DivInput)
-        DivInput.appendChild(CoreXBuild.DivTexte("Name of the program","","Text","width: 100%;"))
+        DivInput.appendChild(CoreXBuild.DivTexte("Name of the program","","Text","width: 100%; margin: 1%;"))
         let ProgramName = this._ListOfProgram[this._CurrentProgramId].Name
         let InputProgramName = CoreXBuild.Input("ProgramName",ProgramName,"Input","","text","ProgramName","Set Program Name")
         InputProgramName.onfocus = function(){InputProgramName.placeholder = ""}
