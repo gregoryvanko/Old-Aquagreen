@@ -1,7 +1,7 @@
 /* Titre */
 .Titre{
     margin-bottom: 2%;
-    font-size: var(--CoreX-Titrefont-size);
+    font-size: var(--TitreNormale);
     color: var(--CoreX-color);
     word-wrap: break-word;
 }
@@ -14,10 +14,10 @@
 /* Texte */
 .Text{
     margin: 1%;
-    font-size: var(--CoreX-font-size);
+    font-size: var(--TexteNomrale);
 }
 .TextSmall{
-    font-size: calc(var(--CoreX-font-size)*0.7);
+    font-size: calc(var(--TexteNomrale)*0.7);
     word-wrap: break-word;
 }
 
@@ -30,7 +30,7 @@
     border-radius: 20px;
     text-align: center;
     display: inline-block;
-    font-size: var(--CoreX-font-size);
+    font-size: var(--TexteNomrale);
     box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.7);
     color: rgb(44,1,21);
     background: white;
@@ -93,7 +93,7 @@
     box-sizing: border-box;
     outline: none;
     width: 100%;
-    font-size: var(--CoreX-font-size);
+    font-size: var(--TexteNomrale);
     margin: 0;
     border: solid 1px #dcdcdc;
     background: #fafafa;
@@ -143,7 +143,7 @@
     padding: 0;
     margin: 0;
     transform: translate(-50%, -50%);
-    font-size: calc(var(--CoreX-font-size)*2);
+    font-size: calc(var(--TexteNomrale)*2);
 }
 .WorkerProgressLine{
     width: 65%;
@@ -178,26 +178,26 @@
 only screen and (min-device-width: 414px) and (max-device-width: 736px) and (-webkit-min-device-pixel-ratio: 3) and (orientation: portrait),
 screen and (max-width: 700px)
 {
-    .Titre{font-size: var(--CoreX-TitreIphone-font-size);}
+    .Titre{font-size: var(--TitreIphone);}
     .SousTitre{font-size: 6vw;}
-    .Text{font-size: var(--CoreX-Iphone-font-size);}
-    .TextSmall{font-size: calc(var(--CoreX-Iphone-font-size)*0.7);}
-    .Button{font-size: var(--CoreX-Iphone-font-size); border-radius: 40px;}
+    .Text{font-size: var(--TexteIphone);}
+    .TextSmall{font-size: calc(var(--TexteIphone)*0.7);}
+    .Button{font-size: var(--TexteIphone); border-radius: 40px;}
     .InputBox{width: 90%;}
-    .Input {font-size: var(--CoreX-Iphone-font-size); padding: 3%;}
+    .Input {font-size: var(--TexteIphone); padding: 3%;}
     .PlayerBox{width: 90%;}
-    .WorkerProgressSemiCircle__label{font-size: calc(var(--CoreX-Iphone-font-size)*2);}
+    .WorkerProgressSemiCircle__label{font-size: calc(var(--TexteIphone)*2);}
     .ActionWidth {width: 90%;}
     .ActionSmallWidth {width: 45%;}
 }
 
 @media screen and (min-width: 1200px)
 {
-    .Titre{font-size: var(--CoreX-TitreMax-font-size);}
+    .Titre{font-size: var(--TitreMax);}
     .SousTitre{font-size: 35px;}
-    .Text{font-size: var(--CoreX-Max-font-size);}
-    .TextSmall{font-size: calc(var(--CoreX-Max-font-size)*0.7);}
-    .Button{font-size: var(--CoreX-Max-font-size); border-radius: 40px;}
-    .Input {font-size: var(--CoreX-Max-font-size);}
-    .WorkerProgressSemiCircle__label{font-size: calc(var(--CoreX-Max-font-size)*2);}
+    .Text{font-size: var(--TexteMax);}
+    .TextSmall{font-size: calc(var(--TexteMax)*0.7);}
+    .Button{font-size: var(--TexteMax); border-radius: 40px;}
+    .Input {font-size: var(--TexteMax);}
+    .WorkerProgressSemiCircle__label{font-size: calc(var(--TexteMax)*2);}
 }

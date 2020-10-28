@@ -1,6 +1,6 @@
 /* Texte nom colonne */
 .TextBoxTitre{
-    font-size: calc(var(--CoreX-font-size)*1.1);
+    font-size: calc(var(--TexteNomrale)*1.1);
     font-family: "nyt-cheltenham", georgia, "times new roman", times, serif;
     color: black;
 }
@@ -28,12 +28,12 @@
 only screen and (min-device-width: 414px) and (max-device-width: 736px) and (-webkit-min-device-pixel-ratio: 3) and (orientation: portrait),
 screen and (max-width: 700px)
 {
-    .TextBoxTitre{font-size: calc(var(--CoreX-Iphone-font-size)*1.1);}
+    .TextBoxTitre{font-size: calc(var(--TexteIphone)*1.1);}
     .ListElement {margin-top: 2%; margin-bottom: 2%;}
     .ActionButton{width: 40%;}
 }
 
 @media screen and (min-width: 1200px)
 {
-    .TextBoxTitre{font-size: calc(var(--CoreX-Max-font-size)*1.1);}
+    .TextBoxTitre{font-size: calc(var(--TexteMax)*1.1);}
 }
