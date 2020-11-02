@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon —inspect exemple.js",
     "save": "git add -A && git commit -a -m 'auto save' && npm version minor && npm publish && git push",
-    "Prod": "npm --prefix /var/www/NodeJs/Production/Aquagreen update"
+    "Prod": "npm --prefix /var/www/NodeJs/Production/Aquagreen update && npm --prefix /var/www/NodeJs/Production/Aquagreen version minor"
   },
   "repository": {
     "type": "git",
