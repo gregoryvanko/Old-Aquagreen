@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon —inspect exemple.js",
-    "save": "git add -A && git commit -a -m 'auto save' && npm version minor && npm publish && git push",
+    "up": "npm version minor && npm publish && git push",
+    "vanko": "ssh root@vanko.be -p 9922",
     "Prod": "npm --prefix /var/www/NodeJs/Production/Aquagreen update && npm --prefix /var/www/NodeJs/Production/Aquagreen version minor"
   },
   "repository": {
@@ -23,7 +24,7 @@
   },
   "homepage": "https://github.com/gregoryvanko/Aquagreen#readme",
   "dependencies": {
-    "@gregvanko/corex": "^4.72.0",
-    "axios": "^0.19.2"
+    "@gregvanko/corex": "^4.15.0",
+    "axios": "^0.21.1"
   }
 }
