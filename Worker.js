@@ -1,5 +1,3 @@
-const { corex } = require('@gregvanko/corex')
-
 class Worker {
     constructor(MyApp, RpiGpioAdress, UseWorker){
         this._MyApp = MyApp
