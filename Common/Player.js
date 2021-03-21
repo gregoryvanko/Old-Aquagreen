@@ -2,9 +2,6 @@ class Player{
     constructor(Conteneur, StopPlayer){
         this._Conteneur = Conteneur
         this._StopPlayer = StopPlayer
-
-        this._WorkerProgressSemiCircle = null
-        this._WorkerProgressLine = null
         this._CurrentZoneAction = ""
 
         // SocketIo Listener
@@ -16,10 +13,6 @@ class Player{
             this.Update(Value)
         })
         SocketIo.on('PlayerStop', (Value) => {
-            this._WorkerProgressSemiCircle.destroy()
-            this._WorkerProgressLine.destroy()
-            this._WorkerProgressSemiCircle = null
-            this._WorkerProgressLine = null
             SocketIo.off('PlayerError')
             SocketIo.off('PlayerUpdate')
             SocketIo.off('PlayerStop')
@@ -41,23 +34,8 @@ class Player{
         ActionBox.appendChild(FlexActionBox)
 
         FlexActionBox.appendChild(CoreXBuild.Div("","","height:5vh;"))
-        let divWorkerProgressSemiCircle = CoreXBuild.Div("WorkerProgressSemiCircle", "WorkerProgressSemiCircle","")
-        FlexActionBox.appendChild(divWorkerProgressSemiCircle)
-        this._WorkerProgressSemiCircle = new ProgressBar.SemiCircle("#WorkerProgressSemiCircle", {
-            color: 'blue',
-            duration: 1000,
-            easing: 'linear',
-            strokeWidth: 2,
-            trailWidth: 4,
-            text: {
-                value: 'Text',
-                className: 'WorkerProgressSemiCircle__label',
-                style: null,
-                alignToBottom: false
-            }
-        });
-        this._WorkerProgressSemiCircle.setText(Pourcent + "%")
-        this._WorkerProgressSemiCircle.set(Pourcent/100)
+
+        FlexActionBox.appendChild(CoreXBuild.ProgressRing({Id:"MyProgressRing", Radius:100, RadiusMobile:100, ScaleText:0.9, TextColor:"black", StrokeColor:"var(--CoreX-color)", Fill:"WhiteSmoke"}))
 
         FlexActionBox.appendChild(CoreXBuild.Div("","","height:2vh;"))
         FlexActionBox.appendChild(CoreXBuild.DivTexte(Minute + "min " + Seconde + "sec", "Timer", "Text", "margin: 1%;"))
@@ -78,15 +56,9 @@ class Player{
         FlexActionBox.appendChild(DivProgressLine)
         DivProgressLine.appendChild(CoreXBuild.DivTexte("Progress: ", "", "Text", "width: 30%; text-align: right; margin: 1%;"))
 
-        DivProgressLine.appendChild(CoreXBuild.Div("WorkerProgressLine", "WorkerProgressLine"))
-        this._WorkerProgressLine = new ProgressBar.Line('#WorkerProgressLine', {
-            color: 'blue',
-            duration: 1000,
-            easing: 'linear',
-            strokeWidth: 4,
-            trailWidth: 4,
-        });
-        this._WorkerProgressLine.set(PourcentZone/100)
+        let DivProgress = CoreXBuild.Div("", "", "width: 65%; margin: 1%;")
+        DivProgressLine.appendChild(DivProgress)
+        DivProgress.appendChild(CoreXBuild.ProgressBar("MyProgressLine","", "width: 100%;"))
 
         let DivStepprogress = CoreXBuild.DivFlexRowStart("")
         FlexActionBox.appendChild(DivStepprogress)
@@ -115,13 +87,8 @@ class Player{
             Seconde = WorkerValue.TotalSecond - (Minute * 60)
         }
         
-        this._WorkerProgressSemiCircle.setText(Pourcent + "%")
-        this._WorkerProgressSemiCircle.animate(Pourcent/100)
-        if (PourcentZone == 0){
-            this._WorkerProgressLine.set(PourcentZone/100)
-        } else {
-            this._WorkerProgressLine.animate(PourcentZone/100)
-        }
+        document.getElementById("MyProgressRing").setAttribute('progress', Pourcent)
+        document.getElementById("MyProgressLine").value = PourcentZone
         document.getElementById("Timer").innerHTML= Minute + "min " + Seconde + "sec"
         document.getElementById("StepName").innerHTML= WorkerValue.ZoneAction + " " + WorkerValue.DisplayName
         document.getElementById("Stepprogress").innerHTML= WorkerValue.ZoneNumberCurrent + "/" + WorkerValue.ZoneNumberTotal

@@ -132,21 +132,6 @@
     width: 45%;
     padding: 2% 1%;
 }
-.WorkerProgressSemiCircle {
-    width: 60%;
-}
-.WorkerProgressSemiCircle__label{
-    color: blue;
-    position: absolute;
-    left: 50%;
-    padding: 0;
-    margin: 0;
-    transform: translate(-50%, -50%);
-    font-size: calc(var(--TexteNomrale)*2);
-}
-.WorkerProgressLine{
-    width: 65%;
-}
 
 .ProgramBox{
     box-sizing: border-box;
@@ -185,7 +170,6 @@ screen and (max-width: 700px)
     .InputBox{width: 90%;}
     .Input {font-size: var(--TexteIphone); padding: 3%;}
     .PlayerBox{width: 90%;}
-    .WorkerProgressSemiCircle__label{font-size: calc(var(--TexteIphone)*2);}
     .ActionWidth {width: 90%;}
     .ActionSmallWidth {width: 45%;}
 }
@@ -198,5 +182,4 @@ screen and (max-width: 700px)
     .TextSmall{font-size: calc(var(--TexteMax)*0.7);}
     .Button{font-size: var(--TexteMax); border-radius: 40px;}
     .Input {font-size: var(--TexteMax);}
-    .WorkerProgressSemiCircle__label{font-size: calc(var(--TexteMax)*2);}
 }
