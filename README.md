@@ -19,4 +19,3 @@ const UseRpiGpio = true
 let MyApp = new Aquagreen(Name, Port, Debug, RpiGpioAdress, UseRpiGpio)
 MyApp.Start()
 ```
-
